@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Item.h"
+
 class Item;
 class Player;
 
@@ -37,7 +39,7 @@ private:
 	ModelRender m_modelRender;
 	Vector3 m_position;
 	Quaternion m_rotation;
-	Item* m_item;
+	Item m_item;
 	Player* m_player;
 	int count = 1;
 	bool useFlag = false;

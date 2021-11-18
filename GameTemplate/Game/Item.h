@@ -10,10 +10,8 @@ class Game;
 class Item
 {
 public:
-	Item() {}
+	Item();
 	~Item() {}
-
-	bool Start();
 
 	//購入ステート
 	enum EnBuyState {

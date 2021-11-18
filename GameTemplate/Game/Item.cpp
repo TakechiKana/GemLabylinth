@@ -12,11 +12,10 @@
 //EffectEmitterを使用するために、ファイルをインクルードする。
 #include "graphics/effect/EffectEmitter.h"
 
-bool Item::Start()
+Item::Item()
 {
 	EffectEngine::GetInstance()->ResistEffect(1, u"Assets/effect/kirakira.efk");
 	m_player = FindGO<Player>("player");
-	return true;
 }
 
 bool Item::GetItem(Vector3 position)

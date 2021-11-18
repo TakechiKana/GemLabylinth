@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ItemDash.h"
-#include "Item.h"
 #include "Player.h"
 
 
@@ -14,7 +13,7 @@ void ItemDash::Update()
 {
 	kari = m_player->GetPosition();
 
-	m_item->GetItem(ServePosition());
+	m_item.GetItem(ServePosition());
 	DashGetAndUse();
 	m_modelRender.Update();
 	Rotation();
@@ -24,19 +23,19 @@ void ItemDash::Update()
 void ItemDash::DashGetAndUse()
 {
 	//アイテムをゲットした判定
-	if (m_item->GetItem(ServePosition()) == true) {
+	if (m_item.GetItem(ServePosition()) == true) {
 		//GetItem関数の戻り値を代入
-		getFlag = m_item->GetItem(ServePosition());
-		m_item->GetItemCount(getFlag, count);
-		SetCount(m_item->GetItemCount(getFlag, count));
+		getFlag = m_item.GetItem(ServePosition());
+		m_item.GetItemCount(getFlag, count);
+		SetCount(m_item.GetItemCount(getFlag, count));
 		DeleteGO(this);
 	}
 	//アイテムを使った判定
 	if (g_pad[0]->IsTrigger(enButtonB)&& m_player->GetDashTimer()<=0.0f && count>=0)
 	{
 		if (useFlag == true) {
-			m_item->ItemUse(useFlag,count);
-			SetCount(m_item->ItemUse(getFlag, count));
+			m_item.ItemUse(useFlag,count);
+			SetCount(m_item.ItemUse(getFlag, count));
 		}
 	}
 }
