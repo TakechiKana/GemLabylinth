@@ -6,25 +6,23 @@
 #include "ItemMagic.h"
 #include "ItemDash.h"
 
-#include "Game.h"
-
-
 //EffectEmitterを使用するために、ファイルをインクルードする。
 #include "graphics/effect/EffectEmitter.h"
 
 Item::Item()
 {
-	EffectEngine::GetInstance()->ResistEffect(1, u"Assets/effect/kirakira.efk");
+	EffectEngine::GetInstance()->ResistEffect(0, u"Assets/effect/kirakira_big.efk");
 	m_player = FindGO<Player>("player");
 }
 
 bool Item::GetItem(Vector3 position)
 {	
 	//playerPosition = m_player->GetPosition();
-	playerPosition = m_game->GetPosition();
-	Vector3 diff = playerPosition - position;
-	if(diff.Length()<100.0f){
-		PlayEffectandSE();
+	//playerPosition = m_game->GetPosition();
+
+	Vector3 diff = m_player->GetPosition() - position;
+	if(diff.Length()<65.0f){
+		PlayEffectandSE(position);
 		return true;
 	}
 	else
@@ -102,7 +100,7 @@ void Item::StoreBuy()
 	return;
 }
 
-void Item::PlayEffectandSE()
+void Item::PlayEffectandSE(Vector3 position)
 {
 	///////効果音の再生///////
 
@@ -111,7 +109,7 @@ void Item::PlayEffectandSE()
 	//取得エフェクトを発生させる。
 	EffectEmitter* effectEmitter = NewGO<EffectEmitter>(0);
 	//ResistEffect関数で指定した番号を指定する。
-	effectEmitter->Init(1);
+	effectEmitter->Init(0);
 	//大きさを設定する。
 	effectEmitter->SetScale(Vector3::One * 11.0f);
 	Vector3 effectPosition = position;
@@ -119,14 +117,6 @@ void Item::PlayEffectandSE()
 	effectPosition.y += 70.0f;
 	//座標を設定する。
 	effectEmitter->SetPosition(effectPosition);
-	Quaternion rotation;
-	//プレイヤーの回転。
-	rotation = rotation;
-	//回転させる。
-	rotation.AddRotationDegY(360.0f);
-	rotation.AddRotationDegZ(180.0f);
-	//回転を設定する。
-	effectEmitter->SetRotation(rotation);
 	//エフェクトを再生する。
 	effectEmitter->Play();
 

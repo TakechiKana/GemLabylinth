@@ -5,7 +5,6 @@ class ItemHeart;
 class ItemPunchUp;
 class ItemMagic;
 class ItemDash;
-class Game;
 
 class Item
 {
@@ -42,13 +41,13 @@ public:
 
 	void StoreBuy();
 
-	void PlayEffectandSE();
+	void PlayEffectandSE(Vector3 position);
 
 private:
 	int m_enBuyState = EnBuyState_NotBuy;
 	Quaternion m_rotation;
 	Vector3 position;
-	Player* m_player;
+	Player* m_player = nullptr;
 	ItemHeart* m_heart;
 	ItemPunchUp* m_punchUp;
 	ItemMagic* m_magic;
@@ -64,8 +63,5 @@ private:
 	int magicCount = 0;
 	int dashCount = 0;
 	int getCount = 0;
-
-	Vector3 playerPosition;
-	Game* m_game;
 };
 

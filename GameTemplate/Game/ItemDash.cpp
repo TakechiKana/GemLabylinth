@@ -11,7 +11,7 @@ bool ItemDash::Start()
 
 void ItemDash::Update()
 {
-	kari = m_player->GetPosition();
+	//kari= m_player->GetPosition();
 
 	m_item.GetItem(ServePosition());
 	DashGetAndUse();

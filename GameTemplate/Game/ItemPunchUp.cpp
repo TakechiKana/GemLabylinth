@@ -26,7 +26,6 @@ void ItemPunchUp::PunchUpGetAndUse()
 		getFlag = m_item->GetItem(m_position);
 		m_item->GetItemCount(getFlag, count);
 		SetCount(m_item->GetItemCount(getFlag, count));
-		m_item->PlayEffectandSE();
 		DeleteGO(this);
 	}
 	//アイテムを使った判定
