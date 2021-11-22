@@ -11,13 +11,12 @@ public:
 	ItemDash() {}
 	~ItemDash() {}
 	bool Start();
-	int ServeCount(){
+	const int ServeCount() const{
 		return count;
 	}
-	int SetCount(int n)
+	void SetCount() 
 	{
-		count = n;
-		return count;
+		count -= 1;
 	}
 
 	void SetPosition(const Vector3& position)
@@ -41,10 +40,7 @@ private:
 	Quaternion m_rotation;
 	Item m_item;
 	Player* m_player;
-	int count = 1;
-	bool useFlag = false;
-	bool getFlag = false;
-
-	Vector3 kari;
+	int count = 0;
+	int kari = 0;
 };
 

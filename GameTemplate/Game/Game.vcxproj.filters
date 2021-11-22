@@ -20,6 +20,7 @@
     <ClCompile Include="ItemPunchUp.cpp" />
     <ClCompile Include="ItemMagic.cpp" />
     <ClCompile Include="ItemDash.cpp" />
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -35,5 +36,6 @@
     <ClInclude Include="ItemPunchUp.h" />
     <ClInclude Include="ItemMagic.h" />
     <ClInclude Include="ItemDash.h" />
+    <ClInclude Include="Enemy.h" />
   </ItemGroup>
 </Project>

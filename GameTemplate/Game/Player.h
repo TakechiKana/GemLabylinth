@@ -1,5 +1,6 @@
 #pragma once
 
+
 //クラス宣言
 class Collision;
 class ItemDash;
@@ -35,9 +36,9 @@ public:
 		return m_health;
 	}
 
-	int GetState()const
+	bool GetState()const
 	{
-		return m_playerState;
+		return m_fastRun;
 	}
 
 	//ダッシュタイマー情報を渡す関数
@@ -56,7 +57,7 @@ public:
 	{
 		return m_position;
 	}
-	//ポジションの代入
+	//ポジションをもらう
 	void SetPosition(const Vector3& position)
 	{
 		m_position = position;
@@ -152,19 +153,21 @@ private:
 	Vector3 m_forward;										//前方方向ベクトル
 	Quaternion m_rotation;									//クォータニオン。
 	int m_playerState = enPlayerState_Idle;					//プレイヤーステート
-	int m_health = 4;										//HP
+	int m_health = 5;										//HP
 	float m_timer = 0.0f;									//ダッシュタイム
 	float m_timer1 = 0.0f;									//クールタイム
 	bool m_downState = false;								//ダウンの判定
 	bool m_isUnderAttack = false;							//攻撃中の判定
 	bool m_fastRun = false;									//速度アップ中の判定
-	int m_PunchBoneId = -1;									//ぼーんID
+	int m_PunchBoneId = -1;									//ボーンID
+
+	int kari = 0;
 
 	//各クラスの変数
-	class ItemDash;
-	class ItemHeart;
-	class ItemMagic;
-	class ItemPunchUp;
+	ItemDash* m_dash;
+	ItemHeart* m_heart;
+	ItemMagic* m_magic;
+	ItemPunchUp* m_punchUp;
 
 	FontRender fontRender;
 };

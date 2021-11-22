@@ -17,9 +17,6 @@ Item::Item()
 
 bool Item::GetItem(Vector3 position)
 {	
-	//playerPosition = m_player->GetPosition();
-	//playerPosition = m_game->GetPosition();
-
 	Vector3 diff = m_player->GetPosition() - position;
 	if(diff.Length()<65.0f){
 		PlayEffectandSE(position);
@@ -29,75 +26,6 @@ bool Item::GetItem(Vector3 position)
 	{
 		return false;
 	}
-}
-
-void Item::StoreBuy()
-{
-	switch (m_enBuyState)
-	{
-	case EnBuyState_Heart:
-		if (m_heart->ServeCount() < 3) {
-			getCount = m_heart->ServeCount();
-			heartStock -= 1;
-			getCount += 1;
-			m_heart->SetCount(getCount);
-			getCount = 0;
-		}
-		else {
-			break;
-		}
-		if (heartStock == 0)
-		{
-			break;
-		}
-		break;
-	case EnBuyState_PunchUp:
-		if (m_punchUp->ServeCount() < 3) {
-			getCount = m_punchUp->ServeCount();
-			punchUpStock -= 1;
-			m_punchUp->SetCount(getCount);
-			getCount = 0;
-		}
-		else {
-			break;
-		}
-		if (punchUpStock == 0)
-		{
-			break;
-		}
-		break;
-	case EnBuyState_Magic:
-		if (m_magic->ServeCount() < 3) {
-			getCount = m_magic->ServeCount();
-			magicStock -= 1;
-			m_magic->SetCount(getCount);
-			getCount = 0;
-		}
-		else {
-			break;
-		}
-		if (magicStock == 0)
-		{
-			break;
-		}
-	case EnBuyState_Dash:
-		if (m_dash->ServeCount() < 3) {
-			getCount = m_dash->ServeCount();
-			magicStock -= 1;
-			m_magic->SetCount(getCount);
-			getCount = 0;
-		}
-		else {
-			break;
-		}
-		if (magicStock == 0)
-		{
-			break;
-		}
-	case EnBuyState_NotBuy:
-		break;
-	}
-	return;
 }
 
 void Item::PlayEffectandSE(Vector3 position)

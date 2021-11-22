@@ -4,10 +4,12 @@
 #include "Player.h"
 #include "GameCamera.h"
 #include "Item.h"
-//#include "ItemHeart.h"
+#include "ItemHeart.h"
 #include "ItemDash.h"
-//#include "ItemMagic.h"
-//#include "ItemPunchUp.h"
+#include "ItemMagic.h"
+#include "ItemPunchUp.h"
+#include "Enemy.h"
+
 
 bool Game::Start()
 {
@@ -37,6 +39,15 @@ bool Game::Start()
 			return true;
 		}
 
+		if (objData.EqualObjectName(L"enemy") == true) {
+
+			//プレイヤーのオブジェクトを作る。
+			m_enemy = NewGO<Enemy>(0, "enemy");
+			m_enemy->SetPosition(objData.position);
+
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 		//if (objData.EqualObjectName(L"heart") == true) {
 
 		//	//プレイヤーのオブジェクトを作る。
@@ -49,20 +60,20 @@ bool Game::Start()
 		//if (objData.EqualObjectName(L"glove") == true) {
 
 		//	//プレイヤーのオブジェクトを作る。
-		//	m_punchUp = NewGO<ItemPunchUp>(0, "punchUp");
+		//	m_punchUp = NewGO<ItemPunchUp>(0, "punchup");
 		//	m_punchUp->SetPosition(objData.position);
 		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
 		//	return true;
 		//}
 
-		if (objData.EqualObjectName(L"boots") == true) {
+		//if (objData.EqualObjectName(L"boots") == true) {
 
-			//プレイヤーのオブジェクトを作る。
-			m_dash = NewGO<ItemDash>(0, "dash");
-			m_dash->SetPosition(objData.position);
-			//falseにすると、レベルの方でモデルが読み込まれて配置される。
-			return true;
-		}
+		//	//プレイヤーのオブジェクトを作る。
+		//	m_dash = NewGO<ItemDash>(0, "dash");
+		//	m_dash->SetPosition(objData.position);
+		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
+		//	return true;
+		//}
 
 		//if (objData.EqualObjectName(L"basket") == true) {
 

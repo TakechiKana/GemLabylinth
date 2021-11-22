@@ -22,19 +22,11 @@ void ItemPunchUp::PunchUpGetAndUse()
 {
 	//アイテムをゲットした判定
 	if (m_item->GetItem(m_position) == true) {
-		//GetItem関数の戻り値を代入
-		getFlag = m_item->GetItem(m_position);
-		m_item->GetItemCount(getFlag, count);
-		SetCount(m_item->GetItemCount(getFlag, count));
 		DeleteGO(this);
 	}
 	//アイテムを使った判定
 	if (g_pad[0]->IsTrigger(enButtonB) && m_player->GetDashTimer() <= 0.0f)
 	{
-		if (useFlag == true) {
-			m_item->ItemUse(useFlag, count);
-			SetCount(m_item->ItemUse(getFlag, count));
-		}
 	}
 }
 

@@ -5,39 +5,38 @@
 
 bool ItemDash::Start()
 {
-	m_modelRender.Init("Assets/modelData/item/heart.tkm");
+	m_modelRender.Init("Assets/modelData/item/boots_kari.tkm");
+	m_player = FindGO<Player>("player");
 	return true;
 }
 
 void ItemDash::Update()
 {
-	//kari= m_player->GetPosition();
-
-	m_item.GetItem(ServePosition());
 	DashGetAndUse();
-	m_modelRender.Update();
 	Rotation();
+	m_modelRender.Update();
 }
 
 
 void ItemDash::DashGetAndUse()
 {
+	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
 	if (m_item.GetItem(ServePosition()) == true) {
-		//GetItem関数の戻り値を代入
-		getFlag = m_item.GetItem(ServePosition());
-		m_item.GetItemCount(getFlag, count);
-		SetCount(m_item.GetItemCount(getFlag, count));
+		count += 1;
 		DeleteGO(this);
 	}
+
 	//アイテムを使った判定
-	if (g_pad[0]->IsTrigger(enButtonB)&& m_player->GetDashTimer()<=0.0f && count>=0)
-	{
-		if (useFlag == true) {
-			m_item.ItemUse(useFlag,count);
-			SetCount(m_item.ItemUse(getFlag, count));
-		}
-	}
+	//if (m_player->GetState() == true)
+	//{ 
+	//		count -= 1;
+
+	//	/*if (m_player->GetDashTimer() >= 3.9f) {
+	//		m_item.GetItemCount(1, count);
+	//	}
+	//	SetCount(m_item.GetItemCount(1, count));*/
+	//}
 }
 void ItemDash::Rotation()
 {
