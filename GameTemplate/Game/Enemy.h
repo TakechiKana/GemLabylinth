@@ -106,6 +106,7 @@ private:
 	Vector3						m_targetPosition;							//ターゲットの座標
 	Vector3						m_moveSpeed;								//移動速度。
 	Vector3						m_forward = Vector3::AxisZ;					//エネミーの正面ベクトル。
+	Vector3						padding = { 20.0f,20.0f,20.0f };			//ターゲットをプレイヤーより少し離す。
 	Quaternion					m_rotation;									//回転。
 	Vector3						m_scale = Vector3::One;						//大きさ。
 	CharacterController			m_charaCon;									//キャラコン。

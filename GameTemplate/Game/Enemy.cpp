@@ -27,14 +27,12 @@ Enemy::~Enemy()
 bool Enemy::Start()
 {
 	//アニメーションを読み込む。
-	//m_animationClips[enAnimationClip_Idle].Load("Assets/animData/enemy/idle.tka");
-	//m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
-	//m_animationClips[enAnimationClip_Walk].Load("Assets/animData/enemy/walk.tka");
-	//m_animationClips[enAnimationClip_Walk].SetLoopFlag(true);
-	//m_animationClips[enAnimationClip_Run].Load("Assets/animData/enemy/run.tka");
-	//m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
-	//m_animationClips[enAnimationClip_Attack].Load("Assets/animData/enemy/attack.tka");
-	//m_animationClips[enAnimationClip_Attack].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/jackie/idle.tka");
+	m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
+	m_animationClips[enAnimationClip_Run].Load("Assets/animData/jackie/run.tka");
+	m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
+	m_animationClips[enAnimationClip_Punch].Load("Assets/animData/jackie/punch.tka");
+	m_animationClips[enAnimationClip_Punch].SetLoopFlag(false);
 	//m_animationClips[enAnimationClip_MagicAttack].Load("Assets/animData/enemy/magicattack.tka");
 	//m_animationClips[enAnimationClip_MagicAttack].SetLoopFlag(false);
 	//m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy/receivedamage.tka");
@@ -43,7 +41,7 @@ bool Enemy::Start()
 	//m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/human/jackie.tkm"/*, m_animationClips, enAnimationClip_Num*/);
+	m_modelRender.Init("Assets/modelData/human/jackie.tkm", m_animationClips, enAnimationClip_Num);
 	//ナビメッシュ
 	m_nvmMesh.Init("Assets/modelData/stage/stage_mesh.tkn");
 
@@ -61,7 +59,7 @@ bool Enemy::Start()
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		20.0f,			//半径。
+		25.0f,			//半径。
 		100.0f,			//高さ。
 		m_position		//座標。
 	);
@@ -84,10 +82,8 @@ bool Enemy::Start()
 
 void Enemy::Update()
 {
-	//移動処理
-	Move();
-	//追跡処理。
-	//Chase();
+	//追跡処理
+	Chase();
 	//回転処理。
 	Rotation();
 	//当たり判定。
@@ -101,13 +97,16 @@ void Enemy::Update()
 
 	//モデルの更新。
 	m_modelRender.Update();
-	m_targetPosition = m_player->GetPosition();
+
+	//ターゲットポジション（プレイヤー）の更新
+	m_targetPosition = m_player->GetPosition() + padding ;
 }
 
-void Enemy::Move()
+void Enemy::Chase()
 {
+
 	bool isEnd;
-	if (g_pad[0]->IsTrigger(enButtonUp)) {
+	if (SearchPlayer()==true)   {
 		// パス検索
 		m_pathFiding.Execute(
 			m_path,							// 構築されたパスの格納先
@@ -122,7 +121,7 @@ void Enemy::Move()
 	// パス上を移動する。
 	m_position = m_path.Move(
 		m_position,
-		10.0f,
+		4.5f,
 		isEnd
 	);
 
@@ -149,32 +148,13 @@ void Enemy::Rotation()
 	//SetRotationDegではなくSetRotationを使用する。
 	m_rotation.SetRotationY(-angle);
 
-	//回転を設定する。
-	m_modelRender.SetRotation(m_rotation);
-
 	//プレイヤーの前ベクトルを計算する。
 	m_forward = Vector3::AxisZ;
 	m_rotation.Apply(m_forward);
-}
 
-void Enemy::Chase()
-{
-	//追跡ステートでないなら、追跡処理はしない。
-	if (m_enemyState != enEnemyState_Chase)
-	{
-		//return;
-	}
-	//エネミーを移動させる。
-	if (m_charaCon.IsOnGround()) {
-		//地面についた。
-		//重力を0にする。
-		m_moveSpeed.y = 0.0f;
-	}
-	Vector3 modelPosition = m_position;
-	////ちょっとだけモデルの座標を挙げる。
-	//modelPosition.y += 2.5f;
-	//座標を設定する。
-	//m_modelRender.SetPosition(modelPosition);
+	//回転を設定する。
+	m_modelRender.SetRotation(m_rotation);
+
 }
 
 void Enemy::Collision()
@@ -188,7 +168,7 @@ void Enemy::Collision()
 	}
 
 	//プレイヤーの攻撃用のコリジョンを取得する。
-	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_punch");
 	//コリジョンの配列をfor文で回す。
 	for (auto collision : collisions)
 	{
@@ -272,7 +252,7 @@ const bool Enemy::SearchPlayer() const
 	Vector3 diff = m_player->GetPosition() - m_position;
 
 	//プレイヤーにある程度近かったら。
-	if (diff.Length() <= 1500.0f)
+	if (diff.LengthSq() <= 1000.0f*1000.0f)
 	{
 		return true;
 	}
@@ -301,32 +281,17 @@ void Enemy::MakePunchCollision()
 	collisionObject->SetWorldMatrix(matrix);
 }
 
-//void Enemy::MakeMagic()
-//{
-//
-//}
-
 void Enemy::ProcessState()
 {
-	//各タイマーを初期化
-	//待機時間と追跡時間を制限するため。
-	m_idleTimer = 0.0f;
-	m_chaseTimer = 0.0f;
-
-	//エネミーからプレイヤーに向かうベクトルを計算する。
-	Vector3 diff = m_player->GetPosition() - m_position;
-
 	//プレイヤーを見つけたら。
 	if (SearchPlayer() == true)
 	{
-		//ベクトルを正規化する。
-		diff.Normalize();
-		//移動速度を設定する。
-		m_moveSpeed = diff * 250.0f;
-		//通常攻撃できない距離なら
-		if (IsCanPunch() == false)
+		//プレイヤーに向かって走る
+		m_enemyState = enEnemyState_Chase;
+		//通常攻撃できる距離なら
+		if (IsCanPunch() == true)
 		{	
-			return;
+			m_enemyState = enEnemyState_Punch;
 		}
 	}
 	//プレイヤーを見つけられなければ。
@@ -340,14 +305,8 @@ void Enemy::ProcessState()
 
 void Enemy::IdleState()
 {
-	m_idleTimer += g_gameTime->GetFrameDeltaTime();
-	//待機時間がある程度経過したら。
-	if (m_idleTimer >= 0.9f)
-	{
-		//他のステートへ遷移する。
-		ProcessState();
-	}
-
+	//他のステートへ遷移する。
+	ProcessState();
 }
 
 void Enemy::WalkState()
@@ -364,20 +323,8 @@ void Enemy::RunState()
 
 void Enemy::ChaseState()
 {
-	//攻撃できる距離なら。
-	if (IsCanPunch() == true)
-	{
-		//他のステートに遷移する。
-		ProcessState();
-		return;
-	}
-	m_chaseTimer += g_gameTime->GetFrameDeltaTime();
-	//追跡時間がある程度経過したら。
-	if (m_chaseTimer >= 0.8f)
-	{
-		//他のステートに遷移する。
-		ProcessState();
-	}
+	//他のステートに遷移する。
+	ProcessState();
 }
 
 void Enemy::PunchState()
@@ -390,27 +337,13 @@ void Enemy::PunchState()
 	}
 }
 
-//void Enemy::ProcessMagicAttackStateTransition()
-//{
-//	//魔法攻撃アニメーションの再生が終わったら。
-//	if (m_modelRender.IsPlayingAnimation() == false)
-//	{
-//		//他のステートに遷移する。
-//		ProcessState();
-//	}
-//}
-
 void Enemy::DamageState()
 {
 	//被ダメージアニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		//攻撃されたら距離関係無しに、取り敢えず追跡させる。
-		m_enemyState = enEnemyState_Chase;
-		Vector3 diff = m_player->GetPosition() - m_position;
-		diff.Normalize();
-		//移動速度を設定する。
-		m_moveSpeed = diff * 250.0f;
+		//他のステートに遷移する。
+		ProcessState();
 	}
 }
 
@@ -445,11 +378,6 @@ void Enemy::ManageState()
 		//攻撃ステートのステート遷移処理。
 		PunchState();
 		break;
-		//魔法攻撃ステートの時。
-	//case enEnemyState_MagicAttack:
-	//	//魔法攻撃ステートのステート遷移処理。
-	//	ProcessMagicAttackStateTransition();
-	//	break;
 		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
 		//被ダメージステートのステート遷移処理。
@@ -465,53 +393,50 @@ void Enemy::ManageState()
 
 void Enemy::PlayAnimation()
 {
-	//m_modelRender.SetAnimationSpeed(1.0f);
-	//switch (m_enemyState)
-	//{
-	//	//待機ステートの時。
-	//case enEnemyState_Idle:
-	//	//待機アニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Idle, 0.5f);
-	//	break;
-	//	//追跡ステートの時。
-	//case enEnemyState_Chase:
-	//	m_modelRender.SetAnimationSpeed(1.2f);
-	//	//走りアニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Run, 0.1f);
-	//	break;
-	//	//攻撃ステートの時。
-	//case enEnemyState_Punch:
-	//	m_modelRender.SetAnimationSpeed(1.6f);
-	//	//攻撃アニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Attack, 0.1f);
-	//	break;
+	switch (m_enemyState)
+	{
+		//待機ステートの時。
+	case enEnemyState_Idle:
+		//待機アニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Idle, 0.3f);
+		break;
+		//追跡ステートの時。
+	case enEnemyState_Chase:
+		//走りアニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Run, 0.3f);
+		break;
+		//攻撃ステートの時。
+	case enEnemyState_Punch:
+		//攻撃アニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
+		break;
 	//	//魔法攻撃ステートの時。
 	//case enEnemyState_MagicAttack:
 	//	m_modelRender.SetAnimationSpeed(1.2f);
 	//	//魔法攻撃アニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_MagicAttack, 0.1f);
+	//	m_modelRender.PlayAnimation(enAnimationClip_MagicAttack, 0.3f);
 	//	break;
 	//	//被ダメージステートの時。
 	//case enEnemyState_ReceiveDamage:
 	//	m_modelRender.SetAnimationSpeed(1.3f);
 	//	//被ダメージアニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.1f);
+	//	m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
 	//	break;
 	//	//ダウンステートの時。
 	//case enEnemyState_Down:
 	//	//ダウンアニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Down, 0.1f);
+	//	m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
 	//	break;
-	//default:
-	//	break;
-	//}
+	default:
+		break;
+	}
 }
 
 const bool Enemy::IsCanPunch() const
 {
 	Vector3 diff = m_player->GetPosition() - m_position;
 	//エネミーとプレイヤーの距離が近かったら。
-	if (diff.LengthSq() <= 100.0f * 100.0f)
+	if (diff.Length() <= 90.0f)
 	{
 		//攻撃できる！
 		return true;
