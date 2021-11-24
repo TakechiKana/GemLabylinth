@@ -12,22 +12,18 @@ bool ItemMagic::Start()
 
 void ItemMagic::Update()
 {
-	m_item->GetItem(m_position);
-	MagicGetAndUse();
+	m_item.GetItem(m_position);
+	MagicGet();
 	m_modelRender.Update();
 }
 
-void ItemMagic::MagicGetAndUse()
+void ItemMagic::MagicGet()
 {
 	//アイテムをゲットした判定
-	if (m_item->GetItem(m_position) == true) {
+	if (m_item.GetItem(m_position) == true) {
 		if (count < 3) {
 			DeleteGO(this);
 		}
-	}
-	//アイテムを使った判定
-	if (g_pad[0]->IsTrigger(enButtonB) && m_player->GetDashTimer() <= 0.0f)
-	{
 	}
 }
 

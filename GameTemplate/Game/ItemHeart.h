@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Item.h"
+
 class Item;
 class Player;
 
@@ -22,13 +24,23 @@ public:
 	{
 		m_position = position;
 	}
+	void UseCount()
+	{
+		count -= 1;
+	}
+	bool IsCanUse()
+	{
+		if (count > 0) {
+			return true;
+		}
+	}
 	void Update();
-	void HeartGetAndUse();
+	void HeartGet();
 	void Render(RenderContext& rc);
 private:
 	ModelRender m_modelRender;
 	Vector3 m_position;
-	Item* m_item;
+	Item m_item;
 	Player* m_player;
 	int count = 0;
 	bool getFlag = false;

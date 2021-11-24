@@ -28,9 +28,18 @@ public:
 	{
 		return m_position;
 	}
-
+	void UseCount()
+	{
+		count -= 1;
+	}
+	bool IsCanUse()
+	{
+		if (count > 0) {
+			return true;
+		}
+	}
 	void Dash();
-	void DashGetAndUse();
+	void DashGet();
 	void Rotation();
 	void Update();
 	void Render(RenderContext& rc);

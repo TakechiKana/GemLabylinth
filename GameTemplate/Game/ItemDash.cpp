@@ -12,13 +12,13 @@ bool ItemDash::Start()
 
 void ItemDash::Update()
 {
-	DashGetAndUse();
+	DashGet();
 	Rotation();
 	m_modelRender.Update();
 }
 
 
-void ItemDash::DashGetAndUse()
+void ItemDash::DashGet()
 {
 	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
@@ -26,17 +26,6 @@ void ItemDash::DashGetAndUse()
 		count += 1;
 		DeleteGO(this);
 	}
-
-	//アイテムを使った判定
-	//if (m_player->GetState() == true)
-	//{ 
-	//		count -= 1;
-
-	//	/*if (m_player->GetDashTimer() >= 3.9f) {
-	//		m_item.GetItemCount(1, count);
-	//	}
-	//	SetCount(m_item.GetItemCount(1, count));*/
-	//}
 }
 void ItemDash::Rotation()
 {

@@ -199,7 +199,7 @@ namespace nsK2Engine {
 		Bone* GetBone(int boneNo) const
 		{
 			return m_skeleton.GetBone(boneNo);
-		}
+		} 
 		void AddAnimationEvent(AnimationEventListener eventListener)
 		{
 			m_animation.AddAnimationEventListener(eventListener);

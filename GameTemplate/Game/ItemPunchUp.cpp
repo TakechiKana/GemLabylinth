@@ -13,20 +13,16 @@ bool ItemPunchUp::Start()
 
 void ItemPunchUp::Update()
 {
-	m_item->GetItem(m_position);
-	PunchUpGetAndUse();
+	m_item.GetItem(m_position);
+	PunchUpGet();
 	m_modelRender.Update();
 }
 
-void ItemPunchUp::PunchUpGetAndUse()
+void ItemPunchUp::PunchUpGet()
 {
 	//アイテムをゲットした判定
-	if (m_item->GetItem(m_position) == true) {
+	if (m_item.GetItem(m_position) == true) {
 		DeleteGO(this);
-	}
-	//アイテムを使った判定
-	if (g_pad[0]->IsTrigger(enButtonB) && m_player->GetDashTimer() <= 0.0f)
-	{
 	}
 }
 

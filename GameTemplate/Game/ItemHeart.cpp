@@ -13,20 +13,16 @@ bool ItemHeart::Start()
 
 void ItemHeart::Update()
 {
-	m_item->GetItem(m_position);
-	HeartGetAndUse();
+	m_item.GetItem(m_position);
+	HeartGet();
 	m_modelRender.Update();
 }
-void ItemHeart::HeartGetAndUse()
+void ItemHeart::HeartGet()
 {
 	//アイテムをゲットした判定
-	if (m_item->GetItem(m_position) == true) {
+	if (m_item.GetItem(m_position) == true) {
 		//GetItem関数の戻り値を代入
 		DeleteGO(this);
-	}
-	//アイテムを使った判定
-	if (g_pad[0]->IsTrigger(enButtonX))
-	{
 	}
 }
 

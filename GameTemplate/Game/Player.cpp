@@ -75,15 +75,39 @@ void Player::Update()
 	//アニメーションの再生。
 	PlayAnimation();
 
-	//wchar_t wcsbuf[256];
-	//swprintf_s(wcsbuf, 256, L"%d", m_dash->ServePosition());
-	////取得個数
-	////表示するテキストを設定。
-	//fontRender.SetText(wcsbuf);
-	////フォントの位置を設定。
-	//fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
-	////フォントの大きさを設定。
-	//fontRender.SetScale(2.0f);
+	wchar_t wcsbuf[256];
+	swprintf_s(wcsbuf, 256, L"%d", m_dash->ServeCount());
+	//取得個数
+	//表示するテキストを設定。
+	fontRender.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"%d", m_heart->ServeCount());
+	//取得個数
+	//表示するテキストを設定。
+	fontRender1.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender1.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"%d", m_magic->ServeCount());
+	//取得個数
+	//表示するテキストを設定。
+	fontRender2.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender2.SetPosition(Vector3(-900.0f, 200.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender2.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"%d", m_punchUp->ServeCount());
+	//取得個数
+	//表示するテキストを設定。
+	fontRender3.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender3.SetPosition(Vector3(-900.0f, 50.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender3.SetScale(2.0f);
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -344,16 +368,20 @@ void Player::ProcessState()
 {
 	
 	//Xボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonX) && m_heart->ServeCount() > 0)
+	if (g_pad[0]->IsTrigger(enButtonX) && m_heart->IsCanUse() == true)
 	{
+		//カウント-1
+		m_heart->UseCount();
 		//回復ステートに移行する。
 		m_playerState = enPlayerState_Healing;
 		
 		return;
 	}
 	//Yボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonY) && m_magic->ServeCount() > 0)
+	if (g_pad[0]->IsTrigger(enButtonY) && m_magic->IsCanUse()==true)
 	{
+		//カウント-1
+		m_magic->UseCount();
 		//遠投攻撃ステートに移行する。
 		m_playerState = enPlayerState_Magic;
 
@@ -369,21 +397,20 @@ void Player::ProcessState()
 	}
 	//攻撃力をアップする
 	//Aボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonA)&& m_punchUp->ServeCount() > 0)
+	if (g_pad[0]->IsPress(enButtonA)&& m_punchUp->IsCanUse()==true)
 	{
-		//if (g_pad[0]->IsTrigger(enButtonRB2)) {
-			//攻撃力アップステートに移行する。
-			m_playerState = enPlayerState_PunchUp;
-			//レバーを押すためのコリジョンを作成する。
-			return;
-		//}
+		//カウント-1
+		m_punchUp->UseCount();
+		m_playerState = enPlayerState_PunchUp;
+		return;
 	}
 
 	//Bボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dash->ServeCount() > 0)
+	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dash->IsCanUse()==true)
 	{
+		//カウント-1
+		m_dash->UseCount();
 		//ダッシュタイムを4秒に設定。
-		
 		m_timer = 4.0f;
 		m_fastRun = true;
 		return;
@@ -542,6 +569,9 @@ void Player::Render(RenderContext& rc)
 	//ユニティちゃんを描画する。
 	m_modelRender.Draw(rc);
 	fontRender.Draw(rc);
+	fontRender1.Draw(rc);
+	fontRender2.Draw(rc);
+	fontRender3.Draw(rc);
 }
 
 //memo

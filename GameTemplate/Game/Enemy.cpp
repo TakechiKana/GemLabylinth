@@ -132,24 +132,24 @@ void Enemy::Chase()
 		isEnd
 	);
 
-	//Vector3 target = m_player->GetPosition() - m_position;
-	//target.Normalize();
-	//Vector3 moveSpeed = target * 1.0f;
+	Vector3 target = m_player->GetPosition() - m_position;
+	target.Normalize();
+	Vector3 moveSpeed = target * 1.0f;
 
-	//Vector3 direction = moveSpeed;
-	//direction.y = 0.0f;
-	//direction.Normalize();
+	Vector3 direction = moveSpeed;
+	direction.y = 0.0f;
+	direction.Normalize();
 
-	//Quaternion quaternion;
-	//quaternion.SetRotationY(atan2(direction.x, direction.z));
-	////回転を設定する。
-	//m_modelRender.SetRotation(quaternion);
+	Quaternion quaternion;
+	quaternion.SetRotationY(atan2(direction.x, direction.z));
+	//回転を設定する。
+	m_modelRender.SetRotation(quaternion);
 
-	////座標を設定する。
-	//m_modelRender.SetPosition(m_position);
-	//m_charaCon.SetPosition(m_position);
-	//Vector3 pos = Vector3::Zero;
-	//m_charaCon.Execute(pos, 1.0f);
+	//座標を設定する。
+	m_modelRender.SetPosition(m_position);
+	m_charaCon.SetPosition(m_position);
+	Vector3 pos = Vector3::Zero;
+	m_charaCon.Execute(pos, 1.0f);
 }
 
 void Enemy::Rotation()
@@ -174,24 +174,24 @@ void Enemy::Rotation()
 	//m_forward = Vector3::AxisZ;
 	//m_rotation.Apply(m_forward);
 
-	Vector3 target = m_player->GetPosition() - m_position;
-	target.Normalize();
-	Vector3 moveSpeed = target * 1.0f;
+	//Vector3 target = m_player->GetPosition() - m_position;
+	//target.Normalize();
+	//Vector3 moveSpeed = target * 1.0f;
 
-	Vector3 direction = moveSpeed;
-	direction.y = 0.0f;
-	direction.Normalize();
+	//Vector3 direction = moveSpeed;
+	//direction.y = 0.0f;
+	//direction.Normalize();
 
-	Quaternion quaternion;
-	quaternion.SetRotationY(atan2(direction.x, direction.z));
-	//回転を設定する。
-	m_modelRender.SetRotation(quaternion);
+	//Quaternion quaternion;
+	//quaternion.SetRotationY(atan2(direction.x, direction.z));
+	////回転を設定する。
+	//m_modelRender.SetRotation(quaternion);
 
-	//座標を設定する。
-	m_modelRender.SetPosition(m_position);
-	m_charaCon.SetPosition(m_position);
-	Vector3 pos = Vector3::Zero;
-	m_charaCon.Execute(pos, 1.0f);
+	////座標を設定する。
+	//m_modelRender.SetPosition(m_position);
+	//m_charaCon.SetPosition(m_position);
+	//Vector3 pos = Vector3::Zero;
+	//m_charaCon.Execute(pos, 1.0f);
 
 }
 
@@ -229,11 +229,11 @@ void Enemy::Collision()
 				m_enemyState = enEnemyState_Down;
 			}
 
-			//効果音を再生する。
-			SoundSource* se = NewGO<SoundSource>(0);
-			se->Init(4);
-			se->Play(false);
-			se->SetVolume(0.4f);
+			////効果音を再生する。
+			//SoundSource* se = NewGO<SoundSource>(0);
+			//se->Init(4);
+			//se->Play(false);
+			//se->SetVolume(0.4f);
 			return;
 		}
 	}

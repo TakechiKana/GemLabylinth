@@ -48,41 +48,41 @@ bool Game::Start()
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-		//if (objData.EqualObjectName(L"heart") == true) {
+		if (objData.EqualObjectName(L"heart") == true) {
 
-		//	//プレイヤーのオブジェクトを作る。
-		//	m_heart = NewGO<ItemHeart>(0, "heart");
-		//	m_heart->SetPosition(objData.position);
-		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
-		//	return true;
-		//}
+			//プレイヤーのオブジェクトを作る。
+			m_heart = NewGO<ItemHeart>(0, "heart");
+			m_heart->SetPosition(objData.position);
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 
-		//if (objData.EqualObjectName(L"glove") == true) {
+		if (objData.EqualObjectName(L"glove") == true) {
 
-		//	//プレイヤーのオブジェクトを作る。
-		//	m_punchUp = NewGO<ItemPunchUp>(0, "punchup");
-		//	m_punchUp->SetPosition(objData.position);
-		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
-		//	return true;
-		//}
+			//プレイヤーのオブジェクトを作る。
+			m_punchUp = NewGO<ItemPunchUp>(0, "punchup");
+			m_punchUp->SetPosition(objData.position);
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 
-		//if (objData.EqualObjectName(L"boots") == true) {
+		if (objData.EqualObjectName(L"boots") == true) {
 
-		//	//プレイヤーのオブジェクトを作る。
-		//	m_dash = NewGO<ItemDash>(0, "dash");
-		//	m_dash->SetPosition(objData.position);
-		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
-		//	return true;
-		//}
+			//プレイヤーのオブジェクトを作る。
+			m_dash = NewGO<ItemDash>(0, "dash");
+			m_dash->SetPosition(objData.position);
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 
-		//if (objData.EqualObjectName(L"basket") == true) {
+		if (objData.EqualObjectName(L"basket") == true) {
 
-		//	//プレイヤーのオブジェクトを作る。
-		//	m_magic = NewGO<ItemMagic>(0, "magic");
-		//	m_magic->SetPosition(objData.position);
-		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
-		//	return true;
-		//}
+			//プレイヤーのオブジェクトを作る。
+			m_magic = NewGO<ItemMagic>(0, "magic");
+			m_magic->SetPosition(objData.position);
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 		return true;
 	});
 		

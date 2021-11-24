@@ -170,4 +170,7 @@ private:
 	ItemPunchUp* m_punchUp;
 
 	FontRender fontRender;
+	FontRender fontRender1; 
+	FontRender fontRender2; 
+	FontRender fontRender3;
 };
