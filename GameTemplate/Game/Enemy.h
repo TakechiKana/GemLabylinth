@@ -67,6 +67,8 @@ private:
 	//void MakeMagic();
 	//アニメーション再生
 	void PlayAnimation();
+	//アニメーションイベント用関数
+	void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
 	//ステート遷移処理
 	void ManageState();
 	/// 共通のステート遷移処理。
@@ -116,11 +118,10 @@ private:
 	nsAI::Path m_path;
 	nsAI::PathFinding m_pathFiding;
 	bool						m_isUnderAttack = false;					//攻撃中か？
-	int							m_hp = 0;									//HP。
+	int							m_hp = 10;									//HP。
 	Player*						m_player = nullptr;							//プレイヤー。
 	float						m_chaseTimer = 0.0f;						//追跡タイマー。
 	float						m_idleTimer = 0.0f;
 	int							m_PunchBoneId = -1;							//ぼーんID
-
 };
 

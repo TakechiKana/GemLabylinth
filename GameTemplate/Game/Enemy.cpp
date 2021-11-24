@@ -70,6 +70,13 @@ bool Enemy::Start()
 	//g_soundEngine->ResistWaveFileBank(3, "Assets/sound/slash.wav");
 	//g_soundEngine->ResistWaveFileBank(4, "Assets/sound/hit.wav");
 
+	//アニメーションイベントの準備
+	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
+		OnAnimationEvent(clipName, eventName);
+		});
+	//どのボーンか
+	m_PunchBoneId = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
+
 	//playerクラスの検索
 	m_player = FindGO<Player>("player");
 	//乱数を初期化。
@@ -121,17 +128,28 @@ void Enemy::Chase()
 	// パス上を移動する。
 	m_position = m_path.Move(
 		m_position,
-		4.5f,
+		4.0f,
 		isEnd
 	);
 
+	//Vector3 target = m_player->GetPosition() - m_position;
+	//target.Normalize();
+	//Vector3 moveSpeed = target * 1.0f;
 
+	//Vector3 direction = moveSpeed;
+	//direction.y = 0.0f;
+	//direction.Normalize();
 
-	//座標を設定する。
-	m_modelRender.SetPosition(m_position);
-	m_charaCon.SetPosition(m_position);
-	Vector3 pos = Vector3::Zero;
-	m_charaCon.Execute(pos, 1.0f);
+	//Quaternion quaternion;
+	//quaternion.SetRotationY(atan2(direction.x, direction.z));
+	////回転を設定する。
+	//m_modelRender.SetRotation(quaternion);
+
+	////座標を設定する。
+	//m_modelRender.SetPosition(m_position);
+	//m_charaCon.SetPosition(m_position);
+	//Vector3 pos = Vector3::Zero;
+	//m_charaCon.Execute(pos, 1.0f);
 }
 
 void Enemy::Rotation()
@@ -142,18 +160,38 @@ void Enemy::Rotation()
 		//このフレームではキャラは移動していないので旋回する必要はない。
 		return;
 	}
+	//float angle = atan2(-diff.x, diff.z);
+
 	//これが回転角度になる。
-	float angle = atan2(-m_moveSpeed.x, m_moveSpeed.z);
+//	float angle = atan2(-m_moveSpeed.x, m_moveSpeed.z);
 	//atanが返してくる角度はラジアン単位なので
 	//SetRotationDegではなくSetRotationを使用する。
-	m_rotation.SetRotationY(-angle);
+	//m_rotation.SetRotationY(-angle);
+
+	
 
 	//プレイヤーの前ベクトルを計算する。
-	m_forward = Vector3::AxisZ;
-	m_rotation.Apply(m_forward);
+	//m_forward = Vector3::AxisZ;
+	//m_rotation.Apply(m_forward);
 
+	Vector3 target = m_player->GetPosition() - m_position;
+	target.Normalize();
+	Vector3 moveSpeed = target * 1.0f;
+
+	Vector3 direction = moveSpeed;
+	direction.y = 0.0f;
+	direction.Normalize();
+
+	Quaternion quaternion;
+	quaternion.SetRotationY(atan2(direction.x, direction.z));
 	//回転を設定する。
-	m_modelRender.SetRotation(m_rotation);
+	m_modelRender.SetRotation(quaternion);
+
+	//座標を設定する。
+	m_modelRender.SetPosition(m_position);
+	m_charaCon.SetPosition(m_position);
+	Vector3 pos = Vector3::Zero;
+	m_charaCon.Execute(pos, 1.0f);
 
 }
 
@@ -429,6 +467,22 @@ void Enemy::PlayAnimation()
 	//	break;
 	default:
 		break;
+	}
+}
+
+void Enemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+	//キーの名前が「attack_start」の時。
+	if (wcscmp(eventName, L"attack_start") == 0) {
+		//攻撃中にする。
+		m_isUnderAttack = true;
+		//エフェクトを発生させる。
+		//MakeSlashingEffect();
+	}
+	//キーの名前が「attack_end」の時。
+	else if (wcscmp(eventName, L"attack_end") == 0) {
+		//攻撃を終わる。
+		m_isUnderAttack = false;
 	}
 }
 
