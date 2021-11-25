@@ -7,6 +7,8 @@ bool ItemMagic::Start()
 {
 	m_modelRender.Init("Assets/modelData/item/heart.tkm");
 	m_modelRender.SetScale({ 0.3f,0.3f,0.3f });	
+	m_player = FindGO<Player>("player");
+
 	return true;
 }
 
@@ -14,6 +16,7 @@ void ItemMagic::Update()
 {
 	m_item.GetItem(m_position);
 	MagicGet();
+	Rotation();
 	m_modelRender.Update();
 }
 
@@ -21,10 +24,19 @@ void ItemMagic::MagicGet()
 {
 	//アイテムをゲットした判定
 	if (m_item.GetItem(m_position) == true) {
-		if (count < 3) {
-			DeleteGO(this);
-		}
+		m_player->GetMagicCount();
+		DeleteGO(this);
 	}
+}
+
+void ItemMagic::Rotation()
+{
+	m_rotation.AddRotationDegY(2.0f);
+
+	//絵描きさんに回転を教える。
+	m_modelRender.SetRotation(m_rotation);
+	m_modelRender.SetPosition(m_position);
+	m_modelRender.SetScale({ 0.3f,0.3f,0.3f });
 }
 
 void ItemMagic::Render(RenderContext& rc)

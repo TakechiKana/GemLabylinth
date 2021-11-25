@@ -76,7 +76,7 @@ void Player::Update()
 	PlayAnimation();
 
 	wchar_t wcsbuf[256];
-	swprintf_s(wcsbuf, 256, L"%d", m_dash->ServeCount());
+	swprintf_s(wcsbuf, 256, L"%d", m_dashCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender.SetText(wcsbuf);
@@ -84,7 +84,7 @@ void Player::Update()
 	fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_heart->ServeCount());
+	swprintf_s(wcsbuf, 256, L"%d", m_heartCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender1.SetText(wcsbuf);
@@ -92,7 +92,7 @@ void Player::Update()
 	fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender1.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_magic->ServeCount());
+	swprintf_s(wcsbuf, 256, L"%d", m_magicCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender2.SetText(wcsbuf);
@@ -100,7 +100,7 @@ void Player::Update()
 	fontRender2.SetPosition(Vector3(-900.0f, 200.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender2.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_punchUp->ServeCount());
+	swprintf_s(wcsbuf, 256, L"%d", m_punchupCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender3.SetText(wcsbuf);
@@ -354,6 +354,7 @@ void Player::HealState()
 	}
 }
 
+//ダウンステート
 void Player::DownState()
 {
 	if (m_modelRender.IsPlayingAnimation() == false)
@@ -368,20 +369,20 @@ void Player::ProcessState()
 {
 	
 	//Xボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonX) && m_heart->IsCanUse() == true)
+	if (g_pad[0]->IsTrigger(enButtonX) && m_heartCount > 0)
 	{
 		//カウント-1
-		m_heart->UseCount();
+		m_heartCount -= 1;
 		//回復ステートに移行する。
 		m_playerState = enPlayerState_Healing;
 		
 		return;
 	}
 	//Yボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonY) && m_magic->IsCanUse()==true)
+	if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
 	{
 		//カウント-1
-		m_magic->UseCount();
+		m_magicCount -= 1;
 		//遠投攻撃ステートに移行する。
 		m_playerState = enPlayerState_Magic;
 
@@ -397,19 +398,19 @@ void Player::ProcessState()
 	}
 	//攻撃力をアップする
 	//Aボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonA)&& m_punchUp->IsCanUse()==true)
+	if (g_pad[0]->IsPress(enButtonA)&& m_punchupCount > 0)
 	{
 		//カウント-1
-		m_punchUp->UseCount();
+		m_punchupCount -= 1;
 		m_playerState = enPlayerState_PunchUp;
 		return;
 	}
 
 	//Bボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dash->IsCanUse()==true)
+	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
 	{
 		//カウント-1
-		m_dash->UseCount();
+		m_dashCount -= 1;
 		//ダッシュタイムを4秒に設定。
 		m_timer = 4.0f;
 		m_fastRun = true;
@@ -465,6 +466,10 @@ void Player::ManageState()
 		break;
 		//Punchステートの時。
 	case enPlayerState_Punch:
+		//攻撃ステートのステート遷移処理。
+		PunchState();
+		break;
+	case enPlayerState_PunchUp:
 		//攻撃ステートのステート遷移処理。
 		PunchState();
 		break;

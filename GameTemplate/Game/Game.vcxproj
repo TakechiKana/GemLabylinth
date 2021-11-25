@@ -159,6 +159,7 @@
     <ClCompile Include="ItemHeart.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemMagic.cpp" />
+    <ClCompile Include="Magic.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ItemPunchUp.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="ItemHeart.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemMagic.h" />
+    <ClInclude Include="Magic.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ItemPunchUp.h" />
     <ClInclude Include="stdafx.h" />

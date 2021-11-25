@@ -13,7 +13,6 @@
 //CollisionObjectを使用したいため、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
 
-
 Enemy::Enemy()
 {
 
@@ -111,6 +110,11 @@ void Enemy::Update()
 
 void Enemy::Chase()
 {
+	if (m_enemyState != enEnemyState_Chase)
+	{
+		return;
+	}
+
 
 	bool isEnd;
 	if (SearchPlayer()==true)   {
@@ -125,13 +129,16 @@ void Enemy::Chase()
 			200.0f							// AIエージェントの高さ。
 		);
 	}
+
 	// パス上を移動する。
 	m_position = m_path.Move(
 		m_position,
 		4.0f,
-		isEnd
+		isEnd,
+		m_velocity
 	);
 
+	/*
 	Vector3 target = m_player->GetPosition() - m_position;
 	target.Normalize();
 	Vector3 moveSpeed = target * 1.0f;
@@ -144,6 +151,7 @@ void Enemy::Chase()
 	quaternion.SetRotationY(atan2(direction.x, direction.z));
 	//回転を設定する。
 	m_modelRender.SetRotation(quaternion);
+	*/
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);
@@ -154,44 +162,16 @@ void Enemy::Chase()
 
 void Enemy::Rotation()
 {
-	if (fabsf(m_moveSpeed.x) < 0.001f
-		&& fabsf(m_moveSpeed.z) < 0.001f) {
+	if (fabsf(m_velocity.x) < 0.001f
+		&& fabsf(m_velocity.z) < 0.001f) {
 		//m_moveSpeed.xとm_moveSpeed.zの絶対値がともに0.001以下ということは
 		//このフレームではキャラは移動していないので旋回する必要はない。
 		return;
 	}
-	//float angle = atan2(-diff.x, diff.z);
 
-	//これが回転角度になる。
-//	float angle = atan2(-m_moveSpeed.x, m_moveSpeed.z);
-	//atanが返してくる角度はラジアン単位なので
-	//SetRotationDegではなくSetRotationを使用する。
-	//m_rotation.SetRotationY(-angle);
-
-	
-
-	//プレイヤーの前ベクトルを計算する。
-	//m_forward = Vector3::AxisZ;
-	//m_rotation.Apply(m_forward);
-
-	//Vector3 target = m_player->GetPosition() - m_position;
-	//target.Normalize();
-	//Vector3 moveSpeed = target * 1.0f;
-
-	//Vector3 direction = moveSpeed;
-	//direction.y = 0.0f;
-	//direction.Normalize();
-
-	//Quaternion quaternion;
-	//quaternion.SetRotationY(atan2(direction.x, direction.z));
-	////回転を設定する。
-	//m_modelRender.SetRotation(quaternion);
-
-	////座標を設定する。
-	//m_modelRender.SetPosition(m_position);
-	//m_charaCon.SetPosition(m_position);
-	//Vector3 pos = Vector3::Zero;
-	//m_charaCon.Execute(pos, 1.0f);
+	Quaternion rotation;
+	rotation.SetRotationYFromDirectionXZ(m_velocity);
+	m_modelRender.SetRotation(rotation);
 
 }
 
@@ -213,9 +193,11 @@ void Enemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			//HPを1減らす。
-			m_hp -= 1;
-
+			if (m_isUnderDamage == false) {
+				//HPを1減らす。
+				m_hp -= 1;
+				m_isUnderDamage = true;
+			}
 			//もしHPが0より上なら。
 			if (m_hp > 0)
 			{
@@ -247,7 +229,7 @@ void Enemy::Collision()
 		if (collision->IsHit(m_charaCon))
 		{
 			//HPを1減らす。
-			m_hp -= 1;
+			m_hp -= 2;
 			//HPが0になったら。
 			if (m_hp == 0)
 			{
@@ -259,10 +241,6 @@ void Enemy::Collision()
 				m_enemyState = enEnemyState_ReceiveDamage;
 			}
 			//効果音を再生する。
-			SoundSource* se = NewGO<SoundSource>(0);
-			se->Init(4);
-			se->Play(false);
-			se->SetVolume(0.6f);
 			return;
 		}
 	}

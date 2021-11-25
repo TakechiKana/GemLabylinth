@@ -47,23 +47,23 @@ public:
 		return m_timer;
 	}
 	//ダッシュカウント
-	int GetDashCount()
+	void GetDashCount()
 	{
-		return m_dashCount;
+		m_dashCount += 1;
 	}
 	//ハートカウント
-	int GetHeartCount()
+	void GetHeartCount()
 	{
-		return m_heartCount;
+		m_heartCount += 1;
 	}
 	//マジックカウント
-	int GetMagicCount()
+	void GetMagicCount()
 	{
-		return m_magicCount;
+		m_magicCount += 1;
 	}
-	int GetPunchUpCount()
+	void GetPunchUpCount()
 	{
-		return m_punchupCount;
+		m_punchupCount += 1;
 	}
 
 	//ポジションを渡す関数

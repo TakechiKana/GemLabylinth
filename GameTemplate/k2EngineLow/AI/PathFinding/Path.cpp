@@ -20,6 +20,7 @@ namespace nsK2EngineLow {
 			Vector3 pos, 
 			float moveSpeed, 
 			bool& isEnd,
+			Vector3& velocity,
 			PhysicsWorld* physicsWorld
 		){
 			if (m_sectionArray.empty() 
@@ -32,6 +33,7 @@ namespace nsK2EngineLow {
 			// セクションの終点に向かうベクトルを計算する。
 			Vector3 toEnd = currentSection.endPos - pos;
 			toEnd.Normalize();
+			velocity = toEnd;
 			pos += toEnd * moveSpeed;
 
 			Vector3 toEnd2 = currentSection.endPos - pos;

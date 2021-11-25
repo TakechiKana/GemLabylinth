@@ -11,13 +11,13 @@ public:
 	ItemDash() {}
 	~ItemDash() {}
 	bool Start();
-	const int ServeCount() const{
-		return count;
-	}
-	void SetCount() 
-	{
-		count -= 1;
-	}
+	//const int ServeCount() const{
+	//	return count;
+	//}
+	//void SetCount() 
+	//{
+	//	count -= 1;
+	//}
 
 	void SetPosition(const Vector3& position)
 	{
@@ -28,17 +28,16 @@ public:
 	{
 		return m_position;
 	}
-	void UseCount()
-	{
-		count -= 1;
-	}
-	bool IsCanUse()
-	{
-		if (count > 0) {
-			return true;
-		}
-	}
-	void Dash();
+	//void UseCount()
+	//{
+	//	count -= 1;
+	//}
+	//bool IsCanUse()
+	//{
+	//	if (count > 0) {
+	//		return true;
+	//	}
+	//}
 	void DashGet();
 	void Rotation();
 	void Update();
@@ -49,7 +48,6 @@ private:
 	Quaternion m_rotation;
 	Item m_item;
 	Player* m_player;
-	int count = 0;
-	int kari = 0;
+	//int count = 0;
 };
 

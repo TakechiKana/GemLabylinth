@@ -14,6 +14,7 @@ namespace nsK2EngineLow {
 			/// <param name="pos">移動させる座標</param>
 			/// <param name="moveSpeed">移動速度</param>
 			/// <param name="isEnd">パス移動終了したらtrueが設定される</param>
+			/// <param name="velocity">移動方向</param>
 			/// <param name="physicsWorld">
 			/// 物理ワールド。
 			/// 物理ワールドが指定されていると、パス移動後に地面にレイキャストを行い、
@@ -24,6 +25,7 @@ namespace nsK2EngineLow {
 				Vector3 pos, 
 				float moveSpeed, 
 				bool& isEnd,
+				Vector3& velocity,
 				PhysicsWorld* physicsWorld = nullptr
 			);
 			/// <summary>

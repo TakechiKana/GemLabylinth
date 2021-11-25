@@ -118,10 +118,12 @@ private:
 	nsAI::Path m_path;
 	nsAI::PathFinding m_pathFiding;
 	bool						m_isUnderAttack = false;					//攻撃中か？
+	bool						m_isUnderDamage = false;					//ダメージを受けたか
 	int							m_hp = 10;									//HP。
 	Player*						m_player = nullptr;							//プレイヤー。
 	float						m_chaseTimer = 0.0f;						//追跡タイマー。
 	float						m_idleTimer = 0.0f;
 	int							m_PunchBoneId = -1;							//ぼーんID
+	Vector3						m_velocity = Vector3::Zero;					//移動方向
 };
 
