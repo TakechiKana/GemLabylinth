@@ -46,10 +46,24 @@ public:
 	{
 		return m_timer;
 	}
-	//タイマー情報を渡す関数
-	float GetHealthTimer() const
+	//ダッシュカウント
+	int GetDashCount()
 	{
-		return m_timer1;
+		return m_dashCount;
+	}
+	//ハートカウント
+	int GetHeartCount()
+	{
+		return m_heartCount;
+	}
+	//マジックカウント
+	int GetMagicCount()
+	{
+		return m_magicCount;
+	}
+	int GetPunchUpCount()
+	{
+		return m_punchupCount;
 	}
 
 	//ポジションを渡す関数
@@ -161,7 +175,10 @@ private:
 	bool m_fastRun = false;									//速度アップ中の判定
 	int m_PunchBoneId = -1;									//ボーンID
 
-	int kari = 0;
+	int m_heartCount = 0;
+	int m_dashCount = 0;
+	int m_magicCount = 0;
+	int m_punchupCount = 0;
 
 	//各クラスの変数
 	ItemDash* m_dash;
