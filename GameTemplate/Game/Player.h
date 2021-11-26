@@ -88,6 +88,11 @@ public:
 	{
 		m_moveSpeed = movespeed;
 	}
+	//
+	const Vector3 GetForward() const
+	{
+		return m_forward;
+	}
 
 	//XVˆ—B
 	void Update();

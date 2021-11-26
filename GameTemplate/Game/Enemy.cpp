@@ -195,7 +195,7 @@ void Enemy::Collision()
 		{
 			if (m_isUnderDamage == false) {
 				//HP‚ğ1Œ¸‚ç‚·B
-				m_hp -= 1;
+				m_hp += 1;										///////////////////////////////////////////////
 				m_isUnderDamage = true;
 			}
 			//‚à‚µHP‚ª0‚æ‚èã‚È‚çB
