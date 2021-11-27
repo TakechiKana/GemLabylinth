@@ -40,6 +40,10 @@ bool MagicCollision::Start()
 		Quaternion::Identity,
 		30.0f
 	);
+	//コリジョンの名前を設定
+	m_collisionObject->SetName("player_magic");
+	//コリジョンオブジェクトが自動で削除されないようにする。
+	m_collisionObject->SetIsEnableAutoDelete(false);
 
 	return true;
 }

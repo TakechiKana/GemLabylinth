@@ -144,7 +144,13 @@ void Player::MakePunchCollision()
 //遠投攻撃処理
 void Player::MakeMagicCollision()
 {
-	MagicCollision*  = NewGO<MagicCollision>(0, "magicCollision");
+	MagicCollision*  magicCollision= NewGO<MagicCollision>(0);
+	Vector3 magicCollisionPos = m_position;
+	//座標の位置をあげる
+	magicCollisionPos.y += 70.0f;
+	//座標を設定
+	magicCollision->SetPosition(magicCollisionPos);
+	magicCollision->SetRotation(m_rotation);
 }
 
 //コリジョンの判定
@@ -193,6 +199,7 @@ void Player::Health()
 		}
 	}
 	if (m_playerState == enPlayerState_Down) {
+		m_health -= 1;
 		return;
 	}
 }
@@ -366,6 +373,16 @@ void Player::DownState()
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		m_death = true;
+	}
+}
+
+//ダメージステート
+void Player::DamageState()
+{
+	if (m_modelRender.IsPlayingAnimation() == false)
+	{
+		//ステートを遷移する。
+		ProcessState();
 	}
 }
 

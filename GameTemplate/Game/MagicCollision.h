@@ -10,6 +10,16 @@ public:
 	bool Start();
 	void Move();
 	void Update();
+	//À•W‚ğİ’è
+	void SetPosition(const Vector3& position)
+	{
+		m_position = position;
+	}
+	//‰ñ“]‚ğİ’è
+	void SetRotation(const Quaternion& rotation)
+	{
+		m_rotation = rotation;
+	}
 
 private:
 	Vector3 m_position;
