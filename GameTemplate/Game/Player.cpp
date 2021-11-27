@@ -27,8 +27,13 @@ bool Player::Start()
 	animationClips[enAnimationClip_Magic].SetLoopFlag(false);
 	animationClips[enAnimationClip_Heal].Load("Assets/animData/jackie/heal.tka");
 	animationClips[enAnimationClip_Heal].SetLoopFlag(false);
+	animationClips[enAnimationClip_Damage].Load("Assets/animData/jackie/receivedamage.tka");
+	animationClips[enAnimationClip_Damage].SetLoopFlag(false);
+	animationClips[enAnimationClip_Down].Load("Assets/animData/jackie/down.tka");
+	animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//Jackieモデルを読み込む。
 	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ);
+	m_spriteRender.Init("Assets/sprite/Gameover.dds",1980.0f,1080.0f);
 	m_modelRender.SetScale({2.0f,2.0f,2.0f});
 
 
@@ -359,8 +364,7 @@ void Player::DownState()
 {
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		//ステートを遷移する。
-		ProcessState();
+		m_death = true;
 	}
 }
 
@@ -486,20 +490,18 @@ void Player::ManageState()
 		//被ダメージ時ステートの時。
 	case enPlayerState_ReceiveDamage:
 		//被ダメージ時ステートのステート遷移処理。
-		//DamageState();
+		DamageState();
 		break;
-
 		//ダウンステートの時。
-	/*case enPlayerState_Down:
+	case enPlayerState_Down:
 		//ダウンステートのステート遷移処理。
 		DownState();
 		break;
 		//クリアステートの時。
-	case enPlayerState_Clear:
-		//クリアステートのステート遷移処理。
-		ClearState();
-		break;
-	}*/
+	//case enPlayerState_Clear:
+	//	//クリアステートのステート遷移処理。
+	//	ClearState();
+	//	break;
 	}
 }
 
@@ -543,6 +545,16 @@ void Player::PlayAnimation()
 		//Healing
 		m_modelRender.PlayAnimation(enAnimationClip_Heal, 0.3f);
 		break;
+	case enPlayerState_ReceiveDamage:
+		//Healing
+		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
+		break;
+	case enPlayerState_Down:
+		//Healing
+		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -577,6 +589,9 @@ void Player::Render(RenderContext& rc)
 	fontRender1.Draw(rc);
 	fontRender2.Draw(rc);
 	fontRender3.Draw(rc);
+	if (m_death == true) {
+		m_spriteRender.Draw(rc);
+	}
 }
 
 //memo

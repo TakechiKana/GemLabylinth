@@ -159,6 +159,8 @@ private:
 		enAnimationClip_Punch,
 		enAnimationClip_Magic,
 		enAnimationClip_Heal,
+		enAnimationClip_Damage,
+		enAnimationClip_Down,
 		enAnimationClip_Num,
 	};
 	AnimationClip animationClips[enAnimationClip_Num];		//アニメーションクリップ。
@@ -180,11 +182,15 @@ private:
 	int m_magicCount = 0;
 	int m_punchupCount = 0;
 
+	bool m_death = false;
+
 	//各クラスの変数
 	ItemDash* m_dash;
 	ItemHeart* m_heart;
 	ItemMagic* m_magic;
 	ItemPunchUp* m_punchUp;
+
+	SpriteRender m_spriteRender;
 
 	FontRender fontRender;
 	FontRender fontRender1; 
