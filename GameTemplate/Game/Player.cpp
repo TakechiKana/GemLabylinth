@@ -5,6 +5,7 @@
 #include "ItemDash.h"
 #include "ItemMagic.h"
 #include "ItemPunchUp.h"
+#include "MagicCollision.h"
 
 //CollisionObjectを使用するために、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
@@ -143,7 +144,7 @@ void Player::MakePunchCollision()
 //遠投攻撃処理
 void Player::MakeMagicCollision()
 {
-	return;
+	MagicCollision*  = NewGO<MagicCollision>(0, "magicCollision");
 }
 
 //コリジョンの判定

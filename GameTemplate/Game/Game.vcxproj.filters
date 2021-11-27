@@ -21,7 +21,7 @@
     <ClCompile Include="ItemMagic.cpp" />
     <ClCompile Include="ItemDash.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Magic.cpp" />
+    <ClCompile Include="MagicCollision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -38,6 +38,6 @@
     <ClInclude Include="ItemMagic.h" />
     <ClInclude Include="ItemDash.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Magic.h" />
+    <ClInclude Include="MagicCollision.h" />
   </ItemGroup>
 </Project>
