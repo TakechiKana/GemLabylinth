@@ -29,6 +29,7 @@ MagicCollision::~MagicCollision()
 
 bool MagicCollision::Start()
 {
+
 	m_player = FindGO<Player>("player");
 
 	Vector3 collisionObject = m_position;
@@ -51,7 +52,7 @@ bool MagicCollision::Start()
 void MagicCollision::Move()
 {
 	//ˆÚ“®‘¬“x‚ðŒvŽZB
-	m_position = m_player->GetForward() * 15.0f;
+	m_position += m_moveSpeed * 15.0f;
 }
 
 void MagicCollision::Update()

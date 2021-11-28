@@ -20,7 +20,11 @@ public:
 	{
 		m_rotation = rotation;
 	}
-
+	//ˆÚ“®‘¬“x‚ğİ’è
+	void SetSpeed(const Vector3& speed)
+	{
+		m_moveSpeed = speed;
+	}
 private:
 	Vector3 m_position;
 	Vector3 m_moveSpeed;

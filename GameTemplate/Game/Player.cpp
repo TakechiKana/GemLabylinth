@@ -44,7 +44,8 @@ bool Player::Start()
 	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
 		OnAnimationEvent(clipName, eventName);
 		});
-	m_PunchBoneId = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
+	m_PunchBoneId_R = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
+	m_PunchBoneId_L = m_modelRender.FindBoneID(L"mixamorig1:LeftHand");
 
 	//各クラスのFindGO
 	m_dash = FindGO<ItemDash>("dash");
@@ -129,14 +130,15 @@ void Player::MakePunchCollision()
 	//座標をプレイヤーの少し前に設定する。
 	collisionPosition += m_forward * 50.0f;
 	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateSphere(collisionPosition,               //座標。
+	collisionObject->CreateSphere(
+		collisionPosition,										   //座標。
 		Quaternion::Identity,                                      //回転。
 		20.0f												       //大きさ。
 	);
 	collisionObject->SetName("player_punch");
 
 	//「Punch」ボーンのワールド行列を取得する。
-	Matrix matrix = m_modelRender.GetBone(m_PunchBoneId)->GetWorldMatrix();
+	Matrix matrix = m_modelRender.GetBone(m_PunchBoneId_R)->GetWorldMatrix();
 	//「Punch」ボーンのワールド行列をコリジョンに適用する。
 	collisionObject->SetWorldMatrix(matrix);
 }
@@ -144,13 +146,40 @@ void Player::MakePunchCollision()
 //遠投攻撃処理
 void Player::MakeMagicCollision()
 {
-	MagicCollision*  magicCollision= NewGO<MagicCollision>(0);
+	MagicCollision* magicCollision = NewGO<MagicCollision>(0);
 	Vector3 magicCollisionPos = m_position;
+	//座標をプレイヤーの少し前に設定する。
+	magicCollisionPos += m_forward * 50.0f;
 	//座標の位置をあげる
 	magicCollisionPos.y += 70.0f;
+	magicCollision->SetSpeed(m_forward);
 	//座標を設定
 	magicCollision->SetPosition(magicCollisionPos);
 	magicCollision->SetRotation(m_rotation);
+
+
+
+	//auto collisionObject2 = NewGO<CollisionObject>(0);
+
+	//Vector3 collisionPosition2 = m_position;
+	////座標をプレイヤーの少し前に設定する。
+	//collisionPosition2 += m_forward * 50.0f;
+	////座標の位置をあげる
+	//collisionPosition2.y += 70.0f;
+	////球状のコリジョンを作成する。
+	//collisionObject2->CreateSphere(
+	//	collisionPosition2,        //座標。
+	//	Quaternion::Identity,                               //回転。
+	//	20.0f                                               //半径。
+	//);
+	//collisionObject2->SetName("player_magic");
+	//collisionObject2->SetIsEnableAutoDelete(false);
+
+	////移動速度を計算。
+	//collisionPosition2 = m_forward * 15.0f;
+
+
+
 }
 
 //コリジョンの判定

@@ -11,28 +11,12 @@ public:
 	ItemMagic() {}
 	~ItemMagic() {}
 	bool Start();
-	//int ServeCount() {
-	//	return count;
-	//}
-	//int SetCount(int n)
-	//{
-	//	count = n;
-	//	return count;
-	//}
+
 	void SetPosition(const Vector3& position)
 	{
 		m_position = position;
 	}
-	//void UseCount()
-	//{
-	//	count -= 1;
-	//}
-	//bool IsCanUse()
-	//{
-	//	if (count > 0) {
-	//		return true;
-	//	}
-	//}
+
 	void Update();
 	void Rotation();
 	void MagicGet();

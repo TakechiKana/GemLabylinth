@@ -175,16 +175,19 @@ private:
 	Quaternion m_rotation;									//クォータニオン。
 	int m_playerState = enPlayerState_Idle;					//プレイヤーステート
 	int m_health = 5;										//HP
+
 	float m_timer = 0.0f;									//ダッシュタイム
-	float m_timer1 = 0.0f;									//クールタイム
+	float m_timer1 = 0.0f;									//マジック削除まで
+
 	bool m_downState = false;								//ダウンの判定
 	bool m_isUnderAttack = false;							//攻撃中の判定
 	bool m_fastRun = false;									//速度アップ中の判定
-	int m_PunchBoneId = -1;									//ボーンID
+	int m_PunchBoneId_R = -1;								//右ボーンID
+	int m_PunchBoneId_L = -1;								//左ボーンID
 
 	int m_heartCount = 0;
 	int m_dashCount = 0;
-	int m_magicCount = 0;
+	int m_magicCount = 10;
 	int m_punchupCount = 0;
 
 	bool m_death = false;
