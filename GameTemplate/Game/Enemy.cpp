@@ -26,21 +26,19 @@ Enemy::~Enemy()
 bool Enemy::Start()
 {
 	//アニメーションを読み込む。
-	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/jackie/idle.tka");
+	m_animationClips[enAnimationClip_Idle].Load("Assets/animData/michelle/idle.tka");
 	m_animationClips[enAnimationClip_Idle].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Run].Load("Assets/animData/jackie/run.tka");
+	m_animationClips[enAnimationClip_Run].Load("Assets/animData/michelle/run.tka");
 	m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Punch].Load("Assets/animData/jackie/punch.tka");
+	m_animationClips[enAnimationClip_Punch].Load("Assets/animData/michelle/punch.tka");
 	m_animationClips[enAnimationClip_Punch].SetLoopFlag(false);
-	//m_animationClips[enAnimationClip_MagicAttack].Load("Assets/animData/enemy/magicattack.tka");
-	//m_animationClips[enAnimationClip_MagicAttack].SetLoopFlag(false);
-	//m_animationClips[enAnimationClip_Damage].Load("Assets/animData/enemy/receivedamage.tka");
-	//m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
-	//m_animationClips[enAnimationClip_Down].Load("Assets/animData/enemy/down.tka");
-	//m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/michelle/receivedamage.tka");
+	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Down].Load("Assets/animData/michelle/down.tka");
+	m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 
 	//モデルを読み込む。
-	m_modelRender.Init("Assets/modelData/human/jackie.tkm", m_animationClips, enAnimationClip_Num);
+	m_modelRender.Init("Assets/modelData/human/Michelle.tkm", m_animationClips, enAnimationClip_Num);
 	//ナビメッシュ
 	m_nvmMesh.Init("Assets/modelData/stage/stage_mesh.tkn");
 
@@ -221,7 +219,7 @@ void Enemy::Collision()
 	}
 
 	//プレイヤーのファイヤーボール用のコリジョンを取得する。
-	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_fireball");
+	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_magic");
 	//for文で配列を回す。
 	for (auto collision : collisions2)
 	{
@@ -317,6 +315,13 @@ void Enemy::ProcessState()
 		m_enemyState = enEnemyState_Idle;
 		return;
 	}
+	if (m_isUnderDamage == true) {
+		m_enemyState = enEnemyState_ReceiveDamage;
+	}
+	if (m_hp == 0) {
+		m_enemyState = enEnemyState_Down;
+	}
+	
 }
 
 void Enemy::IdleState()

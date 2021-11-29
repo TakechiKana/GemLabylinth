@@ -186,12 +186,45 @@ void Player::MakeMagicCollision()
 void Player::Collision()
 {
 	//被ダメージ、ダウン中、クリア時はダメージ判定をしない。
-	if (m_playerState == enPlayerState_ReceiveDamage /*||
-		m_playerState == enPlayerState_Down ||
+	if (m_playerState == enPlayerState_ReceiveDamage ||
+		m_playerState == enPlayerState_Down /*||
 		m_playerState == enPlayerState_Clear*/)
 	{
 		return;
 	}
+
+	//エネミーの攻撃用のコリジョンを取得する。
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_punch");
+	//コリジョンの配列をfor文で回す。
+	for (auto collision : collisions)
+	{
+		//コリジョンとキャラコンが衝突したら。
+		if (collision->IsHit(m_characterController))
+		{
+			if (m_isUnderDamage == false) {
+				//HPを1減らす。
+				m_health -= 1;										///////////////////////////////////////////////
+				m_isUnderDamage = true;
+			}
+			//もしHPが0より上なら。
+			if (m_health > 0)
+			{
+				//被ダメージステートに遷移する。
+				m_playerState = enPlayerState_ReceiveDamage;
+			}
+			//HPが0なら。
+			else if (m_health == 0)
+			{
+				//ダウンステートに遷移する。
+				m_playerState = enPlayerState_Down;
+			}
+
+			//効果音ここ
+
+			return;
+		}
+	}
+
 }
 
 //攻撃の判定
@@ -410,6 +443,7 @@ void Player::DamageState()
 {
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
+		m_isUnderDamage = false;
 		//ステートを遷移する。
 		ProcessState();
 	}
@@ -492,6 +526,9 @@ void Player::ProcessState()
 	}
 	if (m_health == 0) {
 		m_playerState = enPlayerState_Down;
+	}
+	if (m_isUnderDamage == true) {
+		m_playerState = enPlayerState_ReceiveDamage;
 	}
 }
 

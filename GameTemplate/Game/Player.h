@@ -191,6 +191,7 @@ private:
 	int m_punchupCount = 0;
 
 	bool m_death = false;
+	bool m_isUnderDamage = false;
 
 	//ŠeƒNƒ‰ƒX‚Ì•Ï”
 	ItemDash* m_dash;
