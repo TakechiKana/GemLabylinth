@@ -72,7 +72,7 @@ bool Enemy::Start()
 		OnAnimationEvent(clipName, eventName);
 		});
 	//どのボーンか
-	m_PunchBoneId = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
+	m_PunchBoneId = m_modelRender.FindBoneID(L"mixamorig:RightHand");
 
 	//playerクラスの検索
 	m_player = FindGO<Player>("player");
@@ -135,21 +135,6 @@ void Enemy::Chase()
 		isEnd,
 		m_velocity
 	);
-
-	/*
-	Vector3 target = m_player->GetPosition() - m_position;
-	target.Normalize();
-	Vector3 moveSpeed = target * 1.0f;
-
-	Vector3 direction = moveSpeed;
-	direction.y = 0.0f;
-	direction.Normalize();
-
-	Quaternion quaternion;
-	quaternion.SetRotationY(atan2(direction.x, direction.z));
-	//回転を設定する。
-	m_modelRender.SetRotation(quaternion);
-	*/
 
 	//座標を設定する。
 	m_modelRender.SetPosition(m_position);
@@ -306,6 +291,7 @@ void Enemy::ProcessState()
 		if (IsCanPunch() == true)
 		{	
 			m_enemyState = enEnemyState_Punch;
+			return;
 		}
 	}
 	//プレイヤーを見つけられなければ。
@@ -431,23 +417,17 @@ void Enemy::PlayAnimation()
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
 		break;
-	//	//魔法攻撃ステートの時。
-	//case enEnemyState_MagicAttack:
-	//	m_modelRender.SetAnimationSpeed(1.2f);
-	//	//魔法攻撃アニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_MagicAttack, 0.3f);
-	//	break;
-	//	//被ダメージステートの時。
-	//case enEnemyState_ReceiveDamage:
-	//	m_modelRender.SetAnimationSpeed(1.3f);
-	//	//被ダメージアニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
-	//	break;
-	//	//ダウンステートの時。
-	//case enEnemyState_Down:
-	//	//ダウンアニメーションを再生。
-	//	m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
-	//	break;
+		//被ダメージステートの時。
+	case enEnemyState_ReceiveDamage:
+		m_modelRender.SetAnimationSpeed(1.3f);
+		//被ダメージアニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
+		break;
+		//ダウンステートの時。
+	case enEnemyState_Down:
+		//ダウンアニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
+		break;
 	default:
 		break;
 	}
