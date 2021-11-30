@@ -178,7 +178,7 @@ void Enemy::Collision()
 		{
 			if (m_isUnderDamage == false) {
 				//HPを1減らす。
-				m_hp += 1;										///////////////////////////////////////////////
+				m_hp -= 1;										///////////////////////////////////////////////
 				m_isUnderDamage = true;
 			}
 			//もしHPが0より上なら。
@@ -211,8 +211,11 @@ void Enemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			//HPを1減らす。
-			m_hp -= 2;
+			if (m_isUnderDamage == false) {
+				//HPを2減らす。
+				m_hp -= 2;	
+				m_isUnderDamage = true;
+			}
 			//HPが0になったら。
 			if (m_hp == 0)
 			{
