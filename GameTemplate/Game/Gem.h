@@ -1,15 +1,13 @@
 #pragma once
-
 #include "Item.h"
 
-class Item;
 class Player;
 
-class ItemDash :public IGameObject
+class Gem : public IGameObject
 {
 public:
-	ItemDash() {}
-	~ItemDash() {}
+	Gem() {}
+	~Gem() {}
 	bool Start();
 
 	void SetPosition(const Vector3& position)
@@ -17,12 +15,11 @@ public:
 		m_position = position;
 	}
 
-	Vector3 ServePosition ()
+	Vector3 ServePosition()
 	{
 		return m_position;
 	}
-	
-	void DashGet();
+	void Count();
 	void Rotation();
 	void Update();
 	void Render(RenderContext& rc);
@@ -33,4 +30,3 @@ private:
 	Item m_item;
 	Player* m_player;
 };
-

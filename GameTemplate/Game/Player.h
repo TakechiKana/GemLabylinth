@@ -61,9 +61,16 @@ public:
 	{
 		m_magicCount += 1;
 	}
+	//攻撃力アップカウント
 	void GetPunchUpCount()
 	{
 		m_punchupCount += 1;
+	}
+
+	//ジェムカウント
+	void GetGemCount()
+	{
+		m_gemCount += 1;
 	}
 
 	//ポジションを渡す関数
@@ -189,6 +196,7 @@ private:
 	int m_dashCount = 0;
 	int m_magicCount = 10;
 	int m_punchupCount = 0;
+	int m_gemCount = 0;
 
 	bool m_death = false;
 	bool m_isUnderDamage = false;

@@ -9,6 +9,7 @@
 #include "ItemMagic.h"
 #include "ItemPunchUp.h"
 #include "Enemy.h"
+#include "Gem.h"
 
 
 bool Game::Start()
@@ -80,6 +81,14 @@ bool Game::Start()
 			//プレイヤーのオブジェクトを作る。
 			m_magic = NewGO<ItemMagic>(0, "magic");
 			m_magic->SetPosition(objData.position);
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
+		if (objData.EqualObjectName(L"gem") == true) {
+
+			//プレイヤーのオブジェクトを作る。
+			m_gem = NewGO<Gem>(0, "gem");
+			m_gem->SetPosition(objData.position);
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}

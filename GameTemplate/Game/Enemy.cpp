@@ -195,10 +195,8 @@ void Enemy::Collision()
 			}
 
 			////効果音を再生する。
-			//SoundSource* se = NewGO<SoundSource>(0);
-			//se->Init(4);
-			//se->Play(false);
-			//se->SetVolume(0.4f);
+			//ここ
+	
 			return;
 		}
 	}
@@ -227,6 +225,7 @@ void Enemy::Collision()
 				m_enemyState = enEnemyState_ReceiveDamage;
 			}
 			//効果音を再生する。
+			//ここ
 			return;
 		}
 	}
@@ -294,7 +293,6 @@ void Enemy::ProcessState()
 		if (IsCanPunch() == true)
 		{	
 			m_enemyState = enEnemyState_Punch;
-			return;
 		}
 	}
 	//プレイヤーを見つけられなければ。
@@ -354,6 +352,7 @@ void Enemy::DamageState()
 	{
 		//他のステートに遷移する。
 		ProcessState();
+		m_isUnderDamage = false;
 	}
 }
 
@@ -364,6 +363,7 @@ void Enemy::DownState()
 	{
 		Game* game = FindGO<Game>("game");
 		//倒されたエネミーの数を+1する。
+		// ↑倒した数でスコア変動
 		//自身を削除する。
 		DeleteGO(this);
 	}

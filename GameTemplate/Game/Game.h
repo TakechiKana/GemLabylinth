@@ -10,6 +10,7 @@ class ItemHeart;
 class ItemMagic;
 class ItemPunchUp;
 class Enemy;
+class Gem;
 
 class Game : public IGameObject
 {
@@ -36,6 +37,7 @@ private:
 	ItemMagic* m_magic = nullptr;
 	ItemPunchUp* m_punchUp = nullptr;
 	Enemy* m_enemy = nullptr;
+	Gem* m_gem = nullptr;
 
 	ModelRender m_modelRender;
 	Vector3 playerPos;
