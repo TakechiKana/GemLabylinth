@@ -15,6 +15,7 @@ public:
 		enEnemyState_Idle,					//待機。
 		enEnemyState_Chase,					//追跡。
 		enEnemyState_Punch,					//攻撃。
+		enEnemyState_Punch1,				//攻撃繰り返し。
 		enEnemyState_Magic,					//遠投攻撃。
 		enEnemyState_ReceiveDamage,			//被ダメージ。
 		enEnemyState_Down,					//ダウン
@@ -83,6 +84,8 @@ private:
 	void ChaseState();
 	/// 攻撃ステートの遷移処理。
 	void PunchState();
+	/// 攻撃繰り返しステートの遷移処理。
+	void Punch1State();
 	/// 魔法攻撃ステートの遷移処理。
 	//void MagicState();
 	/// 被ダメージステートの遷移処理。
@@ -97,7 +100,7 @@ private:
 		enAnimationClip_Walk,					//歩きアニメーション。
 		enAnimationClip_Run,					//走りアニメーション。
 		enAnimationClip_Punch,					//攻撃アニメーション。
-		//enAnimationClip_Magic,				//魔法攻撃アニメーション。
+		enAnimationClip_Punch1,				//魔法攻撃アニメーション。
 		enAnimationClip_Damage,					//被ダメージアニメーション。
 		enAnimationClip_Down,					//ダウンアニメーション。
 		enAnimationClip_Num,					//アニメーションの数。

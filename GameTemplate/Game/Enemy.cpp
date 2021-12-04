@@ -32,6 +32,8 @@ bool Enemy::Start()
 	m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
 	m_animationClips[enAnimationClip_Punch].Load("Assets/animData/michelle/punch.tka");
 	m_animationClips[enAnimationClip_Punch].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Punch1].Load("Assets/animData/michelle/punch.tka");
+	m_animationClips[enAnimationClip_Punch1].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/michelle/receivedamage.tka");
 	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Down].Load("Assets/animData/michelle/down.tka");
@@ -287,12 +289,22 @@ void Enemy::ProcessState()
 	//プレイヤーを見つけたら。
 	if (SearchPlayer() == true)
 	{
-		//プレイヤーに向かって走る
-		m_enemyState = enEnemyState_Chase;
 		//通常攻撃できる距離なら
 		if (IsCanPunch() == true)
 		{	
-			m_enemyState = enEnemyState_Punch;
+			if (m_enemyState == enEnemyState_Punch)
+			{
+				m_enemyState = enEnemyState_Punch1;
+			}
+			else
+			{
+				m_enemyState = enEnemyState_Punch;
+			}
+		}
+		else 
+		{
+			//プレイヤーに向かって走る
+			m_enemyState = enEnemyState_Chase;
 		}
 	}
 	//プレイヤーを見つけられなければ。
@@ -308,7 +320,6 @@ void Enemy::ProcessState()
 	if (m_hp == 0) {
 		m_enemyState = enEnemyState_Down;
 	}
-	
 }
 
 void Enemy::IdleState()
@@ -340,7 +351,15 @@ void Enemy::PunchState()
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		//他のステートに遷移する。
+		ProcessState();
+	}
+}
+
+void Enemy::Punch1State()
+{
+	//攻撃アニメーションの再生が終わったら。
+	if (m_modelRender.IsPlayingAnimation() == false)
+	{
 		ProcessState();
 	}
 }
@@ -388,6 +407,10 @@ void Enemy::ManageState()
 		//攻撃ステートのステート遷移処理。
 		PunchState();
 		break;
+	case enEnemyState_Punch1:
+		//攻撃ステートのステート遷移処理。
+		Punch1State();
+		break;
 		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
 		//被ダメージステートのステート遷移処理。
@@ -419,6 +442,10 @@ void Enemy::PlayAnimation()
 	case enEnemyState_Punch:
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
+		break;
+	case enEnemyState_Punch1:
+		//攻撃アニメーションを再生。
+		m_modelRender.PlayAnimation(enAnimationClip_Punch1, 0.3f);
 		break;
 		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:

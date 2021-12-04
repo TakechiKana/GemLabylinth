@@ -27,6 +27,7 @@ bool Game::Start()
 			//backGround->rotation = objData.rotation;
 			//trueにすると、レベルの方でモデルが読み込まれない。
 			return true;
+
 		}
 
 		if (objData.EqualObjectName(L"player") == true) {
@@ -98,25 +99,16 @@ bool Game::Start()
 	//ゲームカメラのオブジェクトを作る。
 	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
 
-	//m_skyCube = NewGO<SkyCube>(0, "skycube");
-	//m_skyCube->SetScale(Vector3::One * 3000.0f);
-	//m_skyCube->SetType(enSkyCubeType_SunriseToon);
-
-	/*m_backGround = NewGO<BackGround>(0, "background");
-	m_player = NewGO<Player>(0, "player");
-	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
-	*/
-
 	return true;
 }
 
 
 void Game::Update()
 {
-	/*m_modelRender.Update();*/
+	
 }
 
 void Game::Render(RenderContext& rc)
 {
-	/*m_modelRender.Draw(rc);*/
+
 }
