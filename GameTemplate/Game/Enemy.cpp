@@ -42,13 +42,13 @@ bool Enemy::Start()
 	//モデルを読み込む。
 	m_modelRender.Init("Assets/modelData/human/Michelle.tkm", m_animationClips, enAnimationClip_Num);
 	//ナビメッシュ
-	m_nvmMesh.Init("Assets/modelData/stage/stage_mesh.tkn");
+	m_nvmMesh.Init("Assets/modelData/stage/stage_mesh2.tkn");
 
 	//座標を設定する。
 	Vector3 position = m_position;
 	position.y += 2.5f;
 
-	m_modelRender.SetScale({2.0f,2.0f,2.0f});
+	m_modelRender.SetScale({2.7f,2.7f,2.7f});
 
 	m_modelRender.SetPosition(position);
 	//回転を設定する。
@@ -58,8 +58,8 @@ bool Enemy::Start()
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
-		25.0f,			//半径。
-		100.0f,			//高さ。
+		40.0f,			//半径。
+		135.0f,			//高さ。
 		m_position		//座標。
 	);
 
@@ -483,7 +483,7 @@ const bool Enemy::IsCanPunch() const
 {
 	Vector3 diff = m_player->GetPosition() - m_position;
 	//エネミーとプレイヤーの距離が近かったら。
-	if (diff.Length() <= 90.0f)
+	if (diff.Length() <= 70.0f)
 	{
 		//攻撃できる！
 		return true;

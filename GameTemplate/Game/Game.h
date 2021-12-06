@@ -21,6 +21,9 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 
+	void SpawnItem();
+	void SpawnEnemy();
+
 	const Vector3 GetPosition()const
 	{
 		return playerPos;
