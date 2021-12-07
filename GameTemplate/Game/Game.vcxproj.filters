@@ -17,7 +17,6 @@
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemHeart.cpp" />
-    <ClCompile Include="ItemPunchUp.cpp" />
     <ClCompile Include="ItemMagic.cpp" />
     <ClCompile Include="ItemDash.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -35,7 +34,6 @@
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemHeart.h" />
-    <ClInclude Include="ItemPunchUp.h" />
     <ClInclude Include="ItemMagic.h" />
     <ClInclude Include="ItemDash.h" />
     <ClInclude Include="Enemy.h" />

@@ -1,3 +1,4 @@
+#include<random>
 #include "stdafx.h"
 #include "Game.h"
 #include "BackGround.h"
@@ -7,7 +8,6 @@
 #include "ItemHeart.h"
 #include "ItemDash.h"
 #include "ItemMagic.h"
-#include "ItemPunchUp.h"
 #include "Enemy.h"
 #include "Gem.h"
 
@@ -35,14 +35,15 @@ bool Game::Start()
 			//プレイヤーのオブジェクトを作る。
 			m_player = NewGO<Player>(0, "player");
 			m_player->SetPosition(objData.position);
-			playerPos = m_player->GetPosition();
+			m_player->SetRotation(objData.rotation);
 
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
 
-		if (objData.EqualObjectName(L"enemy") == true) {
+		if (objData.ForwardMatchName(L"enemy") == true) {
 
+			//SpawnEnemy();
 			//プレイヤーのオブジェクトを作る。
 			m_enemy = NewGO<Enemy>(0, "enemy");
 			m_enemy->SetPosition(objData.position);
@@ -50,14 +51,30 @@ bool Game::Start()
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-		if (objData.EqualObjectName(L"item") == true) {
+		//if (objData.ForwardMatchName(L"item") == true) {
 
-			//プレイヤーのオブジェクトを作る。
-			m_heart = NewGO<ItemHeart>(0, "heart");
-			m_heart->SetPosition(objData.position);
-			//falseにすると、レベルの方でモデルが読み込まれて配置される。
-			return true;
-		}
+		//	itemNum = objData.number;
+		//	for (int i = 1; i++; i < 11)
+		//	{
+		//		int ran = 0;
+		//		ran = rand() % 2;
+		//		if (i == itemNum) 
+		//		{
+		//			if (ran == 0)
+		//			{
+		//				m_dash = NewGO<ItemDash>(0, "dash");
+		//				m_dash->SetPosition(objData.position);
+		//			}
+		//			else
+		//			{
+		//				m_magic = NewGO<ItemMagic>(0, "magic");
+		//				m_magic->SetPosition(objData.position);
+		//			}
+		//		}
+		//	}
+		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
+		//	return true;
+		//}
 		if (objData.EqualObjectName(L"gem") == true) {
 
 			//プレイヤーのオブジェクトを作る。
@@ -74,6 +91,16 @@ bool Game::Start()
 
 	return true;
 }
+
+
+void Game::SpawnItem()
+{
+
+}
+//void Game::SpawnEnemy()
+//{
+//
+//}
 
 
 void Game::Update()

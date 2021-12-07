@@ -8,7 +8,6 @@ class GameCamera;
 class ItemDash;
 class ItemHeart;
 class ItemMagic;
-class ItemPunchUp;
 class Enemy;
 class Gem;
 
@@ -38,9 +37,10 @@ private:
 	ItemDash* m_dash = nullptr;
 	ItemHeart* m_heart = nullptr;
 	ItemMagic* m_magic = nullptr;
-	ItemPunchUp* m_punchUp = nullptr;
 	Enemy* m_enemy = nullptr;
 	Gem* m_gem = nullptr;
+
+	int itemNum = 0;
 
 	ModelRender m_modelRender;
 	Vector3 playerPos;

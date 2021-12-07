@@ -163,7 +163,6 @@
     <ClCompile Include="MagicCollision.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="ItemPunchUp.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -182,7 +181,6 @@
     <ClInclude Include="ItemMagic.h" />
     <ClInclude Include="MagicCollision.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="ItemPunchUp.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
   </ItemGroup>

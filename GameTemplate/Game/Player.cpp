@@ -4,7 +4,6 @@
 #include "ItemHeart.h"
 #include "ItemDash.h"
 #include "ItemMagic.h"
-#include "ItemPunchUp.h"
 #include "MagicCollision.h"
 
 //CollisionObjectを使用するために、ファイルをインクルードする。
@@ -16,7 +15,7 @@
 bool Player::Start()
 {
 	//アニメーションのロード
-	animationClips[enAnimationClip_Idle].Load("Assets/animData/jackie/idle.tka");
+	animationClips[enAnimationClip_Idle].Load("Assets/animData/jackie/idle2.tka");
 	animationClips[enAnimationClip_Idle].SetLoopFlag(true);
 	animationClips[enAnimationClip_Run].Load("Assets/animData/jackie/run.tka");
 	animationClips[enAnimationClip_Run].SetLoopFlag(true);
@@ -36,7 +35,7 @@ bool Player::Start()
 	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ);
 	m_spriteRender.Init("Assets/sprite/Gameover.dds",1980.0f,1080.0f);
 	m_modelRender.SetScale({2.0f,2.0f,2.0f});
-
+	m_modelRender.SetRotation(m_rotation);
 
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
@@ -51,7 +50,6 @@ bool Player::Start()
 	m_dash = FindGO<ItemDash>("dash");
 	m_heart = FindGO<ItemHeart>("heart");
 	m_magic = FindGO<ItemMagic>("magic");
-	m_punchUp = FindGO<ItemPunchUp>("punchup");
 
 	return true;
 }
@@ -100,21 +98,6 @@ void Player::Update()
 	//フォントの大きさを設定。
 	fontRender1.SetScale(2.0f);
 	swprintf_s(wcsbuf, 256, L"%d", m_magicCount);
-	//取得個数
-	//表示するテキストを設定。
-	fontRender2.SetText(wcsbuf);
-	//フォントの位置を設定。
-	fontRender2.SetPosition(Vector3(-900.0f, 200.0f, 0.0f));
-	//フォントの大きさを設定。
-	fontRender2.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_punchupCount);
-	//取得個数
-	//表示するテキストを設定。
-	fontRender3.SetText(wcsbuf);
-	//フォントの位置を設定。
-	fontRender3.SetPosition(Vector3(-900.0f, 50.0f, 0.0f));
-	//フォントの大きさを設定。
-	fontRender3.SetScale(2.0f);
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -231,9 +214,7 @@ void Player::Collision()
 void Player::Punch()
 {
 	//攻撃中でないなら、処理をしない。
-	if (m_playerState != enPlayerState_Punch&&
-		m_playerState != enPlayerState_PunchUp)
-	{
+	if (m_playerState != enPlayerState_Punch)	{
 		return;
 	}
 
@@ -481,16 +462,6 @@ void Player::ProcessState()
 		
 		return;
 	}
-	//攻撃力をアップする
-	//Aボタンが押されたら
-	if (g_pad[0]->IsPress(enButtonA)&& m_punchupCount > 0)
-	{
-		//カウント-1
-		m_punchupCount -= 1;
-		m_playerState = enPlayerState_PunchUp;
-		return;
-	}
-
 	//Bボタンが押されたら。
 	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
 	{
@@ -557,10 +528,6 @@ void Player::ManageState()
 		//攻撃ステートのステート遷移処理。
 		PunchState();
 		break;
-	case enPlayerState_PunchUp:
-		//攻撃ステートのステート遷移処理。
-		PunchState();
-		break;
 		//魔法攻撃ステートの時。
 	case enPlayerState_Magic:
 		//魔法攻撃ステートのステート遷移処理。
@@ -611,11 +578,6 @@ void Player::PlayAnimation()
 		break;
 		//プレイヤーステートが3(Punch)だったら。
 	case enPlayerState_Punch:
-		//Punch
-		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
-		break;
-		//プレイヤーステートが3(Punch)だったら。
-	case enPlayerState_PunchUp:
 		//Punch
 		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
 		break;

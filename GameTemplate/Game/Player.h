@@ -6,7 +6,6 @@ class Collision;
 class ItemDash;
 class ItemHeart;
 class ItemMagic;
-class ItemPunchUp;
 
  
 //プレイヤークラス。
@@ -19,7 +18,6 @@ public:
 		enPlayerState_Run,					//走る。
 		enPlayerState_FastRun,				//速く走る。
 		enPlayerState_Punch,				//攻撃
-		enPlayerState_PunchUp,				//攻撃力アップ
 		enPlayerState_Magic,				//遠投攻撃。
 		enPlayerState_Healing,				//回復。
 		enPlayerState_ReceiveDamage,		//ダメ―ジ受けた。
@@ -61,11 +59,7 @@ public:
 	{
 		m_magicCount += 1;
 	}
-	//攻撃力アップカウント
-	void GetPunchUpCount()
-	{
-		m_punchupCount += 1;
-	}
+	
 
 	//ジェムカウント
 	void GetGemCount()
@@ -153,11 +147,8 @@ public:
 			m_playerState != enPlayerState_Magic &&
 			m_playerState != enPlayerState_ReceiveDamage &&
 			m_playerState != enPlayerState_Punch &&
-			m_playerState != enPlayerState_PunchUp
-
-			/*&&
-			m_playerState != enPlayerState_Down &&
-			m_playerState != enPlayerState_Clear*/;
+			m_playerState != enPlayerState_Down;/*&&
+			m_playerState != enPlayerState_Clear*/
 	}
 
 private:
@@ -195,7 +186,6 @@ private:
 	int m_heartCount = 0;
 	int m_dashCount = 0;
 	int m_magicCount = 10;
-	int m_punchupCount = 0;
 	int m_gemCount = 0;
 
 	bool m_death = false;
@@ -205,7 +195,6 @@ private:
 	ItemDash* m_dash;
 	ItemHeart* m_heart;
 	ItemMagic* m_magic;
-	ItemPunchUp* m_punchUp;
 
 	SpriteRender m_spriteRender;
 
