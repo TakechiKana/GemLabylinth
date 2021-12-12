@@ -43,8 +43,9 @@ public:
 	}
 
 private:
-	EnGameState m_gameState = enGameState_Start;
+	EnGameState m_gameState = enGameState_Game;
 	SkyCube m_skyCube;
+	PointLight* m_light;
 	LevelRender m_levelRender;
 	BackGround* m_backGround = nullptr;			//ステージ
 	Player* m_player = nullptr;					//プレイヤー

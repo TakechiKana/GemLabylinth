@@ -28,6 +28,21 @@ bool Game::Start()
 
 		}
 
+		if (objData.EqualObjectName(L"Light") == true) {
+
+			//ポイントライトのオブジェクトを作る。
+			m_light = g_sceneLight->NewPointLight();
+
+			m_light->SetColor(Vector3(1.0f, 1.0f, 1.0f));
+			m_light->SetAffectPowParam(2.0f);
+			m_light->SetRange(200.0f);
+			m_light->SetPosition(objData.position);
+
+
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
+
 		if (objData.EqualObjectName(L"player") == true) {
 
 			//プレイヤーのオブジェクトを作る。
