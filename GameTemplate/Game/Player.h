@@ -4,8 +4,8 @@
 //クラス宣言
 class Collision;
 class ItemDash;
-class ItemHeart;
 class ItemMagic;
+class Game;
 
  
 //プレイヤークラス。
@@ -193,7 +193,7 @@ private:
 
 	//各クラスの変数
 	ItemDash* m_dash;
-	ItemHeart* m_heart;
+	Game* m_game;
 	ItemMagic* m_magic;
 
 	SpriteRender m_spriteRender;

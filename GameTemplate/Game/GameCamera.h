@@ -4,6 +4,7 @@
 
 //クラス宣言。
 class Player;
+class Game;
 
 /// <summary>
 /// カメラ。
@@ -20,6 +21,7 @@ public:
 	/// </summary>
 	void UpdatePositionAndTarget();
 private:
+	Game* m_game = nullptr;
 	Player* m_player = nullptr;					//プレイヤー。
 	Vector3				m_toCameraPos = Vector3::One;		//注視点から視点に向かうベクトル。
 	SpringCamera		m_springCamera;						//ばねカメラ。

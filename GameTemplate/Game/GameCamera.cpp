@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameCamera.h"
-
+#include "Game.h"
 #include "Player.h"
 
 GameCamera::GameCamera()
@@ -16,7 +16,8 @@ GameCamera::~GameCamera()
 bool GameCamera::Start()
 {
 	//注視点から視点までのベクトルを設定。
-	m_toCameraPos.Set(0.0f, 30.0f, -70.0f);
+	m_toCameraPos.Set(0.0f, 30.0f, 70.0f);
+	//m_toCameraPos.Set(-20.0f, 15.0f, -70.0f);
 
 	//プレイヤーのインスタンスを探す。
 	m_player = FindGO<Player>("player");

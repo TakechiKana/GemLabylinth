@@ -23,8 +23,6 @@ bool Game::Start()
 			m_backGround = NewGO<BackGround>(0);
 			//配置座標、スケール、回転を取得する。
 			m_backGround->SetPosition(objData.position);
-			//backGround->scale = objData.scale;
-			//backGround->rotation = objData.rotation;
 			//trueにすると、レベルの方でモデルが読み込まれない。
 			return true;
 
@@ -51,30 +49,30 @@ bool Game::Start()
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-		//if (objData.ForwardMatchName(L"item") == true) {
+		if (objData.ForwardMatchName(L"item") == true) {
 
-		//	itemNum = objData.number;
-		//	for (int i = 1; i++; i < 11)
-		//	{
-		//		int ran = 0;
-		//		ran = rand() % 2;
-		//		if (i == itemNum) 
-		//		{
-		//			if (ran == 0)
-		//			{
-		//				m_dash = NewGO<ItemDash>(0, "dash");
-		//				m_dash->SetPosition(objData.position);
-		//			}
-		//			else
-		//			{
-		//				m_magic = NewGO<ItemMagic>(0, "magic");
-		//				m_magic->SetPosition(objData.position);
-		//			}
-		//		}
-		//	}
-		//	//falseにすると、レベルの方でモデルが読み込まれて配置される。
-		//	return true;
-		//}
+			itemNum = objData.number;
+			for (int i = 1; i<11; i++)
+			{
+				int ran = 0;
+				ran = rand() % 2;
+				if (i == itemNum) 
+				{
+					if (ran == 0)
+					{
+						m_dash = NewGO<ItemDash>(0, "dash");
+						m_dash->SetPosition(objData.position);
+					}
+					else
+					{
+						m_magic = NewGO<ItemMagic>(0, "magic");
+						m_magic->SetPosition(objData.position);
+					}
+				}
+			}
+			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			return true;
+		}
 		if (objData.EqualObjectName(L"gem") == true) {
 
 			//プレイヤーのオブジェクトを作る。

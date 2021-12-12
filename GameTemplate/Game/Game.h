@@ -14,6 +14,16 @@ class Gem;
 class Game : public IGameObject
 {
 public:
+	//ステート
+	enum EnGameState {
+		enGameState_Start,					//スタート
+		enGameState_tuto,					//説明
+		enGameState_Game,					//ゲーム中
+		enGameState_End,					//終わり
+		enGameState_Score,					//スコア
+	};
+
+public:
 	Game() {}
 	~Game() {}
 	bool Start();
@@ -23,12 +33,17 @@ public:
 	void SpawnItem();
 	void SpawnEnemy();
 
+	const EnGameState Get() {
+		return m_gameState;
+	}
+
 	const Vector3 GetPosition()const
 	{
 		return playerPos;
 	}
 
 private:
+	EnGameState m_gameState = enGameState_Start;
 	SkyCube m_skyCube;
 	LevelRender m_levelRender;
 	BackGround* m_backGround = nullptr;			//ステージ

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Player.h"
-
+#include "Game.h"
 #include "ItemHeart.h"
 #include "ItemDash.h"
 #include "ItemMagic.h"
@@ -48,8 +48,8 @@ bool Player::Start()
 
 	//各クラスのFindGO
 	m_dash = FindGO<ItemDash>("dash");
-	m_heart = FindGO<ItemHeart>("heart");
 	m_magic = FindGO<ItemMagic>("magic");
+	m_game = FindGO<Game>("game");
 
 	return true;
 }
@@ -67,16 +67,18 @@ Player::~Player()
 //更新処理。
 void Player::Update()
 {
-	//移動処理。
-	Move();
-	//回転処理。
-	Rotation();
-	//当たり判定。
-	Collision();
-	//攻撃処理。
-	Punch();
-	//ステートの遷移処理。
-	ManageState();
+	if (m_game->Get() == Game::enGameState_Game) {
+		//移動処理。
+		Move();
+		//回転処理。
+		Rotation();
+		//当たり判定。
+		Collision();
+		//攻撃処理。
+		Punch();
+		//ステートの遷移処理。
+		ManageState();
+	}
 	//アニメーションの再生。
 	PlayAnimation();
 
