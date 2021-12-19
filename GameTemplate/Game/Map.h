@@ -17,8 +17,10 @@ private:
 	SpriteRender m_playerSprite;	//プレイヤー
 	SpriteRender m_gemSprite;		//ホウセキ
 
+	Vector3 gemsPos;
+
 	Player* m_player = nullptr;
-	std::vector<Gem*>  m_gems;
+	//std::vector<Gem*>  m_gems;
 	bool m_isImage = false;
 };
 

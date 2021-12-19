@@ -22,7 +22,7 @@ bool Map::Start()
 	m_playerSprite.SetPosition(MAP_CENTER_POSITION);
 
 	//エネミーを表す、黄色い画像。
-	//m_gemSprite.Init("Assets/sprite/enemy.dds", 35, 35);
+	m_gemSprite.Init("Assets/sprite/enemy.dds", 35, 35);
 
 	//m_gems = FindGOs<Gem>("gem");
 	
@@ -37,17 +37,24 @@ void Map::Update()
 	
 
 	Vector3 playerPos = m_player->GetPosition();
-	Vector3 gemPos;
+
+	const auto& gem = FindGOs<Gem>("gem");
+	const int gemSize = gem.size();
+
+	for (int i = 0; i < gemSize; i++) 
+	{
+		gemsPos[i] = gem->GetPosition();
+	}
 
 	Vector3 mapPos;
 
 	//マップに表示する範囲にジェムがあったら。
-	if (WorldPositionConvertToMapPosition(playerPos, gemPos, mapPos))
+	if (WorldPositionConvertToMapPosition(playerPos, gemsPos, mapPos))
 	{
 		//マップに表示するように設定する。
 		m_isImage = true;
 		//SpriteRenderに座標を設定。
-		m_gemSprite.SetPosition(mapPos);
+		m_gemSprite.SetPosition(gemsPos);
 	}
 	//マップに表示する範囲にジェムがなかったら。
 	else
@@ -108,11 +115,11 @@ void Map::Render(RenderContext& rc)
 	}
 	m_gemSprite.Draw(rc);
 
-	const auto& gems = FindGOs<Gem>("gem");
+	/*const auto& gems = FindGOs<Gem>("gem");
 	const int gemSize = gems.size();
 
 	for (int i = 0; i < gemSize; i++)
 	{
 		gems[i]->GemMap(rc);
-	}
+	}*/
 }

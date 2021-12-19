@@ -26,13 +26,13 @@ public:
 		return m_position;
 	}
 
-	void GemMap(RenderContext& rc)
+	/*void GemMap(RenderContext& rc)
 	{
 		if (m_isStart = false) {
 			return;
 		}
 		m_gemMap.Draw(rc);
-	}
+	}*/
 
 	void Count();
 	void Rotation();
@@ -40,7 +40,7 @@ public:
 
 private:
 	ModelRender m_modelRender;
-	SpriteRender m_gemMap;
+	//SpriteRender m_gemMap;
 	Vector3 m_position;
 	Quaternion m_rotation;
 	Item m_item;
