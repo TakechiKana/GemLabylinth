@@ -83,6 +83,7 @@ void InitGame(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, in
 	//k2ƒGƒ“ƒWƒ“‚Ì‰Šú‰»B
 	K2Engine::InitData initData;
 	initData.isSoftShadow = true;
+	//initData.isSoftShadow = false;
 	initData.frameBufferWidth = FRAME_BUFFER_W;
 	initData.frameBufferHeight = FRAME_BUFFER_H;
 	initData.hwnd = g_hWnd;

@@ -15,7 +15,7 @@ public:
 		enEnemyState_Idle,					//待機。
 		enEnemyState_Chase,					//追跡。
 		enEnemyState_Punch,					//攻撃。
-		enEnemyState_Punch1,				//攻撃繰り返し。
+		enEnemyState_Phose,					//殴り後の一時停止
 		enEnemyState_Magic,					//遠投攻撃。
 		enEnemyState_ReceiveDamage,			//被ダメージ。
 		enEnemyState_Down,					//ダウン
@@ -39,14 +39,15 @@ public:
 	{
 		return m_position;
 	}
-	//HPを他からもらう
-	void SetHP(const int hp)
-	{
-		m_hp = hp;
-	}
+	//回転を設定
 	void SetRotation(const Quaternion& rotation)
 	{
 		m_rotation = rotation;
+	}
+	//キャッチの判定を渡す
+	const bool GetCatchState() const
+	{
+		return m_catch;
 	}
 
 private:
@@ -84,8 +85,8 @@ private:
 	void ChaseState();
 	/// 攻撃ステートの遷移処理。
 	void PunchState();
-	/// 攻撃繰り返しステートの遷移処理。
-	void Punch1State();
+	/// 殴り後一時停止ステートの遷移処理。
+	void PhoseState();
 	/// 魔法攻撃ステートの遷移処理。
 	//void MagicState();
 	/// 被ダメージステートの遷移処理。
@@ -94,13 +95,21 @@ private:
 	void DownState();
 	//攻撃できる距離の判定
 	const bool IsCanPunch() const;
+	//つかまえた？
+	void Catch()
+	{
+		if (IsCanPunch() == true)
+		{
+			m_catch = true;
+		}
+	}
 
 	enum EnAnimationClip {						//アニメーション。
 		enAnimationClip_Idle,					//待機アニメーション。
 		enAnimationClip_Walk,					//歩きアニメーション。
 		enAnimationClip_Run,					//走りアニメーション。
 		enAnimationClip_Punch,					//攻撃アニメーション。
-		enAnimationClip_Punch1,				//魔法攻撃アニメーション。
+		enAnimationClip_Phose,					//攻撃後一時停止アニメーション。
 		enAnimationClip_Damage,					//被ダメージアニメーション。
 		enAnimationClip_Down,					//ダウンアニメーション。
 		enAnimationClip_Num,					//アニメーションの数。
@@ -122,7 +131,8 @@ private:
 	nsAI::PathFinding m_pathFiding;
 	bool						m_isUnderAttack = false;					//攻撃中か？
 	bool						m_isUnderDamage = false;					//ダメージを受けたか
-	int							m_hp = 10;									//HP。
+	bool						m_catch = false;							//プレイヤーを捕まえた？
+	//int							m_hp = 10;									//HP。
 	Player*						m_player = nullptr;							//プレイヤー。
 	float						m_chaseTimer = 0.0f;						//追跡タイマー。
 	float						m_idleTimer = 0.0f;

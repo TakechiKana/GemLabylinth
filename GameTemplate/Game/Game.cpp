@@ -10,6 +10,7 @@
 #include "ItemMagic.h"
 #include "Enemy.h"
 #include "Gem.h"
+#include "Map.h"
 
 
 bool Game::Start()
@@ -33,9 +34,9 @@ bool Game::Start()
 			//ポイントライトのオブジェクトを作る。
 			m_light = g_sceneLight->NewPointLight();
 
-			m_light->SetColor(Vector3(1.0f, 1.0f, 1.0f));
-			m_light->SetAffectPowParam(2.0f);
-			m_light->SetRange(200.0f);
+			m_light->SetColor(Vector3(1.0f, 0.0f, 0.0f));
+			m_light->SetAffectPowParam(3.0f);
+			m_light->SetRange(300.0f);
 			m_light->SetPosition(objData.position);
 
 
@@ -89,7 +90,6 @@ bool Game::Start()
 			return true;
 		}
 		if (objData.EqualObjectName(L"gem") == true) {
-
 			//プレイヤーのオブジェクトを作る。
 			m_gem = NewGO<Gem>(0, "gem");
 			m_gem->SetPosition(objData.position);
@@ -101,24 +101,41 @@ bool Game::Start()
 		
 	//ゲームカメラのオブジェクトを作る。
 	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
+	m_map = NewGO<Map>(0, "map");
 
 	return true;
 }
 
-
-void Game::SpawnItem()
-{
-
-}
-//void Game::SpawnEnemy()
-//{
-//
-//}
-
-
 void Game::Update()
 {
-	
+	ProcessState();
+}
+
+void Game::ProcessState()
+{
+	if (m_gameState == enGameState_Start)
+	{
+		if (g_pad[0]->IsTrigger(enButtonA))
+		{
+			m_gameState = enGameState_Game;
+			m_cameraFlag = true;
+		}
+	}
+	else if (m_gameState == enGameState_Game)
+	{
+		if (m_player->Clear() == true)
+		{
+			m_gameState = enGameState_End;
+		}
+	}
+	else if (m_gameState == enGameState_End)
+	{
+		m_gameState = enGameState_Score;
+	}
+	else if (m_gameState == enGameState_Score)
+	{
+		m_gameState = enGameState_Start;
+	}
 }
 
 void Game::Render(RenderContext& rc)

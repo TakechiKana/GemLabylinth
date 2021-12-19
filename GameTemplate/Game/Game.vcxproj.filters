@@ -22,6 +22,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="MagicCollision.cpp" />
     <ClCompile Include="Gem.cpp" />
+    <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -39,5 +40,6 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="MagicCollision.h" />
     <ClInclude Include="Gem.h" />
+    <ClInclude Include="Map.h" />
   </ItemGroup>
 </Project>

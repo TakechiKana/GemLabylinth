@@ -6,6 +6,7 @@ class Collision;
 class ItemDash;
 class ItemMagic;
 class Game;
+class Enemy;
 
  
 //プレイヤークラス。
@@ -22,7 +23,8 @@ public:
 		enPlayerState_Healing,				//回復。
 		enPlayerState_ReceiveDamage,		//ダメ―ジ受けた。
 		enPlayerState_Down,					//HPが0。
-		//enPlayerState_Clear					//クリアー。
+		enPlayerState_Catch,				//つかまった。
+		enPlayerState_Clear					//クリアー。
 	};
 
 	bool Start();
@@ -49,22 +51,27 @@ public:
 	{
 		m_dashCount += 1;
 	}
-	//ハートカウント
-	void GetHeartCount()
-	{
-		m_heartCount += 1;
-	}
 	//マジックカウント
 	void GetMagicCount()
 	{
 		m_magicCount += 1;
 	}
-	
-
 	//ジェムカウント
 	void GetGemCount()
 	{
 		m_gemCount += 1;
+	}
+
+	//ステートを渡す
+	const EnPlayerState GetState()
+	{
+		return m_playerState;
+	}
+
+	//ステートを設定する
+	EnPlayerState SetState(EnPlayerState state)
+	{
+		m_playerState = state;
 	}
 
 	//ポジションを渡す関数
@@ -108,7 +115,7 @@ public:
 	//コリジョンの判定
 	void Collision();
 	//体力、ダメージ、回復
-	void Health();
+	//void Health();
 	//アニメーションイベント用関数
 	void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
 	//移動処理。
@@ -129,14 +136,22 @@ public:
 	void PunchState();
 	//遠投攻撃ステート
 	void MagicState();
-	//回復ステート
-	void HealState();
+	////回復ステート
+	//void HealState();
 	//ダメージステート
 	void DamageState();
 	//ダウンステートの時
 	void DownState();
-	////クリアステート
-	//void ClearState();
+	//キャッチステート
+	void CatchState();
+
+	////クリア
+	bool Clear() {
+		if (m_gemCount == 170)
+		{
+			return true;
+		}
+	}
 
 	//アニメーションの再生。
 	void PlayAnimation();
@@ -147,8 +162,9 @@ public:
 			m_playerState != enPlayerState_Magic &&
 			m_playerState != enPlayerState_ReceiveDamage &&
 			m_playerState != enPlayerState_Punch &&
-			m_playerState != enPlayerState_Down;/*&&
-			m_playerState != enPlayerState_Clear*/
+			m_playerState != enPlayerState_Down &&
+			m_playerState != enPlayerState_Catch &&
+			m_playerState != enPlayerState_Clear;
 	}
 
 private:
@@ -171,8 +187,8 @@ private:
 	Vector3 m_moveSpeed;									//移動速度。
 	Vector3 m_forward;										//前方方向ベクトル
 	Quaternion m_rotation;									//クォータニオン。
-	int m_playerState = enPlayerState_Idle;					//プレイヤーステート
-	int m_health = 5;										//HP
+	EnPlayerState m_playerState = enPlayerState_Idle;		//プレイヤーステート
+	int m_health = 3;										//HP
 
 	float m_timer = 0.0f;									//ダッシュタイム
 	float m_timer1 = 0.0f;									//マジック削除まで
@@ -185,7 +201,7 @@ private:
 
 	int m_heartCount = 0;
 	int m_dashCount = 0;
-	int m_magicCount = 10;
+	int m_magicCount = 0;
 	int m_gemCount = 0;
 
 	bool m_death = false;
@@ -195,6 +211,7 @@ private:
 	ItemDash* m_dash;
 	Game* m_game;
 	ItemMagic* m_magic;
+	std::vector<Enemy*>  m_enemys;
 
 	SpriteRender m_spriteRender;
 

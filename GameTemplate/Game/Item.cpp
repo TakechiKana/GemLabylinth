@@ -32,7 +32,7 @@ Item::Item()
 bool Item::GetItem(Vector3 position)
 {	
 	Vector3 diff = m_player->GetPosition() - position;
-	if(diff.Length()<65.0f){
+	if(diff.Length()<73.0f){
 		PlayEffectandSE(position);
 		return true;
 	}

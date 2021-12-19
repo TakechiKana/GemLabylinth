@@ -10,6 +10,7 @@ class ItemHeart;
 class ItemMagic;
 class Enemy;
 class Gem;
+class Map;
 
 class Game : public IGameObject
 {
@@ -30,10 +31,7 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 
-	void SpawnItem();
-	void SpawnEnemy();
-
-	const EnGameState Get() {
+	const EnGameState GetState() {
 		return m_gameState;
 	}
 
@@ -42,8 +40,20 @@ public:
 		return playerPos;
 	}
 
+	const bool GetCameraFlag()const
+	{
+		return m_cameraFlag;
+	}
+
+	void SetCameraFlag(bool flag)
+	{
+		m_cameraFlag = flag;
+	}
+
 private:
-	EnGameState m_gameState = enGameState_Game;
+	void ProcessState();
+
+	EnGameState m_gameState = enGameState_Start;
 	SkyCube m_skyCube;
 	PointLight* m_light;
 	LevelRender m_levelRender;
@@ -51,15 +61,14 @@ private:
 	Player* m_player = nullptr;					//プレイヤー
 	GameCamera* m_gameCamera = nullptr;			//カメラ
 	ItemDash* m_dash = nullptr;
-	ItemHeart* m_heart = nullptr;
 	ItemMagic* m_magic = nullptr;
 	Enemy* m_enemy = nullptr;
 	Gem* m_gem = nullptr;
+	Map* m_map = nullptr;
 
 	int itemNum = 0;
+	bool m_cameraFlag = false;
 
 	ModelRender m_modelRender;
 	Vector3 playerPos;
-};//来たわよ
-
-//お願いします！
+};

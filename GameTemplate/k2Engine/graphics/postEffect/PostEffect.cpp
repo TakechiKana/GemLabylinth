@@ -59,9 +59,9 @@ namespace nsK2Engine {
     {
         //m_ssao.Render(rc, mainRenderTarget);
         // SSR
-        m_ssr.Render(rc, mainRenderTarget);
+        //m_ssr.Render(rc, mainRenderTarget);
         // トーンマップ
-        m_tonemap.Render(rc, mainRenderTarget);
+        //m_tonemap.Render(rc, mainRenderTarget);
 
         g_renderingEngine->SetMainRenderTargetAndDepthStencilBuffer(rc);
 

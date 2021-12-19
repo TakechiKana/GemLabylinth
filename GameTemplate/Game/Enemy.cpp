@@ -32,8 +32,8 @@ bool Enemy::Start()
 	m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
 	m_animationClips[enAnimationClip_Punch].Load("Assets/animData/michelle/punch.tka");
 	m_animationClips[enAnimationClip_Punch].SetLoopFlag(false);
-	m_animationClips[enAnimationClip_Punch1].Load("Assets/animData/michelle/punch.tka");
-	m_animationClips[enAnimationClip_Punch1].SetLoopFlag(false);
+	m_animationClips[enAnimationClip_Phose].Load("Assets/animData/michelle/catch.tka");
+	m_animationClips[enAnimationClip_Phose].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/michelle/receivedamage.tka");
 	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Down].Load("Assets/animData/michelle/down.tka");
@@ -100,6 +100,8 @@ void Enemy::Update()
 	PlayAnimation();
 	//ステートの遷移処理。
 	ManageState();
+	//つかまえた？
+	Catch();
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -170,38 +172,39 @@ void Enemy::Collision()
 		return;
 	}
 
-	//プレイヤーの攻撃用のコリジョンを取得する。
-	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_punch");
-	//コリジョンの配列をfor文で回す。
-	for (auto collision : collisions)
-	{
-		//コリジョンとキャラコンが衝突したら。
-		if (collision->IsHit(m_charaCon))
-		{
-			if (m_isUnderDamage == false) {
-				//HPを1減らす。
-				m_hp -= 1;										///////////////////////////////////////////////
-				m_isUnderDamage = true;
-			}
-			//もしHPが0より上なら。
-			if (m_hp > 0)
-			{
-				//被ダメージステートに遷移する。
-				m_enemyState = enEnemyState_ReceiveDamage;
-			}
-			//HPが0なら。
-			else if (m_hp == 0)
-			{
-				//ダウンステートに遷移する。
-				m_enemyState = enEnemyState_Down;
-			}
+	////プレイヤーの攻撃用のコリジョンを取得する。
+	//const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_punch");
+	////コリジョンの配列をfor文で回す。
+	//for (auto collision : collisions)
+	//{
+	//	//コリジョンとキャラコンが衝突したら。
+	//	if (collision->IsHit(m_charaCon))
+	//	{
+	//		m_enemyState = enEnemyState_ReceiveDamage;
+	//		//if (m_isUnderDamage == false) {
+	//		//	//HPを1減らす。
+	//		//	m_hp -= 1;										///////////////////////////////////////////////
+	//		//	m_isUnderDamage = true;
+	//		//}
+	//		////もしHPが0より上なら。
+	//		//if (m_hp > 0)
+	//		//{
+	//			//被ダメージステートに遷移する。
+	//			//m_enemyState = enEnemyState_ReceiveDamage;
+	//		//}
+	//		////HPが0なら。
+	//		//else if (m_hp == 0)
+	//		//{
+	//		//	//ダウンステートに遷移する。
+	//		//	m_enemyState = enEnemyState_Down;
+	//		//}
 
-			////効果音を再生する。
-			//ここ
-	
-			return;
-		}
-	}
+	//		////効果音を再生する。
+	//		//ここ
+	//
+	//		return;
+	//	}
+	//}
 
 	//プレイヤーのファイヤーボール用のコリジョンを取得する。
 	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_magic");
@@ -211,23 +214,24 @@ void Enemy::Collision()
 		//コリジョンとキャラコンが衝突したら。
 		if (collision->IsHit(m_charaCon))
 		{
-			if (m_isUnderDamage == false) {
-				//HPを2減らす。
-				m_hp -= 2;	
-				m_isUnderDamage = true;
-			}
-			//HPが0になったら。
-			if (m_hp == 0)
-			{
-				//ダウンステートに遷移する。
-				m_enemyState = enEnemyState_Down;
-			}
-			else {
-				//被ダメージステートに遷移する。
-				m_enemyState = enEnemyState_ReceiveDamage;
-			}
-			//効果音を再生する。
-			//ここ
+			m_enemyState = enEnemyState_ReceiveDamage;
+			//if (m_isUnderDamage == false) {
+			//	//HPを2減らす。
+			//	m_hp -= 2;	
+			//	m_isUnderDamage = true;
+			//}
+			////HPが0になったら。
+			//if (m_hp == 0)
+			//{
+			//	//ダウンステートに遷移する。
+			//	m_enemyState = enEnemyState_Down;
+			//}
+			//else {
+			//	//被ダメージステートに遷移する。
+			//	m_enemyState = enEnemyState_ReceiveDamage;
+			//}
+			////効果音を再生する。
+			////ここ
 			return;
 		}
 	}
@@ -292,14 +296,8 @@ void Enemy::ProcessState()
 		//通常攻撃できる距離なら
 		if (IsCanPunch() == true)
 		{	
-			if (m_enemyState == enEnemyState_Punch)
-			{
-				m_enemyState = enEnemyState_Punch1;
-			}
-			else
-			{
-				m_enemyState = enEnemyState_Punch;
-			}
+			m_enemyState = enEnemyState_Punch;
+			
 		}
 		else 
 		{
@@ -312,13 +310,9 @@ void Enemy::ProcessState()
 	{
 		//待機ステートに遷移する。
 		m_enemyState = enEnemyState_Idle;
-		return;
 	}
 	if (m_isUnderDamage == true) {
 		m_enemyState = enEnemyState_ReceiveDamage;
-	}
-	if (m_hp == 0) {
-		m_enemyState = enEnemyState_Down;
 	}
 }
 
@@ -351,11 +345,12 @@ void Enemy::PunchState()
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		ProcessState();
+		m_catch = false;
+		m_enemyState = enEnemyState_Phose;
 	}
 }
 
-void Enemy::Punch1State()
+void Enemy::PhoseState()
 {
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
@@ -370,6 +365,7 @@ void Enemy::DamageState()
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		//他のステートに遷移する。
+		
 		ProcessState();
 		m_isUnderDamage = false;
 	}
@@ -381,8 +377,6 @@ void Enemy::DownState()
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		Game* game = FindGO<Game>("game");
-		//倒されたエネミーの数を+1する。
-		// ↑倒した数でスコア変動
 		//自身を削除する。
 		DeleteGO(this);
 	}
@@ -407,9 +401,9 @@ void Enemy::ManageState()
 		//攻撃ステートのステート遷移処理。
 		PunchState();
 		break;
-	case enEnemyState_Punch1:
+	case enEnemyState_Phose:
 		//攻撃ステートのステート遷移処理。
-		Punch1State();
+		PhoseState();
 		break;
 		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:
@@ -443,9 +437,9 @@ void Enemy::PlayAnimation()
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
 		break;
-	case enEnemyState_Punch1:
+	case enEnemyState_Phose:
 		//攻撃アニメーションを再生。
-		m_modelRender.PlayAnimation(enAnimationClip_Punch1, 0.3f);
+		m_modelRender.PlayAnimation(enAnimationClip_Phose, 0.3f);
 		break;
 		//被ダメージステートの時。
 	case enEnemyState_ReceiveDamage:

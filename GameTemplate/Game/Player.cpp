@@ -5,6 +5,7 @@
 #include "ItemDash.h"
 #include "ItemMagic.h"
 #include "MagicCollision.h"
+#include "Enemy.h"
 
 //CollisionObjectを使用するために、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
@@ -32,11 +33,12 @@ bool Player::Start()
 	animationClips[enAnimationClip_Down].Load("Assets/animData/jackie/down.tka");
 	animationClips[enAnimationClip_Down].SetLoopFlag(false);
 	//Jackieモデルを読み込む。
-	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ);
+	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ, true);
 	m_spriteRender.Init("Assets/sprite/Gameover.dds",1980.0f,1080.0f);
 	m_modelRender.SetScale({2.0f,2.0f,2.0f});
 	m_modelRender.SetRotation(m_rotation);
-
+	m_modelRender.SetShadowCasterFlag(true);
+	m_modelRender.Update();
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
 
@@ -50,6 +52,7 @@ bool Player::Start()
 	m_dash = FindGO<ItemDash>("dash");
 	m_magic = FindGO<ItemMagic>("magic");
 	m_game = FindGO<Game>("game");
+	m_enemys = FindGOs<Enemy>("enemy");
 
 	return true;
 }
@@ -67,7 +70,7 @@ Player::~Player()
 //更新処理。
 void Player::Update()
 {
-	if (m_game->Get() == Game::enGameState_Game) {
+	if (m_game->GetState() == Game::enGameState_Game) {
 		//移動処理。
 		Move();
 		//回転処理。
@@ -78,6 +81,11 @@ void Player::Update()
 		Punch();
 		//ステートの遷移処理。
 		ManageState();
+		//体力
+		//Health();
+		//クリア判定
+		Clear();
+
 	}
 	//アニメーションの再生。
 	PlayAnimation();
@@ -228,26 +236,14 @@ void Player::Punch()
 	}
 }
 
-void Player::Health()
-{
-	if (m_playerState == enPlayerState_Healing) {
-		if (g_pad[0]->IsTrigger(enButtonX))
-		{
-			if (m_health < 4) {
-				m_health += 1;
-			}
-			else
-			{
-				return;
-			}
-			return;
-		}
-	}
-	if (m_playerState == enPlayerState_Down) {
-		m_health -= 1;
-		return;
-	}
-}
+//体力
+//void Player::Health()
+//{
+//	if (m_playerState == enPlayerState_Down) {
+//		m_health -= 1;
+//		return;
+//	}
+//}
 
 //移動処理
 void Player::Move()
@@ -401,17 +397,6 @@ void Player::MagicState()
 	}
 }
 
-//回復ステート
-void Player::HealState()
-{
-	Health();
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		//ステートを遷移する。
-		ProcessState();
-	}
-}
-
 //ダウンステート
 void Player::DownState()
 {
@@ -432,20 +417,20 @@ void Player::DamageState()
 	}
 }
 
+//キャッチステート
+void Player::CatchState()
+{
+	for (int i = 0; i < 3; i++) {
+		if (m_enemys[i]->GetCatchState() == false)
+		{
+			ProcessState();
+		}
+	}
+}
+
 //ステート遷移
 void Player::ProcessState()
 {
-	
-	//Xボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonX) && m_heartCount > 0)
-	{
-		//カウント-1
-		m_heartCount -= 1;
-		//回復ステートに移行する。
-		m_playerState = enPlayerState_Healing;
-		
-		return;
-	}
 	//Yボタンが押されたら。
 	if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
 	{
@@ -474,6 +459,13 @@ void Player::ProcessState()
 		m_fastRun = true;
 		return;
 	}
+	for (int i = 0; i < 3; i++) {
+		if (m_enemys[i]->GetCatchState() == true)
+		{
+			m_playerState = enPlayerState_Catch;
+			return;
+		}
+	}
 
 	//xかzの移動速度があったら(スティックの入力があったら)。
 	if (fabsf(m_moveSpeed.x) >= 0.001f || fabsf(m_moveSpeed.z) >= 0.001f)
@@ -495,14 +487,22 @@ void Player::ProcessState()
 	{
 		//ステートを待機にする。
 		m_playerState = enPlayerState_Idle;
-		return;
 	}
-	if (m_health == 0) {
+	if (m_health == 0) 
+	{
 		m_playerState = enPlayerState_Down;
 	}
-	if (m_isUnderDamage == true) {
+	if (m_isUnderDamage == true) 
+	{
 		m_playerState = enPlayerState_ReceiveDamage;
 	}
+	/*for (int i = 0; i < 3; i++) {
+		if (m_enemys[i]->GetCatchState() == true)
+		{
+			m_playerState = enPlayerState_Catch;
+		}
+	}*/
+	
 }
 
 //ステート管理。
@@ -535,11 +535,6 @@ void Player::ManageState()
 		//魔法攻撃ステートのステート遷移処理。
 		MagicState();
 		break;
-		//回復ステートの時。
-	case enPlayerState_Healing:
-		//回復時ステートのステート遷移処理。
-		HealState();
-		break;
 		//被ダメージ時ステートの時。
 	case enPlayerState_ReceiveDamage:
 		//被ダメージ時ステートのステート遷移処理。
@@ -549,6 +544,9 @@ void Player::ManageState()
 	case enPlayerState_Down:
 		//ダウンステートのステート遷移処理。
 		DownState();
+		break;
+	case enPlayerState_Catch:
+		CatchState();
 		break;
 		//クリアステートの時。
 	//case enPlayerState_Clear:

@@ -22,11 +22,11 @@ void ItemHeart::Update()
 }
 void ItemHeart::HeartGet()
 {
-	//アイテムをゲットした判定
-	if (m_item.GetItem(m_position) == true) {
-		m_player->GetHeartCount();
-		DeleteGO(this);
-	}
+	////アイテムをゲットした判定
+	//if (m_item.GetItem(m_position) == true) {
+	//	m_player->GetHeartCount();
+	//	DeleteGO(this);
+	//}
 }
 void ItemHeart::Rotation()
 {
