@@ -22,6 +22,8 @@ public:
 	/// </summary>
 	void UpdatePositionAndTarget();
 	void CameraPos();
+	void TargetPos();
+
 private:
 	Game* m_game = nullptr;
 	Player* m_player = nullptr;								//プレイヤー。

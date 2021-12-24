@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Game.h"
-#include "ItemHeart.h"
+//#include "ItemHeart.h"
 #include "ItemDash.h"
 #include "ItemMagic.h"
 #include "MagicCollision.h"
 #include "Enemy.h"
+#include "Fade.h"
 
 //CollisionObjectを使用するために、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
@@ -22,19 +23,17 @@ bool Player::Start()
 	animationClips[enAnimationClip_Run].SetLoopFlag(true);
 	animationClips[enAnimationClip_FastRun].Load("Assets/animData/jackie/fastrun.tka");
 	animationClips[enAnimationClip_FastRun].SetLoopFlag(true);
-	animationClips[enAnimationClip_Punch].Load("Assets/animData/jackie/punch.tka");
-	animationClips[enAnimationClip_Punch].SetLoopFlag(false);
 	animationClips[enAnimationClip_Magic].Load("Assets/animData/jackie/magic.tka");
 	animationClips[enAnimationClip_Magic].SetLoopFlag(false);
-	animationClips[enAnimationClip_Heal].Load("Assets/animData/jackie/heal.tka");
-	animationClips[enAnimationClip_Heal].SetLoopFlag(false);
-	animationClips[enAnimationClip_Damage].Load("Assets/animData/jackie/receivedamage.tka");
-	animationClips[enAnimationClip_Damage].SetLoopFlag(false);
+	animationClips[enAnimationClip_Catch].Load("Assets/animData/jackie/catch.tka");
+	animationClips[enAnimationClip_Catch].SetLoopFlag(true);
+	//animationClips[enAnimationClip_Damage].Load("Assets/animData/jackie/receivedamage.tka");
+	//animationClips[enAnimationClip_Damage].SetLoopFlag(false);
 	animationClips[enAnimationClip_Down].Load("Assets/animData/jackie/down.tka");
 	animationClips[enAnimationClip_Down].SetLoopFlag(false);
+
 	//Jackieモデルを読み込む。
 	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ, true);
-	m_spriteRender.Init("Assets/sprite/Gameover.dds",1980.0f,1080.0f);
 	m_modelRender.SetScale({2.0f,2.0f,2.0f});
 	m_modelRender.SetRotation(m_rotation);
 	m_modelRender.SetShadowCasterFlag(true);
@@ -42,17 +41,25 @@ bool Player::Start()
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
 
+	//アニメーションイベント
 	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
 		OnAnimationEvent(clipName, eventName);
 		});
+	//ボーン
 	m_PunchBoneId_R = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
-	m_PunchBoneId_L = m_modelRender.FindBoneID(L"mixamorig1:LeftHand");
+
+	m_downTextRender.Init("Assets/sprite/life/Down_text.dds", 1980.0f, 1080.0f);
+	m_downLife1Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
+	m_downLife2Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
+	m_downLife3Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
 
 	//各クラスのFindGO
 	m_dash = FindGO<ItemDash>("dash");
 	m_magic = FindGO<ItemMagic>("magic");
 	m_game = FindGO<Game>("game");
 	m_enemys = FindGOs<Enemy>("enemy");
+
+	m_fade = FindGO<Fade>("fade");
 
 	return true;
 }
@@ -75,14 +82,10 @@ void Player::Update()
 		Move();
 		//回転処理。
 		Rotation();
-		//当たり判定。
-		Collision();
-		//攻撃処理。
-		Punch();
 		//ステートの遷移処理。
 		ManageState();
-		//体力
-		//Health();
+		//つかみ判定
+		Catch();
 		//クリア判定
 		Clear();
 
@@ -91,7 +94,7 @@ void Player::Update()
 	PlayAnimation();
 
 	wchar_t wcsbuf[256];
-	swprintf_s(wcsbuf, 256, L"%d", m_dashCount);
+	swprintf_s(wcsbuf, 256, L"%.3f",m_fade->GetAlpha());
 	//取得個数
 	//表示するテキストを設定。
 	fontRender.SetText(wcsbuf);
@@ -99,7 +102,7 @@ void Player::Update()
 	fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_heartCount);
+	swprintf_s(wcsbuf, 256, L"%d", m_magicCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender1.SetText(wcsbuf);
@@ -107,33 +110,9 @@ void Player::Update()
 	fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender1.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_magicCount);
 
 	//モデルの更新。
 	m_modelRender.Update();
-}
-
-//攻撃処理
-void Player::MakePunchCollision()
-{
-	//コリジョンオブジェクトを作成する。
-	auto collisionObject = NewGO<CollisionObject>(0);
-
-	Vector3 collisionPosition = m_position;
-	//座標をプレイヤーの少し前に設定する。
-	collisionPosition += m_forward * 50.0f;
-	//ボックス状のコリジョンを作成する。
-	collisionObject->CreateSphere(
-		collisionPosition,										   //座標。
-		Quaternion::Identity,                                      //回転。
-		20.0f												       //大きさ。
-	);
-	collisionObject->SetName("player_punch");
-
-	//「Punch」ボーンのワールド行列を取得する。
-	Matrix matrix = m_modelRender.GetBone(m_PunchBoneId_R)->GetWorldMatrix();
-	//「Punch」ボーンのワールド行列をコリジョンに適用する。
-	collisionObject->SetWorldMatrix(matrix);
 }
 
 //遠投攻撃処理
@@ -150,100 +129,66 @@ void Player::MakeMagicCollision()
 	magicCollision->SetPosition(magicCollisionPos);
 	magicCollision->SetRotation(m_rotation);
 
-
-
-	//auto collisionObject2 = NewGO<CollisionObject>(0);
-
-	//Vector3 collisionPosition2 = m_position;
-	////座標をプレイヤーの少し前に設定する。
-	//collisionPosition2 += m_forward * 50.0f;
-	////座標の位置をあげる
-	//collisionPosition2.y += 70.0f;
-	////球状のコリジョンを作成する。
-	//collisionObject2->CreateSphere(
-	//	collisionPosition2,        //座標。
-	//	Quaternion::Identity,                               //回転。
-	//	20.0f                                               //半径。
-	//);
-	//collisionObject2->SetName("player_magic");
-	//collisionObject2->SetIsEnableAutoDelete(false);
-
-	////移動速度を計算。
-	//collisionPosition2 = m_forward * 15.0f;
-
-
-
 }
 
 //コリジョンの判定
-void Player::Collision()
-{
-	//被ダメージ、ダウン中、クリア時はダメージ判定をしない。
-	if (m_playerState == enPlayerState_ReceiveDamage ||
-		m_playerState == enPlayerState_Down /*||
-		m_playerState == enPlayerState_Clear*/)
-	{
-		return;
-	}
-
-	//エネミーの攻撃用のコリジョンを取得する。
-	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_punch");
-	//コリジョンの配列をfor文で回す。
-	for (auto collision : collisions)
-	{
-		//コリジョンとキャラコンが衝突したら。
-		if (collision->IsHit(m_characterController))
-		{
-			if (m_isUnderDamage == false) {
-				//HPを1減らす。
-				m_health -= 1;										///////////////////////////////////////////////
-				m_isUnderDamage = true;
-			}
-			//もしHPが0より上なら。
-			if (m_health > 0)
-			{
-				//被ダメージステートに遷移する。
-				m_playerState = enPlayerState_ReceiveDamage;
-			}
-			//HPが0なら。
-			else if (m_health == 0)
-			{
-				//ダウンステートに遷移する。
-				m_playerState = enPlayerState_Down;
-			}
-
-			//効果音ここ
-
-			return;
-		}
-	}
-
-}
-
-//攻撃の判定
-void Player::Punch()
-{
-	//攻撃中でないなら、処理をしない。
-	if (m_playerState != enPlayerState_Punch)	{
-		return;
-	}
-
-	//攻撃判定中であれば。
-	if (m_isUnderAttack == true)
-	{
-		//攻撃用のコリジョンを作成する。
-		MakePunchCollision();
-	}
-}
-
-//体力
-//void Player::Health()
+///↓
+//void Player::Collision()
 //{
-//	if (m_playerState == enPlayerState_Down) {
-//		m_health -= 1;
+//	//被ダメージ、ダウン中、クリア時はダメージ判定をしない。
+//	if (m_playerState == enPlayerState_ReceiveDamage ||
+//		m_playerState == enPlayerState_Down /*||
+//		m_playerState == enPlayerState_Clear*/)
+//	{
 //		return;
 //	}
+//
+//	//エネミーの攻撃用のコリジョンを取得する。
+//	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_punch");
+//	//コリジョンの配列をfor文で回す。
+//	for (auto collision : collisions)
+//	{
+//		//コリジョンとキャラコンが衝突したら。
+//		if (collision->IsHit(m_characterController))
+//		{
+//			if (m_isUnderDamage == false) {
+//				//HPを1減らす。
+//				m_health -= 1;										///////////////////////////////////////////////
+//				m_isUnderDamage = true;
+//			}
+//			//もしHPが0より上なら。
+//			if (m_health > 0)
+//			{
+//				//被ダメージステートに遷移する。
+//				m_playerState = enPlayerState_ReceiveDamage;
+//			}
+//			//HPが0なら。
+//			else if (m_health == 0)
+//			{
+//				//ダウンステートに遷移する。
+//				m_playerState = enPlayerState_Down;
+//			}
+//
+//			//効果音ここ
+//
+//			return;
+//		}
+//	}
+//
 //}
+
+//つかみ判定
+void Player::Catch()
+{
+	if (m_notCatchTimer > 0.0f) 
+	{
+		m_notCatchTimer -= GameTime().GetFrameDeltaTime();
+	}
+	else
+	{
+		m_notCatchTimer = 0.0f;
+	}
+}
 
 //移動処理
 void Player::Move()
@@ -371,7 +316,8 @@ void Player::FastRunState()
 	if (m_timer > 0.0f) {
 		m_timer -= GameTime().GetFrameDeltaTime();
 	}
-	else {
+	else 
+	{
 		m_timer = 0.0f;
 	}
 	ProcessState();
@@ -402,64 +348,53 @@ void Player::DownState()
 {
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		m_death = true;
+		m_downScreen = true;
 	}
 }
 
 //ダメージステート
-void Player::DamageState()
-{
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		m_isUnderDamage = false;
-		//ステートを遷移する。
-		ProcessState();
-	}
-}
+//void Player::DamageState()
+//{
+//	if (m_modelRender.IsPlayingAnimation() == false)
+//	{
+//		m_isUnderDamage = false;
+//		//ステートを遷移する。
+//		ProcessState();
+//	}
+//}
 
 //キャッチステート
 void Player::CatchState()
 {
-	for (int i = 0; i < 3; i++) {
-		if (m_enemys[i]->GetCatchState() == false)
-		{
-			ProcessState();
-		}
-	}
+	ProcessState();
 }
 
 //ステート遷移
 void Player::ProcessState()
 {
-	//Yボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
-	{
-		//カウント-1
-		m_magicCount -= 1;
-		//遠投攻撃ステートに移行する。
-		m_playerState = enPlayerState_Magic;
+	if (m_playerState != enPlayerState_Catch) {
+		//Yボタンが押されたら。
+		if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
+		{
+			//カウント-1
+			m_magicCount -= 1;
+			//遠投攻撃ステートに移行する。
+			m_playerState = enPlayerState_Magic;
 
-		return;
+			return;
+		}
+		//Bボタンが押されたら。
+		if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
+		{
+			//カウント-1
+			m_dashCount -= 1;
+			//ダッシュタイムを4秒に設定。
+			m_timer = 4.0f;
+			m_fastRun = true;
+			return;
+		}
 	}
-	//R2ボタンが押されたら。
-	else if (g_pad[0]->IsTrigger(enButtonRB2))
-	{
-		//攻撃ステートに移行する。
-		m_playerState = enPlayerState_Punch;
-		
-		return;
-	}
-	//Bボタンが押されたら。
-	if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
-	{
-		//カウント-1
-		m_dashCount -= 1;
-		//ダッシュタイムを4秒に設定。
-		m_timer = 4.0f;
-		m_fastRun = true;
-		return;
-	}
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (m_enemys[i]->GetCatchState() == true)
 		{
 			m_playerState = enPlayerState_Catch;
@@ -488,20 +423,11 @@ void Player::ProcessState()
 		//ステートを待機にする。
 		m_playerState = enPlayerState_Idle;
 	}
-	if (m_health == 0) 
+	//ダウンしたら。
+	if (m_death == true) 
 	{
 		m_playerState = enPlayerState_Down;
 	}
-	if (m_isUnderDamage == true) 
-	{
-		m_playerState = enPlayerState_ReceiveDamage;
-	}
-	/*for (int i = 0; i < 3; i++) {
-		if (m_enemys[i]->GetCatchState() == true)
-		{
-			m_playerState = enPlayerState_Catch;
-		}
-	}*/
 	
 }
 
@@ -536,10 +462,10 @@ void Player::ManageState()
 		MagicState();
 		break;
 		//被ダメージ時ステートの時。
-	case enPlayerState_ReceiveDamage:
-		//被ダメージ時ステートのステート遷移処理。
-		DamageState();
-		break;
+	//case enPlayerState_ReceiveDamage:
+	//	//被ダメージ時ステートのステート遷移処理。
+	//	DamageState();
+	//	break;
 		//ダウンステートの時。
 	case enPlayerState_Down:
 		//ダウンステートのステート遷移処理。
@@ -561,42 +487,37 @@ void Player::PlayAnimation()
 {
 	//switch文。
 	switch (m_playerState) {
-		//プレイヤーステートが0(Idle)だったら。
+	//プレイヤーステートが0(Idle)だったら。
 	case enPlayerState_Idle:
 		//Idle
 		m_modelRender.PlayAnimation(enAnimationClip_Idle,0.3f);
 		break;
-		//プレイヤーステートが1(Run)だったら。
+	//プレイヤーステートが1(Run)だったら。
 	case enPlayerState_Run:
 		//Run
 		m_modelRender.PlayAnimation(enAnimationClip_Run, 0.3f);
 		break;
-		//プレイヤーステートが2(FastRun)だったら。
+	//プレイヤーステートが2(FastRun)だったら。
 	case enPlayerState_FastRun:
 		//FastRun
 		m_modelRender.PlayAnimation(enAnimationClip_FastRun, 0.3f);
 		break;
-		//プレイヤーステートが3(Punch)だったら。
-	case enPlayerState_Punch:
-		//Punch
-		m_modelRender.PlayAnimation(enAnimationClip_Punch, 0.3f);
-		break;
-		//プレイヤーステートが4(Magic)だったら。
+	//プレイヤーステートが4(Magic)だったら。
 	case enPlayerState_Magic:
 		//Magic
 		m_modelRender.PlayAnimation(enAnimationClip_Magic, 0.3f);
 		break;
-		//プレイヤーステートが5(Heal)だったら。
-	case enPlayerState_Healing:
-		//Healing
-		m_modelRender.PlayAnimation(enAnimationClip_Heal, 0.3f);
+	//プレイヤーステートが5(Heal)だったら。
+	case enPlayerState_Catch:
+		//Catch
+		m_modelRender.PlayAnimation(enAnimationClip_Catch, 0.3f);
 		break;
-	case enPlayerState_ReceiveDamage:
-		//Healing
-		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
-		break;
+	//case enPlayerState_ReceiveDamage:
+	//	//Damage
+	//	m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
+	//	break;
 	case enPlayerState_Down:
-		//Healing
+		//Down
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
 		break;
 	default:
@@ -607,20 +528,8 @@ void Player::PlayAnimation()
 //アニメーションイベント関数
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 {
-	//キーの名前が「attack_start」の時。
-	if (wcscmp(eventName, L"attack_start") == 0) {
-		//攻撃中にする。
-		m_isUnderAttack = true;
-		//エフェクトを発生させる。
-		//MakeSlashingEffect();
-	}
-	//キーの名前が「attack_end」の時。
-	else if (wcscmp(eventName, L"attack_end") == 0) {
-		//攻撃を終わる。
-		m_isUnderAttack = false;
-	}
 	//キーの名前が「magic_attack」の時。
-	else if (wcscmp(eventName, L"magic_attack") == 0) {
+	if (wcscmp(eventName, L"magic_attack") == 0) {
 		//magicを作成する。
 	MakeMagicCollision();
 	}
@@ -635,8 +544,8 @@ void Player::Render(RenderContext& rc)
 	fontRender1.Draw(rc);
 	fontRender2.Draw(rc);
 	fontRender3.Draw(rc);
-	if (m_death == true) {
-		m_spriteRender.Draw(rc);
+	if (m_downScreen == true) {
+		m_downTextRender.Draw(rc);
 	}
 }
 

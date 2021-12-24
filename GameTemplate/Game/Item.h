@@ -11,14 +11,6 @@ public:
 	Item();
 	~Item() {}
 
-	//ƒAƒCƒeƒ€‚Ì”Ô†æ“¾
-	//void SetNumber(const int& num)
-	//{
-	//	itemNum = num;
-	//}
-
-	/*void SpawnItem();*/
-
 	bool GetItem(Vector3 position);
 
 	void PlayEffectandSE(Vector3 position);

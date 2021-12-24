@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "Item.h"
 #include "Player.h"
-#include "ItemHeart.h"
+//#include "ItemHeart.h"
 #include "ItemMagic.h"
 #include "ItemDash.h"
 
@@ -15,19 +15,6 @@ Item::Item()
 	EffectEngine::GetInstance()->ResistEffect(0, u"Assets/effect/kirakira_big.efk");
 	m_player = FindGO<Player>("player");
 }
-
-//void Item::SpawnItem()
-//{
-//	for (int i = 1; i++; i <= 10) {
-//		ran = rand() % 2;
-//		if (itemNum == i)
-//		{
-//			if (ran = 0) {
-//
-//			}
-//		}
-//	}
-//}
 
 bool Item::GetItem(Vector3 position)
 {	

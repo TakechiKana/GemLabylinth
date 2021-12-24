@@ -7,6 +7,7 @@ class ItemDash;
 class ItemMagic;
 class Game;
 class Enemy;
+class Fade;
 
  
 //プレイヤークラス。
@@ -21,7 +22,7 @@ public:
 		enPlayerState_Punch,				//攻撃
 		enPlayerState_Magic,				//遠投攻撃。
 		enPlayerState_Healing,				//回復。
-		enPlayerState_ReceiveDamage,		//ダメ―ジ受けた。
+		//enPlayerState_ReceiveDamage,		//ダメ―ジ受けた。
 		enPlayerState_Down,					//HPが0。
 		enPlayerState_Catch,				//つかまった。
 		enPlayerState_Clear					//クリアー。
@@ -31,47 +32,26 @@ public:
 	Player();
 	~Player();
 
-	float GetHealth()
+	//ダメージ処理
+	void RaceiveDamage()
 	{
-		return m_health;
+		m_death = true;
 	}
 
-	bool GetState()const
-	{
-		return m_fastRun;
-	}
-
-	//ダッシュタイマー情報を渡す関数
-	float GetDashTimer() const
-	{
-		return m_timer;
-	}
-	//ダッシュカウント
+	//ダッシュアイテムを拾ったら
 	void GetDashCount()
 	{
 		m_dashCount += 1;
 	}
-	//マジックカウント
+	//マジックアイテムを拾ったら
 	void GetMagicCount()
 	{
 		m_magicCount += 1;
 	}
-	//ジェムカウント
+	//ジェムを拾ったら
 	void GetGemCount()
 	{
 		m_gemCount += 1;
-	}
-
-	//ステートを渡す
-	const EnPlayerState GetState()
-	{
-		return m_playerState;
-	}
-
-	//ステートを設定する
-	EnPlayerState SetState(EnPlayerState state)
-	{
-		m_playerState = state;
 	}
 
 	//ポジションを渡す関数
@@ -79,49 +59,52 @@ public:
 	{
 		return m_position;
 	}
-	//ポジションをもらう
+
+	//ポジションをクラス外で設定
 	void SetPosition(const Vector3& position)
 	{
 		m_position = position;
 	}
+	//再スタート地点の設定
+	void SetRestartPosition(const Vector3& position)
+	{
+		m_restartPos = position;
+	}
 
-	//回転設定
+	//回転をクラス外で設定
 	void SetRotation(const Quaternion& rotation)
 	{
 		m_rotation = rotation;
 	}
 
-	//移動速度を渡す関数
-	Vector3& SetMoveSpeed(const Vector3& movespeed)
-	{
-		m_moveSpeed = movespeed;
-	}
-	//
+	//playerの前方向
 	const Vector3 GetForward() const
 	{
 		return m_forward;
 	}
+	////クリア
+	bool Clear() {
+		if (m_gemCount == 178 && m_clear == true)
+		{
+			return true;
+		}
+	}
+	
+	bool IsEnableMove() const
+	{
+		return m_playerState != enPlayerState_Healing &&
+			m_playerState != enPlayerState_Magic &&
+			m_playerState != enPlayerState_Punch &&
+			m_playerState != enPlayerState_Down &&
+			m_playerState != enPlayerState_Catch &&
+			m_playerState != enPlayerState_Clear;
+	}
 
-	//更新処理。
-	void Update();
-	//描画処理。
-	void Render(RenderContext& rc);
-	//パンチ
-	void Punch();
-	//パンチコリジョン
-	void MakePunchCollision();
-	//遠投攻撃コリジョン
-	void MakeMagicCollision();
-	//コリジョンの判定
-	void Collision();
-	//体力、ダメージ、回復
-	//void Health();
+private:
+	//つかみ判定
+	void Catch();
 	//アニメーションイベント用関数
 	void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
-	//移動処理。
-	void Move();
-	//回転処理。
-	void Rotation();
 	//ステート管理。
 	void ManageState();
 	//ステート遷移
@@ -136,84 +119,83 @@ public:
 	void PunchState();
 	//遠投攻撃ステート
 	void MagicState();
-	////回復ステート
-	//void HealState();
 	//ダメージステート
-	void DamageState();
+	//void DamageState();
 	//ダウンステートの時
 	void DownState();
 	//キャッチステート
 	void CatchState();
-
-	////クリア
-	bool Clear() {
-		if (m_gemCount == 170)
-		{
-			return true;
-		}
-	}
-
+	//更新処理。
+	void Update();
+	//描画処理。
+	void Render(RenderContext& rc);
+	//遠投攻撃コリジョン
+	void MakeMagicCollision();
+	//移動処理。
+	void Move();
+	//回転処理。
+	void Rotation();
 	//アニメーションの再生。
 	void PlayAnimation();
-	
-	bool IsEnableMove() const
-	{
-		return m_playerState != enPlayerState_Healing &&
-			m_playerState != enPlayerState_Magic &&
-			m_playerState != enPlayerState_ReceiveDamage &&
-			m_playerState != enPlayerState_Punch &&
-			m_playerState != enPlayerState_Down &&
-			m_playerState != enPlayerState_Catch &&
-			m_playerState != enPlayerState_Clear;
-	}
+	//ダウン時の残機表示
+	//void LifeRender(RenderContext& rc);
 
-private:
+
 	//メンバ変数。
-	ModelRender m_modelRender;	//モデルレンダ―。
-	Vector3 m_position;			//座標。
-	enum EnAnimationClip {		//アニメーション。
-		enAnimationClip_Idle,
-		enAnimationClip_Run,
-		enAnimationClip_FastRun,
-		enAnimationClip_Punch,
-		enAnimationClip_Magic,
-		enAnimationClip_Heal,
-		enAnimationClip_Damage,
-		enAnimationClip_Down,
-		enAnimationClip_Num,
+	enum EnAnimationClip //アニメーション。
+	{		
+		enAnimationClip_Idle,		//待機アニメーション。
+		enAnimationClip_Run,		//走りアニメーション。
+		enAnimationClip_FastRun,	//ダッシュアイテム時の走りアニメーション。
+		enAnimationClip_Magic,		//マジックアニメーション。
+		enAnimationClip_Catch,		//つかまれたアニメーション。
+		//enAnimationClip_Damage,		//ダメージアニメーション。
+		enAnimationClip_Down,		//ダウンアニメーション。
+		enAnimationClip_Num,		//アニメーション数。
 	};
-	AnimationClip animationClips[enAnimationClip_Num];		//アニメーションクリップ。
-	CharacterController m_characterController;				//キャラクターコントローラー。
+	
 	Vector3 m_moveSpeed;									//移動速度。
 	Vector3 m_forward;										//前方方向ベクトル
+	Vector3 m_position;										//座標。
+	Vector3 m_restartPos;									//再スタート地点
 	Quaternion m_rotation;									//クォータニオン。
 	EnPlayerState m_playerState = enPlayerState_Idle;		//プレイヤーステート
+	ModelRender m_modelRender;								//モデルレンダ―。
+	AnimationClip animationClips[enAnimationClip_Num];		//アニメーションクリップ。
+	CharacterController m_characterController;				//キャラクターコントローラー。
+
 	int m_health = 3;										//HP
 
 	float m_timer = 0.0f;									//ダッシュタイム
 	float m_timer1 = 0.0f;									//マジック削除まで
+	float m_notCatchTimer = 0.0f;							//無敵時間
 
-	bool m_downState = false;								//ダウンの判定
-	bool m_isUnderAttack = false;							//攻撃中の判定
 	bool m_fastRun = false;									//速度アップ中の判定
-	int m_PunchBoneId_R = -1;								//右ボーンID
-	int m_PunchBoneId_L = -1;								//左ボーンID
 
-	int m_heartCount = 0;
-	int m_dashCount = 0;
-	int m_magicCount = 0;
-	int m_gemCount = 0;
+	int m_dashCount = 0;									//ダッシュアイテムカウント
+	int m_magicCount = 0;									//マジックアイテムカウント
+	int m_gemCount = 0;										//ジェムカウント
 
-	bool m_death = false;
-	bool m_isUnderDamage = false;
+	bool m_death = false;									//ダウンしたか？
+	bool m_downScreen = false;							//ダメージを喰らっているか？
+	bool m_clear = false;
+
+	int	m_PunchBoneId_R= -1;									//BoneID
 
 	//各クラスの変数
 	ItemDash* m_dash;
 	Game* m_game;
 	ItemMagic* m_magic;
+
+	Fade* m_fade;
+
 	std::vector<Enemy*>  m_enemys;
 
-	SpriteRender m_spriteRender;
+	SpriteRender m_downTextRender;		//ダウン時テキスト
+	SpriteRender m_downLife1Render;		//ダウン時残機１
+	SpriteRender m_downLife2Render;		//ダウン時残機２
+	SpriteRender m_downLife3Render;		//ダウン時残機３
+
 
 	FontRender fontRender;
 	FontRender fontRender1; 

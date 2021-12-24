@@ -18,7 +18,6 @@ public:
 		enEnemyState_Phose,					//殴り後の一時停止
 		enEnemyState_Magic,					//遠投攻撃。
 		enEnemyState_ReceiveDamage,			//被ダメージ。
-		enEnemyState_Down,					//ダウン
 	};
 
 public:
@@ -49,7 +48,6 @@ public:
 	{
 		return m_catch;
 	}
-
 private:
 	//移動処理
 	void Move();
@@ -57,16 +55,12 @@ private:
 	void Chase();
 	//回転処理
 	void Rotation();
-	//攻撃処理
-	void Attack();
 	//当たり判定
 	void Collision();
+	//ポーズ中の処理
+	void Phose();
 	//プレイヤー探索
 	const bool SearchPlayer() const;
-	//パンチの当たり判定コリジョン生成
-	void MakePunchCollision();
-	//ステージ2以降実装するなら使用予定
-	//void MakeMagic();
 	//アニメーション再生
 	void PlayAnimation();
 	//アニメーションイベント用関数
@@ -87,22 +81,10 @@ private:
 	void PunchState();
 	/// 殴り後一時停止ステートの遷移処理。
 	void PhoseState();
-	/// 魔法攻撃ステートの遷移処理。
-	//void MagicState();
 	/// 被ダメージステートの遷移処理。
 	void DamageState();
-	/// ダウンステートの遷移処理。
-	void DownState();
 	//攻撃できる距離の判定
-	const bool IsCanPunch() const;
-	//つかまえた？
-	void Catch()
-	{
-		if (IsCanPunch() == true)
-		{
-			m_catch = true;
-		}
-	}
+	void IsCanPunch();
 
 	enum EnAnimationClip {						//アニメーション。
 		enAnimationClip_Idle,					//待機アニメーション。
@@ -111,7 +93,6 @@ private:
 		enAnimationClip_Punch,					//攻撃アニメーション。
 		enAnimationClip_Phose,					//攻撃後一時停止アニメーション。
 		enAnimationClip_Damage,					//被ダメージアニメーション。
-		enAnimationClip_Down,					//ダウンアニメーション。
 		enAnimationClip_Num,					//アニメーションの数。
 	};
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
@@ -125,17 +106,18 @@ private:
 	Vector3						m_scale = Vector3::One;						//大きさ。
 	CharacterController			m_charaCon;									//キャラコン。
 	EnEnemyState				m_enemyState = enEnemyState_Idle;			//エネミーステート。
+
+	//ナビメッシュ
 	TknFile m_tknFile;
 	nsAI::NaviMesh m_nvmMesh;
 	nsAI::Path m_path;
 	nsAI::PathFinding m_pathFiding;
-	bool						m_isUnderAttack = false;					//攻撃中か？
+	////
+
 	bool						m_isUnderDamage = false;					//ダメージを受けたか
 	bool						m_catch = false;							//プレイヤーを捕まえた？
-	//int							m_hp = 10;									//HP。
+	float						m_catchTimer = 0.0f;
 	Player*						m_player = nullptr;							//プレイヤー。
-	float						m_chaseTimer = 0.0f;						//追跡タイマー。
-	float						m_idleTimer = 0.0f;
 	int							m_PunchBoneId = -1;							//ぼーんID
 	Vector3						m_velocity = Vector3::Zero;					//移動方向
 };

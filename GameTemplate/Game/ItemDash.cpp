@@ -23,6 +23,7 @@ void ItemDash::DashGet()
 	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
 	if (m_item.GetItem(ServePosition()) == true) {
+
 		m_player->GetDashCount();
 		DeleteGO(this);
 	}

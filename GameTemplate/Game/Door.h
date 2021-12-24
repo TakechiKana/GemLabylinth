@@ -6,7 +6,6 @@ public:
 	~Door() {};
 
 private:
-	Vector3
 
 };
 

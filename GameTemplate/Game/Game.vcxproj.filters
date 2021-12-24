@@ -16,13 +16,14 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="Item.cpp" />
-    <ClCompile Include="ItemHeart.cpp" />
     <ClCompile Include="ItemMagic.cpp" />
     <ClCompile Include="ItemDash.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="MagicCollision.cpp" />
     <ClCompile Include="Gem.cpp" />
     <ClCompile Include="Door.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="Fade.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -34,12 +35,13 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="Item.h" />
-    <ClInclude Include="ItemHeart.h" />
     <ClInclude Include="ItemMagic.h" />
     <ClInclude Include="ItemDash.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="MagicCollision.h" />
     <ClInclude Include="Gem.h" />
     <ClInclude Include="Door.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="Fade.h" />
   </ItemGroup>
 </Project>

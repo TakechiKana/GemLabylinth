@@ -6,7 +6,7 @@ BackGround::BackGround()
 	//コメントアウトする。
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
-	m_modelRender.Init("Assets/modelData/stage/stage2_.tkm");
+	m_modelRender.Init("Assets/modelData/stage/stage2.tkm");
 	m_modelRender.SetShadowCasterFlag(false);
 	m_modelRender.Update();
 	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
