@@ -126,7 +126,7 @@ private:
 	float m_alpha = 0.0f;
 	int m_pro_page = 1;
 	bool m_pageFlag = false;
-	//bool m_isPrologue = false;
+	bool m_isWaitFadeout = false;
 
 	SpriteRender m_Prologue1;
 	SpriteRender m_Prologue2;

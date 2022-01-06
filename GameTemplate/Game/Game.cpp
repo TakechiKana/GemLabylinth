@@ -119,52 +119,7 @@ bool Game::Start()
 
 void Game::Update()
 {
-	if (m_gameState == enGameState_Start)
-	{
-		if (g_pad[0]->IsTrigger(enButtonA))
-		{
-			//m_isPrologue = true;
-			m_fade->StartFadeOut();
-			if (m_fade->IsFade() == true && m_fadeTimer <= 0.0f)
-			{
-				m_fadeTimer = 2.0f;
-				m_cameraFlag = true;
-				m_gameState = enGameState_Game;
-				m_fadeTimer -= GameTime().GetFrameDeltaTime();
-				if (m_fadeTimer <= 0.0f) 
-				{
-					m_fadeTimer = 0.0f;
-					m_fade->StartFadeIn();
-				}
-			}
-		}
-	}
-	else if (m_gameState == enGameState_Prologue)
-	{
-		Prologue();
-		/*if (m_pro_page == 6) {
-			m_pro_page = 0;
-			m_gameState = enGameState_Game;
-			m_cameraFlag = true;
-		}*/
-	}
-	else if (m_gameState == enGameState_Game)
-	{
-		if (m_player->Clear() == true)
-		{
-			m_gameState = enGameState_Event;
-		}
-	}
-	else if (m_gameState == enGameState_Event)
-	{
-		m_gameState = enGameState_Score;
-	}
-	else if (m_gameState == enGameState_Score)
-	{
-		m_gameState = enGameState_Start;
-	}
-
-	//ProcessState();
+	ProcessState();
 
 	AlphaValue();
 	m_Prologue1.Update();
@@ -182,8 +137,8 @@ void Game::ProcessState()
 	{
 		if (g_pad[0]->IsTrigger(enButtonA))
 		{
-			
-			m_gameState = enGameState_Prologue;
+			m_gameState = enGameState_Game;
+			m_cameraFlag = true;
 		}
 	}
 	else if (m_gameState == enGameState_Prologue)
@@ -210,6 +165,15 @@ void Game::ProcessState()
 	{
 		m_gameState = enGameState_Start;
 	}
+	/*if (m_fadeTimer > 0.0f)
+	{
+		m_fadeTimer -= GameTime().GetFrameDeltaTime();
+		if(m_fadeTimer <= 0.0f)
+		{
+			m_fadeTimer = 0.0f;
+			m_fade->StartFadeIn();
+		}
+	}*/
 }
 
 void Game::Prologue()
@@ -235,6 +199,7 @@ void Game::Prologue()
 		break;
 	}
 }
+
 
 void Game::Render(RenderContext& rc)
 {

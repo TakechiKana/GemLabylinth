@@ -48,6 +48,7 @@ bool Player::Start()
 	//ボーン
 	m_PunchBoneId_R = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
 
+	m_gameOverRender.Init("Assets/sprite/kari/Gameover.dds", 1980.0f, 1080.0f);
 	m_downTextRender.Init("Assets/sprite/life/Down_text.dds", 1980.0f, 1080.0f);
 	m_downLife1Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
 	m_downLife2Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
@@ -94,7 +95,7 @@ void Player::Update()
 	PlayAnimation();
 
 	wchar_t wcsbuf[256];
-	swprintf_s(wcsbuf, 256, L"%.3f",m_fade->GetAlpha());
+	swprintf_s(wcsbuf, 256, L"%d",m_gemCount);
 	//取得個数
 	//表示するテキストを設定。
 	fontRender.SetText(wcsbuf);
@@ -102,7 +103,7 @@ void Player::Update()
 	fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%d", m_magicCount);
+	swprintf_s(wcsbuf, 256, L"%.3f", m_game->GetTimer());
 	//取得個数
 	//表示するテキストを設定。
 	fontRender1.SetText(wcsbuf);
@@ -348,7 +349,19 @@ void Player::DownState()
 {
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		m_downScreen = true;
+		if (m_downCount == 0)
+		{
+			m_gameOver = true;
+		}
+		else {
+			m_downScreen = true;
+			if (g_pad[0]->IsTrigger(enButtonA))
+			{
+				m_death = false;
+				m_downScreen = false;
+				m_playerState = enPlayerState_Idle;
+			}
+		}
 	}
 }
 
@@ -426,6 +439,7 @@ void Player::ProcessState()
 	//ダウンしたら。
 	if (m_death == true) 
 	{
+		m_downCount -= 1;
 		m_playerState = enPlayerState_Down;
 	}
 	
@@ -546,6 +560,10 @@ void Player::Render(RenderContext& rc)
 	fontRender3.Draw(rc);
 	if (m_downScreen == true) {
 		m_downTextRender.Draw(rc);
+	}
+	if (m_gameOver == true)
+	{
+		m_gameOverRender.Draw(rc);
 	}
 }
 

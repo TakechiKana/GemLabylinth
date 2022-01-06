@@ -14,6 +14,7 @@ public:
 		m_state = enState_FadeIn;
 	}
 
+
 	//フェードアウト
 	void StartFadeOut()
 	{
@@ -23,11 +24,7 @@ public:
 	//フェード中？
 	const bool IsFade() const
 	{
-		if (m_state == enState_Idle)
-		{
-			return true;
-		}
-		//return m_state != enState_Idle;
+		return m_state != enState_Idle;
 	}
 
 	//α値
@@ -40,8 +37,11 @@ private:
 	enum EnState {
 		enState_FadeIn,			//フェードイン中。	
 		enState_FadeOut,		//フェードアウト中。
-		enState_Idle,			//アイドル中。
+		enState_Idle			//アイドル中。
 	};
+
+	void AutoFade();
+
 	//状態
 	EnState m_state = enState_Idle;
 	//画像

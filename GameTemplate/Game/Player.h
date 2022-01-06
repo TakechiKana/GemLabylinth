@@ -149,7 +149,7 @@ private:
 		enAnimationClip_FastRun,	//ダッシュアイテム時の走りアニメーション。
 		enAnimationClip_Magic,		//マジックアニメーション。
 		enAnimationClip_Catch,		//つかまれたアニメーション。
-		//enAnimationClip_Damage,		//ダメージアニメーション。
+		//enAnimationClip_Damage,	//ダメージアニメーション。
 		enAnimationClip_Down,		//ダウンアニメーション。
 		enAnimationClip_Num,		//アニメーション数。
 	};
@@ -175,10 +175,12 @@ private:
 	int m_dashCount = 0;									//ダッシュアイテムカウント
 	int m_magicCount = 0;									//マジックアイテムカウント
 	int m_gemCount = 0;										//ジェムカウント
+	int m_downCount = 3;									//ダウン回数
 
 	bool m_death = false;									//ダウンしたか？
-	bool m_downScreen = false;							//ダメージを喰らっているか？
+	bool m_downScreen = false;								//ダウン画面
 	bool m_clear = false;
+	bool m_gameOver = false;
 
 	int	m_PunchBoneId_R= -1;									//BoneID
 
@@ -195,6 +197,7 @@ private:
 	SpriteRender m_downLife1Render;		//ダウン時残機１
 	SpriteRender m_downLife2Render;		//ダウン時残機２
 	SpriteRender m_downLife3Render;		//ダウン時残機３
+	SpriteRender m_gameOverRender;		//GameOver
 
 
 	FontRender fontRender;

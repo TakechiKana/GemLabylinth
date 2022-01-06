@@ -48,6 +48,10 @@ public:
 	{
 		return m_catch;
 	}
+	const float GetCatchTimer() const
+	{
+		return m_catchTimer;
+	}
 private:
 	//ˆÚ“®ˆ—
 	void Move();

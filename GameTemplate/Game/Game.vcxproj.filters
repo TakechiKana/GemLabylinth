@@ -22,8 +22,8 @@
     <ClCompile Include="MagicCollision.cpp" />
     <ClCompile Include="Gem.cpp" />
     <ClCompile Include="Door.cpp" />
-    <ClCompile Include="Event.cpp" />
     <ClCompile Include="Fade.cpp" />
+    <ClCompile Include="Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -41,7 +41,7 @@
     <ClInclude Include="MagicCollision.h" />
     <ClInclude Include="Gem.h" />
     <ClInclude Include="Door.h" />
-    <ClInclude Include="Event.h" />
     <ClInclude Include="Fade.h" />
+    <ClInclude Include="Title.h" />
   </ItemGroup>
 </Project>

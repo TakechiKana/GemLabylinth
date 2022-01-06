@@ -283,7 +283,7 @@ void Enemy::PhoseState()
 	if (m_catchTimer < 0.0f)
 	{
 		m_catchTimer = 0.0f;
-		ProcessState();
+		m_enemyState = enEnemyState_Idle;
 	}
 }
 //ƒ_ƒ[ƒWŠÖ”
