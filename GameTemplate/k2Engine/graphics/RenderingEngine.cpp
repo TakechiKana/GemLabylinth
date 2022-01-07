@@ -3,22 +3,29 @@
 
 namespace nsK2Engine {
 
+    RenderingEngine::~RenderingEngine()
+    {
+        g_sceneLight = nullptr;
+    }
     void RenderingEngine::Init(bool isSoftShadow)
     {
         m_isSoftShadow = isSoftShadow;
 
         InitZPrepassRenderTarget();
         InitMainRenderTarget();
+        m_volumeLightRender.Init();
         InitGBuffer();
         InitMainRTSnapshotRenderTarget();
         InitCopyMainRenderTargetToFrameBufferSprite();
         InitShadowMapRender();
         InitDeferredLighting();
         Init2DRenderTarget();
+        
         m_lightCulling.Init(
             m_zprepassRenderTarget.GetRenderTargetTexture(),
             m_diferredLightingSprite.GetExpandConstantBufferGPU(),
-            m_pointLightNoListInTileUAV
+            m_pointLightNoListInTileUAV,
+            m_spotLightNoListInTileUAV
         );
         m_postEffect.Init(
             m_mainRenderTarget,
@@ -55,8 +62,9 @@ namespace nsK2Engine {
         }
         spriteInitData.m_expandConstantBuffer = &m_deferredLightingCB;
         spriteInitData.m_expandConstantBufferSize = sizeof(m_deferredLightingCB);
-        spriteInitData.m_expandShaderResoruceView = &m_pointLightNoListInTileUAV;
-
+        spriteInitData.m_expandShaderResoruceView[0] = &m_pointLightNoListInTileUAV;
+        spriteInitData.m_expandShaderResoruceView[1] = &m_spotLightNoListInTileUAV;
+        
         for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
         {
             for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
@@ -84,7 +92,8 @@ namespace nsK2Engine {
         m_lightCulling.Init(
             m_zprepassRenderTarget.GetRenderTargetTexture(),
             m_diferredLightingSprite.GetExpandConstantBufferGPU(),
-            m_pointLightNoListInTileUAV
+            m_pointLightNoListInTileUAV,
+            m_spotLightNoListInTileUAV
         );
         // イベントリスナーにIBLデータに変更があったことを通知する。
         for (auto& listener : m_eventListeners) {
@@ -131,8 +140,8 @@ namespace nsK2Engine {
             g_graphicsEngine->GetFrameBufferHeight(),
             1,
             1,
-            DXGI_FORMAT_R16G16B16A16_FLOAT,
-            DXGI_FORMAT_UNKNOWN
+            g_mainRenderTargetFormat.colorBufferFormat,
+            g_mainRenderTargetFormat.depthBufferFormat
         );
     }
     void RenderingEngine::InitGBuffer()
@@ -141,13 +150,15 @@ namespace nsK2Engine {
         int frameBuffer_h = g_graphicsEngine->GetFrameBufferHeight();
 
         // アルベドカラーを出力用のレンダリングターゲットを初期化する
+        float clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
         m_gBuffer[enGBufferAlbedoDepth].Create(
             frameBuffer_w,
             frameBuffer_h,
             1,
             1,
             DXGI_FORMAT_R32G32B32A32_FLOAT,
-            DXGI_FORMAT_D32_FLOAT
+            DXGI_FORMAT_D32_FLOAT,
+            clearColor
         );
 
         // 法線出力用のレンダリングターゲットを初期化する
@@ -206,8 +217,14 @@ namespace nsK2Engine {
         m_pointLightNoListInTileUAV.Init(
             sizeof(int),
             MAX_POINT_LIGHT * NUM_TILE,
-            nullptr);
-
+            nullptr
+        );
+        // タイルごとのスポットライトの番号を記憶するリストのUAVを作成。
+        m_spotLightNoListInTileUAV.Init(
+            sizeof(int),
+            MAX_SPOT_LIGHT * NUM_TILE,
+            nullptr
+        );
         // ポストエフェクト的にディファードライティングを行うためのスプライトを初期化
         InitDefferedLighting_Sprite();
     }
@@ -216,11 +233,11 @@ namespace nsK2Engine {
         float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
 
         m_2DRenderTarget.Create(
-            1920,
-            1080,
+            UI_SPACE_WIDTH,
+            UI_SPACE_HEIGHT,
             1,
             1,
-            DXGI_FORMAT_R16G16B16A16_FLOAT,
+            DXGI_FORMAT_R8G8B8A8_UNORM,
             DXGI_FORMAT_UNKNOWN,
             clearColor
         );
@@ -293,8 +310,8 @@ namespace nsK2Engine {
 
         // ディファードライティング
         DeferredLighting(rc);
-
-        // ディファードライティングが終わった時点でスナップショットを撮影する
+            
+        // 不透明オブジェクトの描画が終わった時点でスナップショットを撮影する
         SnapshotMainRenderTarget(rc, EnMainRTSnapshot::enDrawnOpacity);
 
         // フォワードレンダリング
@@ -318,6 +335,7 @@ namespace nsK2Engine {
         if (m_sceneGeometryData.IsBuildshadowCasterGeometryData() == false) {
             return;
         }
+        BeginGPUEvent("RenderToShadowMap");
         int ligNo = 0;
         for (auto& shadowMapRender : m_shadowMapRenders)
         {
@@ -333,10 +351,12 @@ namespace nsK2Engine {
             }
             ligNo++;
         }
+        EndGPUEvent();
     }
 
     void RenderingEngine::ZPrepass(RenderContext& rc)
     {
+        BeginGPUEvent("ZPrepass");
         // まず、レンダリングターゲットとして設定できるようになるまで待つ
         rc.WaitUntilToPossibleSetRenderTarget(m_zprepassRenderTarget);
 
@@ -351,9 +371,11 @@ namespace nsK2Engine {
         }
 
         rc.WaitUntilFinishDrawingToRenderTarget(m_zprepassRenderTarget);
+        EndGPUEvent();
     }
     void RenderingEngine::Render2D(RenderContext& rc)
     {
+        BeginGPUEvent("Render2D");
         // レンダリングターゲットとして利用できるまで待つ。
         //PRESENTからRENDERTARGETへ。
         rc.WaitUntilToPossibleSetRenderTarget(m_2DRenderTarget);
@@ -382,17 +404,28 @@ namespace nsK2Engine {
 
         //RENDERTARGETからPRESENTへ。
         rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
+
+        EndGPUEvent();
     }
     void RenderingEngine::ForwardRendering(RenderContext& rc)
     {
+        BeginGPUEvent("ForwardRendering");
         rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);
         rc.SetRenderTarget(
             m_mainRenderTarget.GetRTVCpuDescriptorHandle(),
             m_gBuffer[enGBufferAlbedoDepth].GetDSVCpuDescriptorHandle()
         );
+        
         for (auto& renderObj : m_renderObjects) {
             renderObj->OnForwardRender(rc);
         }
+
+        // ボリュームライトを描画。
+        m_volumeLightRender.Render(
+            rc, 
+            m_mainRenderTarget.GetRTVCpuDescriptorHandle(),
+            m_gBuffer[enGBufferAlbedoDepth].GetDSVCpuDescriptorHandle()
+        );
 
         // 続いて半透明オブジェクトを描画。
         for (auto& renderObj : m_renderObjects) {
@@ -401,9 +434,12 @@ namespace nsK2Engine {
 
         // メインレンダリングターゲットへの書き込み終了待ち
         rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
+        
+        EndGPUEvent();
     }
     void RenderingEngine::RenderToGBuffer(RenderContext& rc)
     {
+        BeginGPUEvent("RenderToGBuffer");
         // レンダリングターゲットをG-Bufferに変更
         RenderTarget* rts[enGBufferNum] = {
             &m_gBuffer[enGBufferAlbedoDepth],         // 0番目のレンダリングターゲット
@@ -426,19 +462,26 @@ namespace nsK2Engine {
 
         // レンダリングターゲットへの書き込み待ち
         rc.WaitUntilFinishDrawingToRenderTargets(ARRAYSIZE(rts), rts);
+        EndGPUEvent();
     }
 
     void RenderingEngine::SnapshotMainRenderTarget(RenderContext& rc, EnMainRTSnapshot enSnapshot)
     {
+        BeginGPUEvent("SnapshotMainRenderTarget");
+
         // メインレンダリングターゲットの内容をスナップショット
         rc.WaitUntilToPossibleSetRenderTarget(m_mainRTSnapshots[(int)enSnapshot]);
         rc.SetRenderTargetAndViewport(m_mainRTSnapshots[(int)enSnapshot]);
         m_copyMainRtToFrameBufferSprite.Draw(rc);
         rc.WaitUntilFinishDrawingToRenderTarget(m_mainRTSnapshots[(int)enSnapshot]);
+
+        EndGPUEvent();
     }
 
     void RenderingEngine::DeferredLighting(RenderContext& rc)
     {
+        BeginGPUEvent("DeferredLighting");
+
         // ディファードライティングに必要なライト情報を更新する
         m_deferredLightingCB.m_light.eyePos = g_camera3D->GetPosition();
         for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
@@ -460,10 +503,14 @@ namespace nsK2Engine {
 
         // メインレンダリングターゲットへの書き込み終了待ち
         rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
+
+        EndGPUEvent();
     }
 
     void RenderingEngine::CopyMainRenderTargetToFrameBuffer(RenderContext& rc)
     {
+        BeginGPUEvent("CopyMainRenderTargetToFrameBuffer");
+
         // メインレンダリングターゲットの絵をフレームバッファーにコピー
         rc.SetRenderTarget(
             g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
@@ -481,5 +528,7 @@ namespace nsK2Engine {
 
         rc.SetViewportAndScissor(viewport);
         m_copyMainRtToFrameBufferSprite.Draw(rc);
+
+        EndGPUEvent();
     }
 }

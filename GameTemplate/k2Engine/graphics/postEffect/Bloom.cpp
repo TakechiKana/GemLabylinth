@@ -28,11 +28,17 @@ namespace nsK2Engine {
             spriteInitData.m_vsEntryPointFunc = "VSMain";
             // ピクセルシェーダーのエントリーポイントを指定する
             spriteInitData.m_psEntryPoinFunc = "PSSamplingLuminance";
+            spriteInitData.m_expandConstantBuffer = &m_samplingLuminanceCB1;
+            spriteInitData.m_expandConstantBufferSize = sizeof(m_samplingLuminanceCB1);
+
             // スプライトの幅と高さはluminnceRenderTargetと同じ
             spriteInitData.m_width = mainRenderTarget.GetWidth();
             spriteInitData.m_height = mainRenderTarget.GetHeight();
             // テクスチャはメインレンダリングターゲットのカラーバッファー
             spriteInitData.m_textures[0] = &mainRenderTarget.GetRenderTargetTexture();
+            // 輝度テクスチャ
+            spriteInitData.m_textures[1] = &g_renderingEngine->GetLuminanceAvgTextureInScene();
+
             // 描き込むレンダリングターゲットのフォーマットを指定する
             spriteInitData.m_colorBufferFormat[0] = mainRenderTarget.GetColorBufferFormat();
 
@@ -72,6 +78,9 @@ namespace nsK2Engine {
     }
     void Bloom::OnRender(RenderContext& rc, RenderTarget& mainRenderTarget)
     {
+        m_samplingLuminanceCB1.isTonemap = g_renderingEngine->IsEnableTonemap() ? 1 : 0;
+        m_samplingLuminanceCB1.middlegray = g_renderingEngine->GetSceneMiddleGray();
+        g_graphicsEngine->BeginGPUEvent("Bloom");
         // 輝度抽出
         // 輝度抽出用のレンダリングターゲットに変更
         rc.WaitUntilToPossibleSetRenderTarget(m_luminanceRenderTarget);
@@ -99,5 +108,7 @@ namespace nsK2Engine {
         m_finalSprite.Draw(rc);
         // レンダリングターゲットへの書き込み終了待ち
         rc.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
+
+        g_graphicsEngine->EndGPUEvent();
     }
 }

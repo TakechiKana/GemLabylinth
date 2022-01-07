@@ -11,6 +11,28 @@ namespace nsK2Engine {
 			RenderTarget& albedoRenderTarget
 		);
 		void Render(RenderContext& rc, RenderTarget& mainRenderTarget);
+		/// <summary>
+		/// ポストエフェクトを無効にする。
+		/// </summary>
+		void Disable()
+		{
+			m_isEnable = false;
+		}
+		/// <summary>
+		/// ポストエフェクトを有効にする。
+		/// </summary>
+		void Enable()
+		{
+			m_isEnable = true;
+		}
+		/// <summary>
+		/// ポストエフェクトが有効か判定。
+		/// </summary>
+		/// <returns></returns>
+		bool IsEnable() const
+		{
+			return m_isEnable;
+		}
 	private:
 		virtual void OnInit(
 			RenderTarget& mainRenderTarget,
@@ -19,7 +41,11 @@ namespace nsK2Engine {
 			RenderTarget& metallicSmoothRenderTarget,
 			RenderTarget& albedoRenderTarget) = 0;
 		virtual void OnRender(RenderContext& rc, RenderTarget& mainRenderTarget) = 0;
-		virtual Texture& GetResultTexture() = 0;
+		virtual Texture& GetResultTexture() 
+		{
+			static Texture nullTexture;
+			return nullTexture;
+		}
 		/// <summary>
 		/// ポストの結果をメインレンダリングターゲットにコピーする？
 		/// </summary>
@@ -28,7 +54,9 @@ namespace nsK2Engine {
 		{
 			return false;
 		}
+		
 	private:
+		bool m_isEnable = true;
 		Sprite m_copyMainRtSprite;	// メインレンダリングターゲットに描画するためのスプライト。
 	};
 }

@@ -3,9 +3,10 @@
 #include "MyRenderer.h"
 #include "graphics/preRender/ShadowMapRender.h"
 #include "graphics/postEffect/PostEffect.h"
-#include "SceneLight.h"
+#include "graphics/light/SceneLight.h"
 #include "graphics/preRender/LightCulling.h"
 #include "geometry/SceneGeometryData.h"
+#include "graphics/light/VolumeLightRender.h"
 
 namespace nsK2Engine {
    
@@ -30,10 +31,10 @@ namespace nsK2Engine {
         // ディファードライティング用の定数バッファ
         struct SDeferredLightingCB
         {
-            Light m_light;      // ライト
-            int m_isIBL;        // IBLを行う。
-            Matrix mlvp[MAX_DIRECTIONAL_LIGHT][NUM_SHADOW_MAP];
+            Light m_light;          // ライト
+            Matrix mlvp[MAX_DIRECTIONAL_LIGHT][NUM_SHADOW_MAP]; // ライトビュープロジェクション行列。
             float m_iblLuminance;   // IBLの明るさ。
+            int m_isIBL;            // IBLを行う。
         };
 
         //メインレンダリングターゲットのスナップショット
@@ -46,13 +47,14 @@ namespace nsK2Engine {
         // レンダリングパス
         enum class EnRenderingPass
         {
-            enRenderToShadowMap,    // シャドウマップへの描画パス
-            enZPrepass,             // ZPrepass
-            enLightCulling,         // ライトカリング。
-            enRenderToGBuffer,      // G-Bufferへの描画パス
-            enForwardRender,        // フォワードレンダリングの描画パス
-            enPostEffect,           // ポストエフェクト
-            enRender2D,             // 2D描画。
+            enRenderToShadowMap,        // シャドウマップへの描画パス
+            enZPrepass,                 // ZPrepass
+            enRenderToVolumeLightMap,   // ボリュームライトマップへの描画
+            enLightCulling,             // ライトカリング。
+            enRenderToGBuffer,          // G-Bufferへの描画パス
+            enForwardRender,            // フォワードレンダリングの描画パス
+            enPostEffect,               // ポストエフェクト
+            enRender2D,                 // 2D描画。
         };
         /// <summary>
         /// イベント。
@@ -60,6 +62,8 @@ namespace nsK2Engine {
         enum EnEvent {
             enEventReInitIBLTexture,    // IBLテクスチャが再初期化された。
         };
+
+        ~RenderingEngine();
         /// <summary>
         /// レンダリングパイプラインを初期化
         /// </summary>
@@ -109,6 +113,14 @@ namespace nsK2Engine {
         Texture& GetMainRenderTargetSnapshotDrawnOpacity()
         {
             return m_mainRTSnapshots[(int)EnMainRTSnapshot::enDrawnOpacity].GetRenderTargetTexture();
+        }
+        /// <summary>
+        /// シーンの平均輝度テクスチャを取得。
+        /// </summary>
+        /// <returns></returns>o
+        Texture& GetLuminanceAvgTextureInScene()
+        {
+            return m_postEffect.GetLuminanceAvgTextureInScene();
         }
         /// <summary>
         /// レンダリングパイプラインを実行
@@ -254,6 +266,109 @@ namespace nsK2Engine {
         {
             return m_deferredLightingCB;
         }
+        /// <summary>
+        /// トーンマップを無効にする
+        /// </summary>
+        void DisableTonemap()
+        {
+            m_postEffect.DisableTonemap();
+        }
+        /// <summary>
+        /// トーンマップを有効にする。
+        /// </summary>
+        void EnableTonemap()
+        {
+            m_postEffect.EnableTonemap();
+        }
+        /// <summary>
+        /// トーンマップが有効か判定する。
+        /// </summary>
+        /// <returns></returns>
+        bool IsEnableTonemap() const
+        {
+            return m_postEffect.IsEnableTonemap();
+        }
+        /// <summary>
+        /// シーンの中間の明るさを示す明度率を指定する。
+        /// </summary>
+        /// <remark>
+        /// この設定はポストエフェクトのトーンマップが有効なときに利用されます。
+        /// 慣習的に0.18が使われている。
+        /// https://en.wikipedia.org/wiki/Middle_gray
+        /// </remark>
+        void SetSceneMiddleGray(float luminance)
+        {
+            m_postEffect.SetTonemapMiddlegray(luminance);
+        }
+        /// <summary>
+        /// シーンの中間の明るさを示す明度率を取得する。
+        /// </summary>
+        /// <returns></returns>
+        float GetSceneMiddleGray() const
+        {
+            return m_postEffect.GetTonemapMiddlegray();
+        }
+        /// <summary>
+        /// ボリュームスポットライトをシーンに追加
+        /// </summary>
+        /// <param name="lig">ライト</param>
+        void AddVolumeSpotLight(VolumeLightBase& lig)
+        {
+            m_volumeLightRender.AddVolumeSpotLight(lig);
+            
+        }
+        /// <summary>
+        /// ボリュームスポットライトをシーンから削除
+        /// </summary>
+        /// <param name="lig"></param>
+        void RemoveVolumeSpotLight(VolumeLightBase& lig)
+        {
+            m_volumeLightRender.RemoveVolumeSpotLight(lig);
+        }
+        /// <summary>
+        /// ボリュームライトレンダラーを取得。
+        /// </summary>
+        /// <returns></returns>
+        VolumeLightRender& GetVolumeLightRender()
+        {
+            return m_volumeLightRender;
+        }
+        /// <summary>
+        /// 環境光の計算のためのIBLテクスチャを設定。
+        /// </summary>
+        /// <remark>
+        /// この関数を利用して、IBLテクスチャをセットすると、
+        /// 環境光をIBLテクスチャからサンプリングして、それを利用した
+        /// ライティングが行われます。
+        /// IBLテクスチャを利用した環境光の計算をオフにしたい場合は、DisableIBLForAmbinet()を呼び出して、
+        /// IBLを無効にしてください。
+        /// </remark>
+        /// <param name="textureFilePath">
+        /// IBLテクスチャのファイルパス。
+        /// キューブマップである必要があります。
+        /// </param>
+        /// <param name="luminance">
+        /// IBLテクスチャの明るさ。
+        /// <param>
+        void SetAmbientByIBLTexture(const wchar_t* textureFilePath, float luminance)
+        {
+            ReInitIBL(textureFilePath, luminance);
+        }
+        /// <summary>
+        /// IBL環境光を無効にする。
+        /// </summary>
+        void DisableIBLTextureForAmbient()
+        {
+            m_sceneLight.DisableIBLTextureForAmbient();
+        }
+        /// <summary>
+        /// 環境光を設定。
+        /// </summary>
+        /// <param name="ambient"></param>
+        void SetAmbient(Vector3 ambient)
+        {
+            m_sceneLight.SetAmbinet(ambient);
+        }
     private:
         /// <summary>
         /// イメージベースドライティング(IBL)のためのデータを初期化する。
@@ -350,7 +465,7 @@ namespace nsK2Engine {
             enGBufferNormal,                // 法線
             enGBufferMetaricShadowSmooth,   // メタリック、影パラメータ、スムース。
                                             // メタリックがr、影パラメータがg、スムースがa。gは未使用。
-                                            enGBufferNum,                   // G-Bufferの数
+            enGBufferNum,                   // G-Bufferの数
         };
 
         
@@ -363,6 +478,7 @@ namespace nsK2Engine {
         };
         LightCulling m_lightCulling;                                    // ライトカリング。 
         ShadowMapRender m_shadowMapRenders[MAX_DIRECTIONAL_LIGHT];      // シャドウマップへの描画処理
+        VolumeLightRender m_volumeLightRender;                          // ボリュームライトレンダラー。
         SDeferredLightingCB m_deferredLightingCB;                       // ディファードライティング用の定数バッファ
         Sprite m_copyMainRtToFrameBufferSprite;                         // メインレンダリングターゲットをフレームバッファにコピーするためのスプライト
         Sprite m_diferredLightingSprite;                                // ディファードライティングを行うためのスプライト
@@ -372,6 +488,7 @@ namespace nsK2Engine {
         RenderTarget m_gBuffer[enGBufferNum];                           // G-Buffer
         PostEffect m_postEffect;                                        // ポストエフェクト
         RWStructuredBuffer m_pointLightNoListInTileUAV;                 // タイルごとのポイントライトのリストのUAV。
+        RWStructuredBuffer m_spotLightNoListInTileUAV;                  // タイルごとのスポットライトのリストのUAV。
         std::vector< IRenderer* > m_renderObjects;                      // 描画オブジェクトのリスト。
         SceneLight m_sceneLight;                                        // シーンライト。
         bool m_isSoftShadow = false;                                    // ソフトシャドウフラグ。

@@ -7,11 +7,14 @@ namespace nsK2Engine {
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
         DXGI_FORMAT colorFormat;
+        DXGI_FORMAT depthFormat;
         if (isSoftShadow) {
-            colorFormat = DXGI_FORMAT_R32G32_FLOAT;
+            colorFormat = g_softShadowMapFormat.colorBufferFormat;
+            depthFormat = g_softShadowMapFormat.depthBufferFormat;
         }
         else {
-            colorFormat = DXGI_FORMAT_R32_FLOAT;
+            colorFormat = g_hardShadowMapFormat.colorBufferFormat;
+            depthFormat = g_hardShadowMapFormat.depthBufferFormat;
         }
         //近景用のシャドウマップ
         m_shadowMaps[0].Create(
@@ -20,7 +23,7 @@ namespace nsK2Engine {
             1,
             1,
             colorFormat,
-            DXGI_FORMAT_D32_FLOAT,
+            depthFormat,
             clearColor
         );
         //中景用のシャドウマップ
@@ -30,7 +33,7 @@ namespace nsK2Engine {
             1,
             1,
             colorFormat,
-            DXGI_FORMAT_D32_FLOAT,
+            depthFormat,
             clearColor
         );
         //遠景用のシャドウマップ
@@ -40,7 +43,7 @@ namespace nsK2Engine {
             1,
             1,
             colorFormat,
-            DXGI_FORMAT_D32_FLOAT,
+            depthFormat,
             clearColor
         );
 

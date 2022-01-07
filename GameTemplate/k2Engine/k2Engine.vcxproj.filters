@@ -31,6 +31,9 @@
     <Filter Include="dbg">
       <UniqueIdentifier>{da4adfd3-066d-493e-8ff5-83d0147f941e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="graphics\light">
+      <UniqueIdentifier>{098d7f12-6f25-45fe-b2f2-3519670804f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics\ModelRender.cpp">
@@ -69,9 +72,6 @@
     </ClCompile>
     <ClCompile Include="collision\CollisionObject.cpp">
       <Filter>collision</Filter>
-    </ClCompile>
-    <ClCompile Include="graphics\SceneLight.cpp">
-      <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics\postEffect\Ssao.cpp">
       <Filter>graphics\postEffect</Filter>
@@ -116,6 +116,30 @@
     <ClCompile Include="graphics\preRender\CalcAnimatedVertex.cpp" />
     <ClCompile Include="dbg\dbgVectorRenderer.cpp">
       <Filter>dbg</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\SpotLight.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\PointLight.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\SceneLight.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\VolumeSpotLight.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\VolumeLightRender.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\VolumePointLight.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\light\VolumeLightBase.cpp">
+      <Filter>graphics\light</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\postEffect\CalcSceneLuminance.cpp">
+      <Filter>graphics\postEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,9 +186,6 @@
     <ClInclude Include="collision\CollisionObject.h">
       <Filter>collision</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\SceneLight.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
     <ClInclude Include="graphics\postEffect\Ssao.h">
       <Filter>graphics\postEffect</Filter>
     </ClInclude>
@@ -208,6 +229,30 @@
     <ClInclude Include="graphics\preRender\CalcAnimatedVertex.h" />
     <ClInclude Include="dbg\dbgVectorRenderer.h">
       <Filter>dbg</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\SceneLight.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\SpotLight.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\PointLight.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\VolumeSpotLight.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\VolumeLightRender.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\VolumePointLight.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\light\VolumeLightBase.h">
+      <Filter>graphics\light</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\postEffect\CalcSceneLuminance.h">
+      <Filter>graphics\postEffect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

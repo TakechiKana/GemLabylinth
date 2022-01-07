@@ -11,7 +11,11 @@ using namespace nsK2EngineLow;
 #include "graphics/ModelRender.h"
 #include "graphics/SpriteRender.h"
 #include "graphics/FontRender.h"
-#include "graphics/SceneLight.h"
+#include "graphics/light/SceneLight.h"
 #include "nature/SkyCube.h"
 #include "Level3DRender/LevelRender.h"
+#include "graphics/light/SpotLight.h"
+#include "graphics/light/PointLight.h"
+#include "graphics/light/VolumeSpotLight.h"
+#include "graphics/light/VolumePointLight.h"
 

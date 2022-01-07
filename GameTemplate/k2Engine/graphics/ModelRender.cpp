@@ -72,7 +72,7 @@ namespace nsK2Engine {
 		//半透明オブジェクト描画パスで使用されるモデルを初期化。
 		InitModelOnTranslucent(*g_renderingEngine, filePath, enModelUpAxis, isShadowReciever);
 		//ZPrepass描画用のモデルを初期化。
-		InitModelOnZprepass(*g_renderingEngine, filePath, enModelUpAxis);
+		//InitModelOnZprepass(*g_renderingEngine, filePath, enModelUpAxis);
 		//シャドウマップ描画用のモデルを初期化。
 		InitModelOnShadowMap(*g_renderingEngine, filePath, enModelUpAxis);
 		// 幾何学データを初期化。
@@ -91,7 +91,7 @@ namespace nsK2Engine {
 		//作成した初期化データをもとにモデルを初期化する。
 		m_forwardRenderModel.Init(initData);
 		//ZPrepass描画用のモデルを初期化。
-		InitModelOnZprepass(*g_renderingEngine, initData.m_tkmFilePath, initData.m_modelUpAxis);
+		//InitModelOnZprepass(*g_renderingEngine, initData.m_tkmFilePath, initData.m_modelUpAxis);
 		//シャドウマップ描画用のモデルを初期化。
 		InitModelOnShadowMap(*g_renderingEngine, initData.m_tkmFilePath, initData.m_modelUpAxis);
 		// 幾何学データを初期化。
@@ -161,11 +161,11 @@ namespace nsK2Engine {
 	{
 		m_maxInstance = maxInstance;
 		if (m_maxInstance > 1) {
-			//インスタンシング描画を行うので、
-			//それ用のデータを構築する。
-			//ワールド行列の配列のメモリを確保する。
+			// インスタンシング描画を行うので、
+			// それ用のデータを構築する。
+			// ワールド行列の配列のメモリを確保する。
 			m_worldMatrixArray = std::make_unique<Matrix[]>(m_maxInstance);
-			//ワールド行列をGPUに転送するためのストラクチャードバッファを確保。
+			// ワールド行列をGPUに転送するためのストラクチャードバッファを確保。
 			m_worldMatrixArraySB.Init(
 				sizeof(Matrix),
 				m_maxInstance,
@@ -282,10 +282,10 @@ namespace nsK2Engine {
 
 		modelInitData.m_fxFilePath = "Assets/shader/DrawShadowMap.fx";
 		if (g_renderingEngine->IsSoftShadow()) {
-			modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32_FLOAT;
+			modelInitData.m_colorBufferFormat[0] = g_softShadowMapFormat.colorBufferFormat;
 		}
 		else {
-			modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
+			modelInitData.m_colorBufferFormat[0] = g_hardShadowMapFormat.colorBufferFormat;
 		}
 
 		if (m_isEnableInstancingDraw) {

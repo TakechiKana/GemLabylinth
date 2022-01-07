@@ -11,6 +11,11 @@
 
 namespace nsK2EngineLow {
 
+	struct LowTexture {
+		std::string filePath;			// ファイルパス。
+		std::unique_ptr<char[]> data;	// 生データ(ddsファイル)
+		unsigned int dataSize;			// データのサイズ。
+	};
 	/// <summary>
 	/// tkmファイルクラス。
 	/// </summary>
@@ -19,27 +24,18 @@ namespace nsK2EngineLow {
 		/// <summary>
 		/// マテリアル
 		/// </summary>
-		struct SMaterial {
-			std::string albedoMapFileName;			//アルベドマップのファイル名。
-			std::string normalMapFileName;			//法線マップのファイル名。
-			std::string specularMapFileName;		//スペキュラマップのファイル名。
-			std::string reflectionMapFileName;		//リフレクションマップのファイル名。
-			std::string refractionMapFileName;		//屈折マップのファイル名。
-			std::unique_ptr<char[]>	albedoMap;		//ロードされたアルベドマップ。(ddsファイル)
-			unsigned int albedoMapSize;				//アルベドマップのサイズ。(ddsファイル)
-			std::unique_ptr<char[]>	normalMap;		//ロードされた法線マップ。(ddsファイル)
-			unsigned int normalMapSize;				//法線マップのサイズ。
-			std::unique_ptr<char[]>	specularMap;	//ロードされたスペキュラマップ。(ddsファイル)
-			unsigned int specularMapSize;			//スペキュラマップのサイズ。(ddsファイル)
-			std::unique_ptr<char[]>	reflectionMap;	//ロードされたリフレクションマップ。(ddsファイル)
-			unsigned int reflectionMapSize;			//リフレクションマップのサイズ。(ddsファイル)
-			std::unique_ptr<char[]>	refractionMap;	//ロードされた屈折マップ。(ddsファイル)
-			unsigned int refractionMapSize;			//屈折マップのサイズ。(ddsファイル)
-			std::string albedoMapFilePath;			//アルベドマップのファイルパス。
-			std::string normalMapFilePath;			//法線マップのファイルパス。
-			std::string specularMapFilePath;		//スペキュラマップのファイルパス。
-			std::string reflectionMapFilePath;		//リフレクションマップのファイルパス。
-			std::string refractionMapFilePath;		//屈折マップのファイルパス。
+		struct  SMaterial{
+			int uniqID;								// テクスチャファイル名から作成されるユニークID。
+			std::string albedoMapFileName;			// アルベドマップのファイル名。
+			std::string normalMapFileName;			// 法線マップのファイル名。
+			std::string specularMapFileName;		// スペキュラマップのファイル名。
+			std::string reflectionMapFileName;		// リフレクションマップのファイル名。
+			std::string refractionMapFileName;		// 屈折マップのファイル名。
+			LowTexture*	albedoMap;					// ロードされたアルベドマップの生テクスチャデータ。(ddsファイル)
+			LowTexture*	normalMap;					// ロードされた法線マップの生テクスチャデータ。(ddsファイル9
+			LowTexture* specularMap;				// ロードされたスペキュラマップの生テクスチャデータ。(ddsファイル)
+			LowTexture*	reflectionMap;				// ロードされたリフレクションマップの生テクスチャデータ。(ddsファイル)
+			LowTexture*	refractionMap;				// ロードされた屈折マップの生テクスチャデータ。(ddsファイル)
 		};
 		/// <summary>
 		/// 頂点。
@@ -83,8 +79,20 @@ namespace nsK2EngineLow {
 		/// 3Dモデルをロード。
 		/// </summary>
 		/// <param name="filePath">ファイルパス。</param>
-		void Load(const char* filePath);
-
+		/// <param name="isOptimize">最適化フラグ。</param>
+		/// <param name="isLoadTexture">
+		/// テクスチャをロードする？
+		/// コリジョンの構築のためなどにtkmファイルをロードするなどといった、
+		/// テクスチャが不要の場合には、この引数をfalseにしてください。
+		/// すると、メモリ使用量、ロード時間などが削減されます。
+		/// </param>
+		/// <param name="isOutputMsgTTY">メッセージを標準入出力デバイスに出力する？</param>
+		bool Load(const char* filePath, bool isOptimize, bool isLoadTexture = true, bool isOutputErrorCodeTTY = false);
+		/// <summary>
+		/// tkmファイルを保存。
+		/// </summary>
+		/// <param name="filePath">保存先のファイルパス。</param>
+		bool Save(const char* filePath);
 		/// <summary>
 		/// メッシュパーツに対してクエリを行う。
 		/// </summary>
@@ -127,7 +135,7 @@ namespace nsK2EngineLow {
 		/// マテリアルを構築。
 		/// </summary>
 		/// <param name="tkmMat"></param>
-		void BuildMaterial(SMaterial& tkmMat, FILE* fp, const char* filePath);
+		void BuildMaterial(SMaterial& tkmMat, FILE* fp, const char* filePath, bool isLoadTexture, bool isOutputErrorCodeTTY);
 		/// <summary>
 		/// 接ベクトルと従ベクトルを計算する。
 		/// </summary>
@@ -135,9 +143,13 @@ namespace nsK2EngineLow {
 		/// 3dsMaxScriptでやるべきなんだろうけど、デバッグしたいので今はこちらでやる。
 		/// </remarks>
 		void BuildTangentAndBiNormal();
-		
+	private:
+		/// <summary>
+		/// TKMファイルの最適化。
+		/// </summary>
+		void Optimize();
 	private:
 		BSP m_bpsOnVertexPosition;				// 頂点座標を使ったBSPツリー。
-		std::vector< SMesh>	m_meshParts;		// メッシュパーツ。
+		std::vector< SMesh >	m_meshParts;		// メッシュパーツ。
 	};
 }

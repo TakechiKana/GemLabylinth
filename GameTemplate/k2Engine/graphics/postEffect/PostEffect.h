@@ -6,6 +6,7 @@
 #include "graphics/postEffect/ToneMap.h"
 #include "graphics/postEffect/Ssao.h"
 #include "graphics/postEffect/Ssr.h"
+#include "graphics/postEffect/CalcSceneLuminance.h"
 
 namespace nsK2Engine {
     /// <summary>
@@ -44,9 +45,55 @@ namespace nsK2Engine {
         /// <param name="changeSceneTime">シーン切り替えにかかる時間。</param>
         void NotifyChangeScene(float changeSceneTime)
         {
-            m_tonemap.NotifyChangeScene(changeSceneTime);
+            m_calsSceneLuminance.NotifyChangeScene(changeSceneTime);
+        }
+        /// <summary>
+        /// トーンマップをオフに。
+        /// </summary>
+        void DisableTonemap()
+        {
+            m_tonemap.Disable();
+        }
+        /// <summary>
+        /// トーンマップをオンに。
+        /// </summary>
+        void EnableTonemap()
+        {
+            m_tonemap.Enable();
+        }
+        /// <summary>
+        /// トーンマップが有効か判定する。
+        /// </summary>
+        /// <returns></returns>
+        bool IsEnableTonemap() const
+        {
+            return m_tonemap.IsEnable();
+        }
+        /// <summary>
+        /// シーンの明るさの基準値を設定
+        /// </summary>
+        void SetTonemapMiddlegray(float middlegray)
+        {
+            m_tonemap.SetMiddlegray(middlegray);
+        }
+        /// <summary>
+        /// シーンの明るさの基準値を取得。
+        /// </summary>
+        /// <returns></returns>
+        float GetTonemapMiddlegray() const
+        {
+            return m_tonemap.GetMiddlegray();
+        }
+        /// <summary>
+        /// シーンの平均輝度が記憶されているテクスチャを取得。
+        /// </summary>
+        /// <returns></returns>
+        Texture& GetLuminanceAvgTextureInScene()
+        {
+            return m_calsSceneLuminance.GetLuminanceAvgTextureInScene();
         }
     private:
+        CalcSceneLuminance m_calsSceneLuminance;    // シーンの平均輝度計算処理。
         Bloom m_bloom;	    //ブルーム
         Dof m_dof;		    //被写界深度
         Fxaa m_fXaa;        //FXAA。

@@ -32,7 +32,12 @@ public:
 
 public:
 	Game() {}
-	~Game() {}
+	~Game() 
+	{
+		for (auto ptLig : m_lightArray) {
+			delete ptLig;
+		}
+	}
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
@@ -106,7 +111,9 @@ private:
 	EnGameState m_gameState = enGameState_Start;
 	EnAlphaState m_alphaState = enAlphaState_Idle;
 	SkyCube m_skyCube;
-	PointLight* m_light;
+	std::vector< PointLight*> m_lightArray;
+	std::vector< SpotLight*> m_sptLightArray;
+	std::vector< VolumeSpotLight*> m_volumeSptLightArray;
 	LevelRender m_levelRender;
 	BackGround* m_backGround = nullptr;			//ステージ
 	Player* m_player = nullptr;					//プレイヤー

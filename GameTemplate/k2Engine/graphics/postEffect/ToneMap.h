@@ -3,7 +3,7 @@
 #include "graphics/postEffect/PostEffectComponentBase.h"
 
 namespace nsK2Engine {
-	class ToneMap : public PostEffectComponentBase
+    class ToneMap : public PostEffectComponentBase
 	{
 	public:
 		ToneMap();
@@ -39,66 +39,30 @@ namespace nsK2Engine {
 		{
 			return true;
 		}
+		
 		/// <summary>
-		/// シーンが切り替わったことを通知。
+		/// シーンの明るさの基準値を設定する。
 		/// </summary>
-		/// <param name="timer"></param>
-		void NotifyChangeScene(float timer)
+		/// <param name="middlegray"></param>
+		void SetMiddlegray(float middlegray)
 		{
-			m_isFirstWhenChangeScene = timer;
-			m_changeSceneTimer = timer;
+			m_cb1.midddleGray = middlegray;
 		}
 		/// <summary>
-		/// トーンマップを有効にする。
+		/// シーンの明るさの基準値を取得する。
 		/// </summary>
-		void Enable()
+		/// <param name="middlegray"></param>
+		float GetMiddlegray() const
 		{
-			m_isEnable = true;
+			return m_cb1.midddleGray;
 		}
-		/// <summary>
-		/// トーンマップを無効にする。
-		/// </summary>
-		void Disable()
-		{
-			m_isEnable = false;
-		}
-	private:
-		/// <summary>
-		/// 平均輝度を計算する。
-		/// </summary>
-		/// <param name="">レンダリングコンテキスト</param>
-		void CalcLuminanceAvarage(RenderContext& rc);
 	private:
 		static const int MAX_SAMPLES = 16;
-		struct STonemapParam {
-			float deltaTime;
+		struct SCB_1 {
 			float midddleGray;
-			int currentAvgTexNo;
 		};
-		enum CalcAvgSprite {
-			enCalcAvgLog,						// 対数平均を求める。
-			enCalcAvg_Start,
-			enCalcAvg_0 = enCalcAvg_Start,	// 平均輝度を計算。
-			enCalcAvg_1,					// 平均輝度を計算。
-			enCalcAvg_2,					// 平均輝度を計算。	
-			enCalcAvg_3,					// 平均輝度を計算する。
-			enCalcAvg_End,
-			enCalcAvgExp = enCalcAvg_End,		// exp()を用いて最終平均を求める。
-			enNumCalcAvgSprite
-		};
-		RenderTarget m_calcAvgRt[enNumCalcAvgSprite];	// 平均輝度計算用のレンダリングターゲット。
-		RenderTarget m_avgRt[2];					// 平均輝度が格納されるレンダリングターゲット。
-		int m_currentAvgRt = 0;						// 
-		Sprite m_calcAvgSprites[enNumCalcAvgSprite];
-		Sprite m_calcAdapteredLuminanceSprite;		// 明暗順応用のスプライト。
-		Sprite m_calcAdapteredLuminanceFisrtSprite;	// 明暗順応用のスプライト。(シーンが切り替わったときに使用される。)
-		Sprite m_finalSprite;						// 最終合成用のスプライト。
-
-		bool m_isFirstWhenChangeScene = true;			//!<シーンが切り替わって初回の描画かどうかのフラグ。
-		Vector4 m_avSampleOffsets[MAX_SAMPLES];
-		RenderTarget m_finalRt;						// 最終合成レンダリングターゲット。
-		STonemapParam m_tonemapParam;
-		bool m_isEnable = true;					// トーンマップが有効？
-		float m_changeSceneTimer = 0.5f;		// シーン切り替えタイマー。
+		Sprite m_finalSprite;							// 最終合成用のスプライト。
+		RenderTarget m_finalRt;							// 最終合成レンダリングターゲット。
+		SCB_1 m_cb1;
 	};
 }

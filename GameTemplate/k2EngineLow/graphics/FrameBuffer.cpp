@@ -110,16 +110,23 @@ namespace nsK2EngineLow {
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
+		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+		fullScreenDesc.RefreshRate.Denominator = 1;
+		fullScreenDesc.RefreshRate.Numerator = 60;
+		fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		fullScreenDesc.Windowed = true;
 
 		IDXGISwapChain1* swapChain;
 		dxgiFactory->CreateSwapChainForHwnd(
 			commandQueue,
 			hwnd,
 			&swapChainDesc,
-			nullptr,
+			&fullScreenDesc,
 			nullptr,
 			&swapChain
 		);
+		
 		//IDXGISwapChain3のインターフェースを取得。
 		swapChain->QueryInterface(IID_PPV_ARGS(&m_swapChain));
 		swapChain->Release();
@@ -164,6 +171,8 @@ namespace nsK2EngineLow {
 			d3dDevice->CreateRenderTargetView(
 				m_renderTargets[n], nullptr, rtvHandle
 			);
+			m_renderTargets[n]->SetName(L"FrameBuffer::RenderTargetView");
+			
 			rtvHandle.ptr += m_rtvDescriptorSize;
 		}
 		return true;

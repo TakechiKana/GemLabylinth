@@ -26,6 +26,10 @@ bool Game::Start()
 
 	m_fade = NewGO<Fade>(0, "fade");
 
+
+	g_renderingEngine->SetSceneMiddleGray(0.04f);
+	g_renderingEngine->SetAmbient({0.1f, 0.1f, 0.1f});
+
 	m_levelRender.Init("Assets/modelData/stage/stage2.tkl", [&](LevelObjectData& objData) {
 		if (objData.EqualObjectName(L"stage") == true) {
 
@@ -40,14 +44,26 @@ bool Game::Start()
 		if (objData.EqualObjectName(L"Light") == true) {
 
 			//ポイントライトのオブジェクトを作る。
-			m_light = g_sceneLight->NewPointLight();
+			PointLight* light = new PointLight;
+			light->Init();
+			light->SetColor(Vector3(400.0f, 200.0f, 100.0f));
+			light->SetAffectPowParam(5.0f);
+			light->SetRange(400.0f);
+			light->SetPosition(objData.position);
+			m_lightArray.push_back(light);
 
-			m_light->SetColor(Vector3(1.0f, 0.0f, 0.0f));
-			m_light->SetAffectPowParam(3.0f);
-			m_light->SetRange(300.0f);
-			m_light->SetPosition(objData.position);
+			SpotLight* sptLight = new SpotLight;
+			sptLight->Init();
+			sptLight->SetColor(Vector3(400.0f, 200.0f, 100.0f));
+			sptLight->SetRange(750.0f);
+			sptLight->SetAngleAffectPowParam(5.0f);
+			sptLight->SetPosition(objData.position);
+			sptLight->SetDirection(0.0f,-1.0f,0.0f);
+			sptLight->SetAngle(Math::DegToRad(90.0f));
 
+			m_sptLightArray.push_back(sptLight);
 
+			
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
@@ -119,6 +135,15 @@ bool Game::Start()
 
 void Game::Update()
 {
+	for (auto ptLig : m_lightArray) {
+		ptLig->Update();
+	}
+	for (auto sptLig : m_sptLightArray) {
+		sptLig->Update();
+	}
+	for (auto vlLig : m_volumeSptLightArray) {
+		vlLig->Update();
+	}
 	ProcessState();
 
 	AlphaValue();

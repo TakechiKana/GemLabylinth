@@ -22,9 +22,9 @@ namespace nsK2EngineLow {
 		{
 			if (tkmMat.albedoMap != nullptr)
 			{
-				filePath = tkmMat.albedoMapFilePath.c_str();
-				map = tkmMat.albedoMap.get();
-				mapSize = tkmMat.albedoMapSize;
+				filePath = tkmMat.albedoMap->filePath.c_str();
+				map = tkmMat.albedoMap->data.get();
+				mapSize = tkmMat.albedoMap->dataSize;
 			}
 			else
 			{
@@ -48,9 +48,9 @@ namespace nsK2EngineLow {
 		{
 			if (tkmMat.normalMap != nullptr)
 			{
-				filePath = tkmMat.normalMapFilePath.c_str();
-				map = tkmMat.normalMap.get();
-				mapSize = tkmMat.normalMapSize;
+				filePath = tkmMat.normalMap->filePath.c_str();
+				map = tkmMat.normalMap->data.get();
+				mapSize = tkmMat.normalMap->dataSize;
 			}
 			else
 			{
@@ -75,9 +75,9 @@ namespace nsK2EngineLow {
 		{
 			if (tkmMat.specularMap != nullptr)
 			{
-				filePath = tkmMat.specularMapFilePath.c_str();
-				map = tkmMat.specularMap.get();
-				mapSize = tkmMat.specularMapSize;
+				filePath = tkmMat.specularMap->filePath.c_str();
+				map = tkmMat.specularMap->data.get();
+				mapSize = tkmMat.specularMap->dataSize;
 			}
 			else
 			{
@@ -100,9 +100,9 @@ namespace nsK2EngineLow {
 		{
 			if (tkmMat.reflectionMap != nullptr)
 			{
-				filePath = tkmMat.reflectionMapFilePath.c_str();
-				map = tkmMat.reflectionMap.get();
-				mapSize = tkmMat.reflectionMapSize;
+				filePath = tkmMat.reflectionMap->filePath.c_str();
+				map = tkmMat.reflectionMap->data.get();
+				mapSize = tkmMat.reflectionMap->dataSize;
 			}
 			else
 			{
@@ -125,9 +125,9 @@ namespace nsK2EngineLow {
 		{
 			if (tkmMat.refractionMap != nullptr)
 			{
-				filePath = tkmMat.refractionMapFilePath.c_str();
-				map = tkmMat.refractionMap.get();
-				mapSize = tkmMat.refractionMapSize;
+				filePath = tkmMat.refractionMap->filePath.c_str();
+				map = tkmMat.refractionMap->data.get();
+				mapSize = tkmMat.refractionMap->dataSize;
 			}
 			else
 			{
@@ -161,7 +161,8 @@ namespace nsK2EngineLow {
 		UINT offsetInDescriptorsFromTableStartSRV,
 		AlphaBlendMode alphaBlendMode,
 		bool isDepthWrite,
-		bool isDepthTest
+		bool isDepthTest,
+		D3D12_CULL_MODE cullMode
 	)
 	{
 		//テクスチャをロード。
@@ -211,14 +212,21 @@ namespace nsK2EngineLow {
 			//シェーダーを初期化。
 			InitShaders(fxFilePath, vsEntryPointFunc, vsSkinEntryPointFunc, psEntryPointFunc);
 			//パイプラインステートを初期化。
-			InitPipelineState(colorBufferFormat, alphaBlendMode, isDepthWrite, isDepthTest);
+			InitPipelineState(
+				colorBufferFormat, 
+				alphaBlendMode, 
+				isDepthWrite, 
+				isDepthTest,
+				cullMode
+			);
 		}
 	}
 	void Material::InitPipelineState(
 		const std::array<DXGI_FORMAT, MAX_RENDERING_TARGET>& colorBufferFormat,
 		AlphaBlendMode alphaBlendMode,
 		bool isDepthWrite,
-		bool isDepthTest
+		bool isDepthTest,
+		D3D12_CULL_MODE cullMode
 	) {
 		// 頂点レイアウトを定義する。
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
@@ -239,7 +247,7 @@ namespace nsK2EngineLow {
 		psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vsSkinModel->GetCompiledBlob());
 		psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_psModel->GetCompiledBlob());
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+		psoDesc.RasterizerState.CullMode = cullMode;
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
 		if (alphaBlendMode == AlphaBlendMode_Trans) {

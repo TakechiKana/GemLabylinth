@@ -12,6 +12,21 @@ namespace nsK2Engine {
         RenderTarget& albedoRenderTarget
     )
     {
+        m_calsSceneLuminance.Init(
+            mainRenderTarget,
+            zprepassRenderTarget,
+            normalRenderTarget,
+            metallicSmoothRenderTarget,
+            albedoRenderTarget
+        );
+        m_tonemap.Init(
+            mainRenderTarget,
+            zprepassRenderTarget,
+            normalRenderTarget,
+            metallicSmoothRenderTarget,
+            albedoRenderTarget
+        );
+
         m_bloom.Init(
             mainRenderTarget,
             zprepassRenderTarget,
@@ -33,13 +48,7 @@ namespace nsK2Engine {
             metallicSmoothRenderTarget,
             albedoRenderTarget
         );
-        m_tonemap.Init(
-            mainRenderTarget,
-            zprepassRenderTarget,
-            normalRenderTarget,
-            metallicSmoothRenderTarget,
-            albedoRenderTarget
-        );
+        
         m_ssao.Init(
             mainRenderTarget,
             zprepassRenderTarget,
@@ -54,14 +63,23 @@ namespace nsK2Engine {
             metallicSmoothRenderTarget,
             albedoRenderTarget
         );
+
     }
     void PostEffect::Render(RenderContext& rc, RenderTarget& mainRenderTarget)
     {
+        BeginGPUEvent("PostEffect");
         //m_ssao.Render(rc, mainRenderTarget);
+        
         // SSR
         //m_ssr.Render(rc, mainRenderTarget);
+        // シーンの輝度を計算する。
+        m_calsSceneLuminance.Render(rc, mainRenderTarget);
+
+        // ブルーム
+        m_bloom.Render(rc, mainRenderTarget);
+
         // トーンマップ
-        //m_tonemap.Render(rc, mainRenderTarget);
+        m_tonemap.Render(rc, mainRenderTarget);
 
         g_renderingEngine->SetMainRenderTargetAndDepthStencilBuffer(rc);
 
@@ -71,11 +89,12 @@ namespace nsK2Engine {
         EffectEngine::GetInstance()->Draw();
         //メインレンダーターゲットをTARGETからPRESENTへ。
         rc.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
-        // ブルーム
-        m_bloom.Render(rc, mainRenderTarget);
+
         // DOF
         m_dof.Render(rc, mainRenderTarget);
         // FXAA
         m_fXaa.Render(rc, mainRenderTarget);
+
+        EndGPUEvent();
     }
 }
