@@ -10,7 +10,6 @@
 #include "Gem.h"
 #include "Fade.h"
 #include "Title.h"
-#include "LightModel.h"
 //#include "Map.h"
 
 
@@ -20,12 +19,6 @@ Game::~Game()
 	DeleteGO(m_player);
 	DeleteGO(m_backGround);
 	//DeleteGO(m_bgm);
-
-	const auto& lightmodels = FindGOs<LightModel>("lightmodel");
-	for (auto lightmodel : lightmodels)
-	{
-		DeleteGO(lightmodel);
-	}
 
 	const auto& enemys = FindGOs<Enemy>("enemy");
 	for (auto enemy : enemys)
@@ -60,9 +53,6 @@ bool Game::Start()
 		}
 
 		if (objData.EqualObjectName(L"Light") == true) {
-
-			m_lightmodel = NewGO<LightModel>(0, "lightmodel");
-			m_lightmodel->SetPosition(objData.position);
 
 			//ポイントライトのオブジェクトを作る。
 			PointLight* light = new PointLight;
@@ -179,6 +169,5 @@ void Game::Update()
 
 void Game::Render(RenderContext& rc)
 {
-	//モデルを描画する。
-	m_modelRender.Draw(rc);
+
 }

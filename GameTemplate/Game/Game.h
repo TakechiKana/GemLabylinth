@@ -11,7 +11,7 @@ class ItemMagic;
 class Enemy;
 class Gem;
 class Fade;
-class LightModel;
+
 //class Map;
 
 class Game : public IGameObject
@@ -37,7 +37,7 @@ private:
 	std::vector< PointLight*> m_lightArray;
 	std::vector< SpotLight*> m_sptLightArray;
 	std::vector< VolumeSpotLight*> m_volumeSptLightArray;
-	ModelRender m_modelRender;
+	//ModelRender m_modelRender;
 	LevelRender m_levelRender;
 	BackGround* m_backGround = nullptr;			//ステージ
 	Player* m_player = nullptr;					//プレイヤー
@@ -47,7 +47,6 @@ private:
 	Enemy* m_enemy = nullptr;
 	Gem* m_gem = nullptr;
 	Fade* m_fade = nullptr;
-	LightModel* m_lightmodel = nullptr;
 	//Map* m_map = nullptr;
 
 	int itemNum = 0;

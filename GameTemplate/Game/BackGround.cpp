@@ -6,7 +6,8 @@ BackGround::BackGround()
 	//コメントアウトする。
 	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
-	m_modelRender.Init("Assets/modelData/stage/stage2.tkm", nullptr, 0, enModelUpAxisZ, false);
+	//m_modelRender.Init("Assets/modelData/stage/stage2.tkm", nullptr, 0, enModelUpAxisZ, false);
+	m_modelRender.Init("Assets/modelData/stage/stage_saisyu.tkm", nullptr, 0, enModelUpAxisZ, false);
 	m_modelRender.SetShadowCasterFlag(false);
 	
 	m_modelRender.Update();

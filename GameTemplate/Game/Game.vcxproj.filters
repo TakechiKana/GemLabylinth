@@ -21,7 +21,6 @@
     <ClCompile Include="Gem.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Title.cpp" />
-    <ClCompile Include="LightModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -38,6 +37,5 @@
     <ClInclude Include="Gem.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Title.h" />
-    <ClInclude Include="LightModel.h" />
   </ItemGroup>
 </Project>
