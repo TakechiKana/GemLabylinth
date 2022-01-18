@@ -7,6 +7,7 @@ bool Gem::Start()
 {
 	//m_gemMap.Init("Assets/sprite/enemy.dds", 35, 35);
 	m_modelRender.Init("Assets/modelData/item/gem_kari.tkm");
+	//m_modelRender.SetScale({ 10.0f,10.0f,10.0f });
 	m_player = FindGO<Player>("player");
 	return true;
 }

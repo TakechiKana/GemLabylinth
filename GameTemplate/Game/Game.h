@@ -141,6 +141,8 @@ private:
 	SpriteRender m_Prologue4;
 	SpriteRender m_Prologue5;
 	Vector3 playerPos;
+	Vector3 m_gemPos;
+	Vector3 m_dashPos;
 
 	FontRender font1;
 };

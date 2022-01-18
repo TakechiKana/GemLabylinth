@@ -5,7 +5,8 @@
 
 bool ItemDash::Start()
 {
-	m_modelRender.Init("Assets/modelData/item/boots_kari.tkm");
+	m_modelRender.Init("Assets/modelData/item/wings.tkm");
+	m_modelRender.SetScale({ 1.4f,1.4f,1.4f });
 	m_player = FindGO<Player>("player");
 	return true;
 }

@@ -27,8 +27,8 @@ bool Game::Start()
 	m_fade = NewGO<Fade>(0, "fade");
 
 
-	g_renderingEngine->SetSceneMiddleGray(0.04f);
-	g_renderingEngine->SetAmbient({0.1f, 0.1f, 0.1f});
+	g_renderingEngine->SetSceneMiddleGray(0.1f);
+	g_renderingEngine->SetAmbient({ 0.1f, 0.1f, 0.1f });
 
 	m_levelRender.Init("Assets/modelData/stage/stage2.tkl", [&](LevelObjectData& objData) {
 		if (objData.EqualObjectName(L"stage") == true) {
@@ -54,16 +54,35 @@ bool Game::Start()
 
 			SpotLight* sptLight = new SpotLight;
 			sptLight->Init();
-			sptLight->SetColor(Vector3(400.0f, 200.0f, 100.0f));
 			sptLight->SetRange(750.0f);
-			sptLight->SetAngleAffectPowParam(5.0f);
+			// 色
+			sptLight->SetColor(Vector3(5.0f, 1.0f, 1.0f));
+			sptLight->SetColor2(Vector3(100.0f, 60.0f, 20.0f));
+			sptLight->SetColor3(Vector3(8.0f, 1.5f, 1.5f));
+			// 角度の減衰率
+			sptLight->SetAngleAffectPowParam(1.0f);
+			sptLight->SetAngleAffectPowParam2(1.0f);
+			sptLight->SetAngleAffectPowParam3(1.5f);
+			// 範囲の減衰率
+			sptLight->SetRangeAffectPowParam(5.0f);
+			sptLight->SetRangeAffectPowParam2(100.0f);
+			sptLight->SetRangeAffectPowParam3(20.0f);
+			// 角度
+			sptLight->SetAngle(Math::DegToRad(45.0f));
+			sptLight->SetAngle2(Math::DegToRad(45.0f));
+			sptLight->SetAngle3(Math::DegToRad(45.0f));
+
 			sptLight->SetPosition(objData.position);
-			sptLight->SetDirection(0.0f,-1.0f,0.0f);
-			sptLight->SetAngle(Math::DegToRad(90.0f));
+			sptLight->SetDirection(0.0f, -1.0f, 0.0f);
+
 
 			m_sptLightArray.push_back(sptLight);
 
-			
+			VolumeSpotLight* vlspLig = new VolumeSpotLight;
+			vlspLig->Init(*sptLight);
+			m_volumeSptLightArray.push_back(vlspLig);
+
+
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
@@ -93,12 +112,12 @@ bool Game::Start()
 		}
 		if (objData.ForwardMatchName(L"item") == true) {
 
-			itemNum = objData.number;
-			for (int i = 1; i<11; i++)
+			/*itemNum = objData.number;
+			for (int i = 1; i < 11; i++)
 			{
 				int ran = 0;
 				ran = rand() % 2;
-				if (i == itemNum) 
+				if (i == itemNum)
 				{
 					if (ran == 0)
 					{
@@ -111,23 +130,32 @@ bool Game::Start()
 						m_magic->SetPosition(objData.position);
 					}
 				}
-			}
+			}*/
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
+			
+			m_dash = NewGO<ItemDash>(0, "dash");
+			m_dashPos = objData.position;
+			m_dashPos.y = objData.position.y + 30.0f;
+			//m_dash->SetPosition(objData.position);
+			m_dash->SetPosition(m_dashPos);
+			
 			return true;
 		}
 		if (objData.EqualObjectName(L"gem") == true) {
 			//プレイヤーのオブジェクトを作る。
 			m_gem = NewGO<Gem>(0, "gem");
-			m_gem->SetPosition(objData.position);
+			m_gemPos = objData.position;
+			m_gemPos.y = objData.position.y + 30.0f;
+			m_gem->SetPosition(m_gemPos);
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
 		return true;
-	});
-		
+		});
+
 	//ゲームカメラのオブジェクトを作る。
 	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
-	
+
 	//m_map = NewGO<Map>(0, "map");
 
 	return true;

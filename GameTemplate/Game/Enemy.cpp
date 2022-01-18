@@ -135,7 +135,7 @@ void Enemy::Chase()
 	// ƒpƒXã‚ðˆÚ“®‚·‚éB
 	m_position = m_path.Move(
 		m_position,
-		4.0f,
+		4.0f * g_gameTime->GetFrameDeltaTime() * 60.0f,
 		isEnd,
 		m_velocity
 	);

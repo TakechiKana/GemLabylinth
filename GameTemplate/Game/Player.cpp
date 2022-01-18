@@ -94,23 +94,23 @@ void Player::Update()
 	//アニメーションの再生。
 	PlayAnimation();
 
-	wchar_t wcsbuf[256];
-	swprintf_s(wcsbuf, 256, L"%d",m_gemCount);
-	//取得個数
-	//表示するテキストを設定。
-	fontRender.SetText(wcsbuf);
-	//フォントの位置を設定。
-	fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
-	//フォントの大きさを設定。
-	fontRender.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"%.3f", m_game->GetTimer());
-	//取得個数
-	//表示するテキストを設定。
-	fontRender1.SetText(wcsbuf);
-	//フォントの位置を設定。
-	fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
-	//フォントの大きさを設定。
-	fontRender1.SetScale(2.0f);
+	//wchar_t wcsbuf[256];
+	//swprintf_s(wcsbuf, 256, L"%d",m_gemCount);
+	////取得個数
+	////表示するテキストを設定。
+	//fontRender.SetText(wcsbuf);
+	////フォントの位置を設定。
+	//fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
+	////フォントの大きさを設定。
+	//fontRender.SetScale(2.0f);
+	//swprintf_s(wcsbuf, 256, L"%.3f", m_game->GetTimer());
+	////取得個数
+	////表示するテキストを設定。
+	//fontRender1.SetText(wcsbuf);
+	////フォントの位置を設定。
+	//fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
+	////フォントの大きさを設定。
+	//fontRender1.SetScale(2.0f);
 
 	//モデルの更新。
 	m_modelRender.Update();
@@ -131,52 +131,6 @@ void Player::MakeMagicCollision()
 	magicCollision->SetRotation(m_rotation);
 
 }
-
-//コリジョンの判定
-///↓
-//void Player::Collision()
-//{
-//	//被ダメージ、ダウン中、クリア時はダメージ判定をしない。
-//	if (m_playerState == enPlayerState_ReceiveDamage ||
-//		m_playerState == enPlayerState_Down /*||
-//		m_playerState == enPlayerState_Clear*/)
-//	{
-//		return;
-//	}
-//
-//	//エネミーの攻撃用のコリジョンを取得する。
-//	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_punch");
-//	//コリジョンの配列をfor文で回す。
-//	for (auto collision : collisions)
-//	{
-//		//コリジョンとキャラコンが衝突したら。
-//		if (collision->IsHit(m_characterController))
-//		{
-//			if (m_isUnderDamage == false) {
-//				//HPを1減らす。
-//				m_health -= 1;										///////////////////////////////////////////////
-//				m_isUnderDamage = true;
-//			}
-//			//もしHPが0より上なら。
-//			if (m_health > 0)
-//			{
-//				//被ダメージステートに遷移する。
-//				m_playerState = enPlayerState_ReceiveDamage;
-//			}
-//			//HPが0なら。
-//			else if (m_health == 0)
-//			{
-//				//ダウンステートに遷移する。
-//				m_playerState = enPlayerState_Down;
-//			}
-//
-//			//効果音ここ
-//
-//			return;
-//		}
-//	}
-//
-//}
 
 //つかみ判定
 void Player::Catch()
@@ -245,8 +199,8 @@ void Player::Move()
 	//ダッシュ状態なら速度を1.6倍にする。
 	if (m_playerState == enPlayerState_FastRun) {
 
-		m_moveSpeed.x *= 1.6f;
-		m_moveSpeed.z *= 1.6f;
+		m_moveSpeed.x *= 1.3f;
+		m_moveSpeed.z *= 1.3f;
 	}
 
 
@@ -267,7 +221,7 @@ void Player::Move()
 	}
 
 	//キャラクターコントローラーを使って座標を移動させる。
-	m_position = m_characterController.Execute(m_moveSpeed, 1.0f / 60.0f);
+	m_position = m_characterController.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 
 	//絵描きさんに座標を教える。
 	m_modelRender.SetPosition(m_position);
@@ -386,16 +340,17 @@ void Player::CatchState()
 void Player::ProcessState()
 {
 	if (m_playerState != enPlayerState_Catch) {
-		//Yボタンが押されたら。
-		if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
-		{
-			//カウント-1
-			m_magicCount -= 1;
-			//遠投攻撃ステートに移行する。
-			m_playerState = enPlayerState_Magic;
+		////Yボタンが押されたら。
+		//if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
+		//{
+		//	//カウント-1
+		//	m_magicCount -= 1;
+		//	//遠投攻撃ステートに移行する。
+		//	m_playerState = enPlayerState_Magic;
 
-			return;
-		}
+		//	return;
+		//}
+		
 		//Bボタンが押されたら。
 		if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
 		{

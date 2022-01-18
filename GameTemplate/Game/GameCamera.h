@@ -30,5 +30,7 @@ private:
 	Enemy* m_enemy = nullptr;								//エネミー。
 	Vector3				m_toCameraPos = Vector3::One;		//注視点から視点に向かうベクトル。
 	Vector3				target;
+	Vector3 m_position;
+	Vector3 m_moveSpeed;
 	SpringCamera		m_springCamera;						//ばねカメラ。
 };

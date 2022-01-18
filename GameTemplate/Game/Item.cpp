@@ -43,7 +43,7 @@ void Item::PlayEffectandSE(Vector3 position)
 	effectEmitter->SetScale(Vector3::One * 11.0f);
 	Vector3 effectPosition = position;
 	//座標を少し上にする。
-	effectPosition.y += 70.0f;
+	effectPosition.y += 30.0f;
 	//座標を設定する。
 	effectEmitter->SetPosition(effectPosition);
 	//エフェクトを再生する。
