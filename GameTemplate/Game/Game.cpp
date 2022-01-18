@@ -6,11 +6,11 @@
 #include "GameCamera.h"
 #include "Item.h"
 #include "ItemDash.h"
-#include "ItemMagic.h"
 #include "Enemy.h"
 #include "Gem.h"
 #include "Fade.h"
 #include "Title.h"
+#include "LightModel.h"
 //#include "Map.h"
 
 
@@ -20,6 +20,12 @@ Game::~Game()
 	DeleteGO(m_player);
 	DeleteGO(m_backGround);
 	//DeleteGO(m_bgm);
+
+	const auto& lightmodels = FindGOs<LightModel>("lightmodel");
+	for (auto lightmodel : lightmodels)
+	{
+		DeleteGO(lightmodel);
+	}
 
 	const auto& enemys = FindGOs<Enemy>("enemy");
 	for (auto enemy : enemys)
@@ -36,11 +42,11 @@ bool Game::Start()
 {
 
 	m_player = FindGO<Player>("player");
-	m_fade = NewGO<Fade>(0, "fade");
-
 
 	g_renderingEngine->SetSceneMiddleGray(0.1f);
 	g_renderingEngine->SetAmbient({ 0.1f, 0.1f, 0.1f });
+
+	
 
 	m_levelRender.Init("Assets/modelData/stage/stage2.tkl", [&](LevelObjectData& objData) {
 		if (objData.EqualObjectName(L"stage") == true) {
@@ -54,6 +60,9 @@ bool Game::Start()
 		}
 
 		if (objData.EqualObjectName(L"Light") == true) {
+
+			m_lightmodel = NewGO<LightModel>(0, "lightmodel");
+			m_lightmodel->SetPosition(objData.position);
 
 			//ポイントライトのオブジェクトを作る。
 			PointLight* light = new PointLight;
@@ -112,9 +121,8 @@ bool Game::Start()
 			return true;
 		}
 
-		if (objData.ForwardMatchName(L"enemy") == true) {
-
-			//SpawnEnemy();
+		if (objData.ForwardMatchName(L"enemy") == true) 
+		{
 			//プレイヤーのオブジェクトを作る。
 			m_enemy = NewGO<Enemy>(0, "enemy");
 			m_enemy->SetPosition(objData.position);
@@ -122,29 +130,8 @@ bool Game::Start()
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
-		if (objData.ForwardMatchName(L"item") == true) {
-
-			/*itemNum = objData.number;
-			for (int i = 1; i < 11; i++)
-			{
-				int ran = 0;
-				ran = rand() % 2;
-				if (i == itemNum)
-				{
-					if (ran == 0)
-					{
-						m_dash = NewGO<ItemDash>(0, "dash");
-						m_dash->SetPosition(objData.position);
-					}
-					else
-					{
-						m_magic = NewGO<ItemMagic>(0, "magic");
-						m_magic->SetPosition(objData.position);
-					}
-				}
-			}*/
-			//falseにすると、レベルの方でモデルが読み込まれて配置される。
-			
+		if (objData.ForwardMatchName(L"item") == true) 
+		{
 			m_dash = NewGO<ItemDash>(0, "dash");
 			m_dashPos = objData.position;
 			m_dashPos.y = objData.position.y + 30.0f;
@@ -163,13 +150,15 @@ bool Game::Start()
 			return true;
 		}
 		return true;
-		});
+	});
 
 	//ゲームカメラのオブジェクトを作る。
 	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
 
 	//m_map = NewGO<Map>(0, "map");
 
+	//フェードを終了する。
+	m_fade = FindGO<Fade>("fade");
 	m_fade->StartFadeIn();
 
 	return true;
@@ -186,43 +175,10 @@ void Game::Update()
 	for (auto vlLig : m_volumeSptLightArray) {
 		vlLig->Update();
 	}
-	ProcessState();
-
-
 }
-
-
-
-void Game::ProcessState()
-{
-	if (m_gameState == enGameState_Start)
-	{
-		if (g_pad[0]->IsTrigger(enButtonA))
-		{
-			m_gameState = enGameState_Game;
-			m_cameraFlag = true;
-		}
-	}
-	else if (m_gameState == enGameState_Game)
-	{
-		if (m_player->Clear() == true)
-		{
-			m_gameState = enGameState_Event;
-		}
-	}
-	else if (m_gameState == enGameState_Event)
-	{
-		m_gameState = enGameState_Score;
-	}
-	else if (m_gameState == enGameState_Score)
-	{
-		m_gameState = enGameState_Start;
-	}
-}
-
-
 
 void Game::Render(RenderContext& rc)
 {
-	
+	//モデルを描画する。
+	m_modelRender.Draw(rc);
 }

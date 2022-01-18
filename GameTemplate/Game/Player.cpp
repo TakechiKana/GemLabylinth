@@ -3,8 +3,6 @@
 #include "Game.h"
 //#include "ItemHeart.h"
 #include "ItemDash.h"
-#include "ItemMagic.h"
-#include "MagicCollision.h"
 #include "Enemy.h"
 #include "Fade.h"
 
@@ -23,8 +21,6 @@ bool Player::Start()
 	animationClips[enAnimationClip_Run].SetLoopFlag(true);
 	animationClips[enAnimationClip_FastRun].Load("Assets/animData/jackie/fastrun.tka");
 	animationClips[enAnimationClip_FastRun].SetLoopFlag(true);
-	animationClips[enAnimationClip_Magic].Load("Assets/animData/jackie/magic.tka");
-	animationClips[enAnimationClip_Magic].SetLoopFlag(false);
 	animationClips[enAnimationClip_Catch].Load("Assets/animData/jackie/catch.tka");
 	animationClips[enAnimationClip_Catch].SetLoopFlag(true);
 	//animationClips[enAnimationClip_Damage].Load("Assets/animData/jackie/receivedamage.tka");
@@ -41,13 +37,6 @@ bool Player::Start()
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
 
-	//アニメーションイベント
-	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
-		OnAnimationEvent(clipName, eventName);
-		});
-	//ボーン
-	m_PunchBoneId_R = m_modelRender.FindBoneID(L"mixamorig1:RightHand");
-
 	m_gameOverRender.Init("Assets/sprite/kari/Gameover.dds", 1980.0f, 1080.0f);
 	m_downTextRender.Init("Assets/sprite/life/Down_text.dds", 1980.0f, 1080.0f);
 	m_downLife1Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
@@ -56,7 +45,6 @@ bool Player::Start()
 
 	//各クラスのFindGO
 	m_dash = FindGO<ItemDash>("dash");
-	m_magic = FindGO<ItemMagic>("magic");
 	m_game = FindGO<Game>("game");
 	m_enemys = FindGOs<Enemy>("enemy");
 
@@ -78,21 +66,22 @@ Player::~Player()
 //更新処理。
 void Player::Update()
 {
-	if (m_game->GetState() == Game::enGameState_Game) {
-		//移動処理。
-		Move();
-		//回転処理。
-		Rotation();
-		//ステートの遷移処理。
-		ManageState();
-		//つかみ判定
-		Catch();
-		//クリア判定
-		Clear();
+	//移動処理。
+	Move();
+	//回転処理。
+	Rotation();
+	//ステートの遷移処理。
+	ManageState();
+	//つかみ判定
+	Catch();
+	//クリア判定
+	Clear();
 
-	}
 	//アニメーションの再生。
 	PlayAnimation();
+
+
+	//////////デバッグ用テキスト//////////
 
 	//wchar_t wcsbuf[256];
 	//swprintf_s(wcsbuf, 256, L"%d",m_gemCount);
@@ -112,24 +101,10 @@ void Player::Update()
 	////フォントの大きさを設定。
 	//fontRender1.SetScale(2.0f);
 
+	//////////////////////////////////////
+
 	//モデルの更新。
 	m_modelRender.Update();
-}
-
-//遠投攻撃処理
-void Player::MakeMagicCollision()
-{
-	MagicCollision* magicCollision = NewGO<MagicCollision>(0);
-	Vector3 magicCollisionPos = m_position;
-	//座標をプレイヤーの少し前に設定する。
-	magicCollisionPos += m_forward * 50.0f;
-	//座標の位置をあげる
-	magicCollisionPos.y += 70.0f;
-	magicCollision->SetSpeed(m_forward);
-	//座標を設定
-	magicCollision->SetPosition(magicCollisionPos);
-	magicCollision->SetRotation(m_rotation);
-
 }
 
 //つかみ判定
@@ -137,7 +112,7 @@ void Player::Catch()
 {
 	if (m_notCatchTimer > 0.0f) 
 	{
-		m_notCatchTimer -= GameTime().GetFrameDeltaTime();
+		m_notCatchTimer -= g_gameTime->GetFrameDeltaTime();
 	}
 	else
 	{
@@ -269,7 +244,7 @@ void Player::RunState()
 void Player::FastRunState()
 {
 	if (m_timer > 0.0f) {
-		m_timer -= GameTime().GetFrameDeltaTime();
+		m_timer -= g_gameTime->GetFrameDeltaTime();
 	}
 	else 
 	{
@@ -278,30 +253,10 @@ void Player::FastRunState()
 	ProcessState();
 }
 
-//パンチステート
-void Player::PunchState()
-{
-	if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		//ステートを遷移する。
-		ProcessState();
-	}
-}
-
-//遠投攻撃ステート
-void Player::MagicState()
-{
-	if(m_modelRender.IsPlayingAnimation() == false)
-	{
-		//ステートを遷移する。
-		ProcessState();
-	}
-}
-
 //ダウンステート
 void Player::DownState()
 {
-	if (m_modelRender.IsPlayingAnimation() == false)
+	/*if (m_modelRender.IsPlayingAnimation() == false)
 	{
 		if (m_downCount == 0)
 		{
@@ -316,19 +271,33 @@ void Player::DownState()
 				m_playerState = enPlayerState_Idle;
 			}
 		}
+	}*/
+
+	//アニメーションが再生中なら。
+	if (m_modelRender.IsPlayingAnimation() == true)
+	{
+		//処理しない。
+		//早めのリターン。
+		//早期リターン。
+		return;
+	}
+
+	//ダウンカウントが0なら。
+	if (m_downCount ==0)
+	{
+		//ゲームオーバー。
+		m_gameOver = true;
+		return;
+	}
+
+	m_downScreen = true;
+	if (g_pad[0]->IsTrigger(enButtonA))
+	{
+		m_death = false;
+		m_downScreen = false;
+		m_playerState = enPlayerState_Idle;
 	}
 }
-
-//ダメージステート
-//void Player::DamageState()
-//{
-//	if (m_modelRender.IsPlayingAnimation() == false)
-//	{
-//		m_isUnderDamage = false;
-//		//ステートを遷移する。
-//		ProcessState();
-//	}
-//}
 
 //キャッチステート
 void Player::CatchState()
@@ -339,18 +308,14 @@ void Player::CatchState()
 //ステート遷移
 void Player::ProcessState()
 {
-	if (m_playerState != enPlayerState_Catch) {
-		////Yボタンが押されたら。
-		//if (g_pad[0]->IsTrigger(enButtonY) && m_magicCount > 0)
-		//{
-		//	//カウント-1
-		//	m_magicCount -= 1;
-		//	//遠投攻撃ステートに移行する。
-		//	m_playerState = enPlayerState_Magic;
+	//ダウンしたら。
+	if (m_death == true)
+	{
+		m_downCount -= 1;
+		m_playerState = enPlayerState_Down;
+	}
 
-		//	return;
-		//}
-		
+	if (m_playerState != enPlayerState_Catch) {
 		//Bボタンが押されたら。
 		if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
 		{
@@ -373,7 +338,6 @@ void Player::ProcessState()
 	//xかzの移動速度があったら(スティックの入力があったら)。
 	if (fabsf(m_moveSpeed.x) >= 0.001f || fabsf(m_moveSpeed.z) >= 0.001f)
 	{
-
 		if (m_timer > 0.0f) {
 			m_playerState = enPlayerState_FastRun;
 		}
@@ -384,19 +348,9 @@ void Player::ProcessState()
 		}
 		return;
 	}
-
-	//xとzの移動速度が無かったら(スティックの入力が無かったら)。
-	else
-	{
-		//ステートを待機にする。
-		m_playerState = enPlayerState_Idle;
-	}
-	//ダウンしたら。
-	if (m_death == true) 
-	{
-		m_downCount -= 1;
-		m_playerState = enPlayerState_Down;
-	}
+	//ステートを待機にする。
+	m_playerState = enPlayerState_Idle;
+	
 	
 }
 
@@ -420,21 +374,6 @@ void Player::ManageState()
 		//FastRunステートのステート遷移処理。
 		FastRunState();
 		break;
-		//Punchステートの時。
-	case enPlayerState_Punch:
-		//攻撃ステートのステート遷移処理。
-		PunchState();
-		break;
-		//魔法攻撃ステートの時。
-	case enPlayerState_Magic:
-		//魔法攻撃ステートのステート遷移処理。
-		MagicState();
-		break;
-		//被ダメージ時ステートの時。
-	//case enPlayerState_ReceiveDamage:
-	//	//被ダメージ時ステートのステート遷移処理。
-	//	DamageState();
-	//	break;
 		//ダウンステートの時。
 	case enPlayerState_Down:
 		//ダウンステートのステート遷移処理。
@@ -456,51 +395,33 @@ void Player::PlayAnimation()
 {
 	//switch文。
 	switch (m_playerState) {
-	//プレイヤーステートが0(Idle)だったら。
+	//プレイヤーステートがIdleだったら。
 	case enPlayerState_Idle:
 		//Idle
 		m_modelRender.PlayAnimation(enAnimationClip_Idle,0.3f);
 		break;
-	//プレイヤーステートが1(Run)だったら。
+	//プレイヤーステートがRunだったら。
 	case enPlayerState_Run:
 		//Run
 		m_modelRender.PlayAnimation(enAnimationClip_Run, 0.3f);
 		break;
-	//プレイヤーステートが2(FastRun)だったら。
+	//プレイヤーステートがFastRunだったら。
 	case enPlayerState_FastRun:
 		//FastRun
 		m_modelRender.PlayAnimation(enAnimationClip_FastRun, 0.3f);
 		break;
-	//プレイヤーステートが4(Magic)だったら。
-	case enPlayerState_Magic:
-		//Magic
-		m_modelRender.PlayAnimation(enAnimationClip_Magic, 0.3f);
-		break;
-	//プレイヤーステートが5(Heal)だったら。
+	//プレイヤーステートがCatchだったら。
 	case enPlayerState_Catch:
 		//Catch
 		m_modelRender.PlayAnimation(enAnimationClip_Catch, 0.3f);
 		break;
-	//case enPlayerState_ReceiveDamage:
-	//	//Damage
-	//	m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
-	//	break;
+	//プレイヤーステートがDownだったら。
 	case enPlayerState_Down:
 		//Down
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
 		break;
 	default:
 		break;
-	}
-}
-
-//アニメーションイベント関数
-void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
-{
-	//キーの名前が「magic_attack」の時。
-	if (wcscmp(eventName, L"magic_attack") == 0) {
-		//magicを作成する。
-	MakeMagicCollision();
 	}
 }
 

@@ -4,7 +4,6 @@
 //クラス宣言
 class Collision;
 class ItemDash;
-class ItemMagic;
 class Game;
 class Enemy;
 class Fade;
@@ -19,10 +18,6 @@ public:
 		enPlayerState_Idle,					//待機。
 		enPlayerState_Run,					//走る。
 		enPlayerState_FastRun,				//速く走る。
-		enPlayerState_Punch,				//攻撃
-		enPlayerState_Magic,				//遠投攻撃。
-		enPlayerState_Healing,				//回復。
-		//enPlayerState_ReceiveDamage,		//ダメ―ジ受けた。
 		enPlayerState_Down,					//HPが0。
 		enPlayerState_Catch,				//つかまった。
 		enPlayerState_Clear					//クリアー。
@@ -42,11 +37,6 @@ public:
 	void GetDashCount()
 	{
 		m_dashCount += 1;
-	}
-	//マジックアイテムを拾ったら
-	void GetMagicCount()
-	{
-		m_magicCount += 1;
 	}
 	//ジェムを拾ったら
 	void GetGemCount()
@@ -92,10 +82,7 @@ public:
 	
 	bool IsEnableMove() const
 	{
-		return m_playerState != enPlayerState_Healing &&
-			m_playerState != enPlayerState_Magic &&
-			m_playerState != enPlayerState_Punch &&
-			m_playerState != enPlayerState_Down &&
+		return m_playerState != enPlayerState_Down &&
 			m_playerState != enPlayerState_Catch &&
 			m_playerState != enPlayerState_Clear;
 	}
@@ -103,8 +90,6 @@ public:
 private:
 	//つかみ判定
 	void Catch();
-	//アニメーションイベント用関数
-	void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
 	//ステート管理。
 	void ManageState();
 	//ステート遷移
@@ -115,12 +100,6 @@ private:
 	void RunState();
 	//ファストランステート
 	void FastRunState();
-	//パンチステート
-	void PunchState();
-	//遠投攻撃ステート
-	void MagicState();
-	//ダメージステート
-	//void DamageState();
 	//ダウンステートの時
 	void DownState();
 	//キャッチステート
@@ -129,8 +108,6 @@ private:
 	void Update();
 	//描画処理。
 	void Render(RenderContext& rc);
-	//遠投攻撃コリジョン
-	void MakeMagicCollision();
 	//移動処理。
 	void Move();
 	//回転処理。
@@ -147,9 +124,7 @@ private:
 		enAnimationClip_Idle,		//待機アニメーション。
 		enAnimationClip_Run,		//走りアニメーション。
 		enAnimationClip_FastRun,	//ダッシュアイテム時の走りアニメーション。
-		enAnimationClip_Magic,		//マジックアニメーション。
 		enAnimationClip_Catch,		//つかまれたアニメーション。
-		//enAnimationClip_Damage,	//ダメージアニメーション。
 		enAnimationClip_Down,		//ダウンアニメーション。
 		enAnimationClip_Num,		//アニメーション数。
 	};
@@ -163,8 +138,6 @@ private:
 	ModelRender m_modelRender;								//モデルレンダ―。
 	AnimationClip animationClips[enAnimationClip_Num];		//アニメーションクリップ。
 	CharacterController m_characterController;				//キャラクターコントローラー。
-
-	int m_health = 3;										//HP
 
 	float m_timer = 0.0f;									//ダッシュタイム
 	float m_timer1 = 0.0f;									//マジック削除まで
@@ -187,8 +160,6 @@ private:
 	//各クラスの変数
 	ItemDash* m_dash;
 	Game* m_game;
-	ItemMagic* m_magic;
-
 	Fade* m_fade;
 
 	std::vector<Enemy*>  m_enemys;

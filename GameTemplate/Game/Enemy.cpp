@@ -166,7 +166,7 @@ void Enemy::Phose()
 {
 	if (m_catchTimer > 0.0f)
 	{
-		m_catchTimer -= GameTime().GetFrameDeltaTime();
+		m_catchTimer -= g_gameTime->GetFrameDeltaTime();
 	}
 	else
 	{
@@ -215,32 +215,53 @@ const bool Enemy::SearchPlayer() const
 
 void Enemy::ProcessState()
 {
-	if (m_catchTimer <= 0.0f) {
-		//プレイヤーを見つけたら。
-		if (SearchPlayer() == true)
-		{
-			//通常攻撃できる距離なら
-			if (m_catch == true)
-			{
-				m_enemyState = enEnemyState_Punch;
-
-			}
-			else
-			{
-				//プレイヤーに向かって走る
-				m_enemyState = enEnemyState_Chase;
-			}
-		}
-		//プレイヤーを見つけられなければ。
-		else
-		{
-			//待機ステートに遷移する。
-			m_enemyState = enEnemyState_Idle;
-		}
-		if (m_isUnderDamage == true) {
-			m_enemyState = enEnemyState_ReceiveDamage;
-		}
+	if (m_catchTimer > 0.0f)
+	{
+		return;
 	}
+	if (SearchPlayer() == false)
+	{
+		//待機ステートに遷移する。
+		m_enemyState = enEnemyState_Idle;
+		return;
+	}
+	if (m_catch == false)
+	{
+		//プレイヤーに向かって走る。
+		m_enemyState = enEnemyState_Chase;
+		return;
+	}
+	//プレイヤーに攻撃する。
+	m_enemyState = enEnemyState_Punch;
+
+	//if (m_catchTimer <= 0.0f) {
+	//	//プレイヤーを見つけたら。
+	//	if (SearchPlayer() == true)
+	//	{
+	//		//通常攻撃できる距離なら
+	//		if (m_catch == true)
+	//		{
+	//			m_enemyState = enEnemyState_Punch;
+
+	//		}
+	//		else
+	//		{
+	//			//プレイヤーに向かって走る
+	//			m_enemyState = enEnemyState_Chase;
+	//		}
+	//	}
+	//	//プレイヤーを見つけられなければ。
+	//	else
+	//	{
+	//		//待機ステートに遷移する。
+	//		m_enemyState = enEnemyState_Idle;
+	//	}
+	// 
+	// 
+	//	if (m_isUnderDamage == true) {
+	//		m_enemyState = enEnemyState_ReceiveDamage;
+	//	}
+	//}
 }
 
 void Enemy::IdleState()
@@ -289,14 +310,14 @@ void Enemy::PhoseState()
 //ダメージ関数
 void Enemy::DamageState()
 {
-	//被ダメージアニメーションの再生が終わったら。
-	if (m_modelRender.IsPlayingAnimation() == false)
+	//被ダメージアニメーションの再生中なら。
+	if (m_modelRender.IsPlayingAnimation() == true)
 	{
-		//他のステートに遷移する。
-		
-		ProcessState();
-		m_isUnderDamage = false;
+		return;
 	}
+	//他のステートに遷移する。
+	ProcessState();
+	m_isUnderDamage = false;
 }
 
 //各ステートの関数呼び出し

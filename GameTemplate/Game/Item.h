@@ -22,10 +22,5 @@ private:
 	ItemHeart* m_heart;
 	ItemMagic* m_magic;
 	ItemDash* m_dash;
-	/*int itemNum = 0;
-	int ran = 0;*/
-	int m_state;
-	bool m_state1;
-	int getCount = 0;
 };
 

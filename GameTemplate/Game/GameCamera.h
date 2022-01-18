@@ -21,8 +21,6 @@ public:
 	/// 座標と視点を更新する。
 	/// </summary>
 	void UpdatePositionAndTarget();
-	void CameraPos();
-	void TargetPos();
 
 private:
 	Game* m_game = nullptr;

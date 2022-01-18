@@ -1,10 +1,6 @@
-//#include <Random>
-
 #include "stdafx.h"
 #include "Item.h"
 #include "Player.h"
-//#include "ItemHeart.h"
-#include "ItemMagic.h"
 #include "ItemDash.h"
 
 //EffectEmitterを使用するために、ファイルをインクルードする。
@@ -32,7 +28,6 @@ bool Item::GetItem(Vector3 position)
 void Item::PlayEffectandSE(Vector3 position)
 {
 	///////効果音の再生///////
-
 
 	/////エフェクトの再生/////
 	//取得エフェクトを発生させる。

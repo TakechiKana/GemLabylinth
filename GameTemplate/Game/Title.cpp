@@ -7,6 +7,11 @@
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 
+namespace
+{
+	const float WIDHT = 1920.0f;
+}
+
 Title::~Title()
 {
 	//BGMを削除する。
@@ -16,7 +21,7 @@ Title::~Title()
 bool Title::Start()
 {
 	//画像を読み込む。
-	m_spriteRender.Init("Assets/sprite/title/Title_jackie1.dds", 1920, 1080);
+	m_spriteRender.Init("Assets/sprite/title/Title_jackie1.dds", WIDHT, 1080);
 	m_play.Init("Assets/sprite/title/title_play.dds",450,128);
 	m_play.SetPosition(Vector3(0.0f, -250.0f, 0.0f));
 
@@ -31,6 +36,7 @@ bool Title::Start()
 	m_bgm->SetVolume(0.3f);*/
 
 	m_fade = FindGO<Fade>("fade");
+	//フェードインを開始する。
 	m_fade->StartFadeIn();
 	return true;
 }
@@ -38,6 +44,7 @@ bool Title::Start()
 void Title::Update()
 {
 	if (m_isWaitFadeout) {
+		//フェード中じゃなかったら。
 		if (!m_fade->IsFade()) {
 			NewGO<Game>(0, "game");
 			//自身を削除する。
@@ -48,6 +55,7 @@ void Title::Update()
 		//Aボタンを押したら。
 		if (g_pad[0]->IsTrigger(enButtonA)) {
 			m_isWaitFadeout = true;
+			//フェードアウトを開始する。
 			m_fade->StartFadeOut();
 			//効果音を再生する。
 			/*SoundSource* se = NewGO<SoundSource>(0);
