@@ -32,12 +32,7 @@ public:
 
 public:
 	Game() {}
-	~Game() 
-	{
-		for (auto ptLig : m_lightArray) {
-			delete ptLig;
-		}
-	}
+	~Game();
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
@@ -46,10 +41,6 @@ public:
 		return m_gameState;
 	}
 
-	const Vector3 GetPosition()const
-	{
-		return playerPos;
-	}
 
 	const float GetTimer()const
 	{
@@ -68,47 +59,10 @@ public:
 
 private:
 	void ProcessState();
-	void Prologue();
+
 	//void ManageState();
-	void AlphaValue() 
-	{
-		switch (m_alphaState) {
-		case enAlphaState_FadeOut:
-			m_alpha -= 1.0f * g_gameTime->GetFrameDeltaTime();
-			if (m_alpha <= 0.0f) {
-				m_alpha = 0.0f;
-				m_alphaState = enAlphaState_Idle;
-			}
-			break;
-		case enAlphaState_FadeIn:
-			m_alpha += 1.0f * g_gameTime->GetFrameDeltaTime();
-			if (m_alpha >= 1.0f) {
-				m_alpha = 1.0f;
-				m_alphaState = enAlphaState_Idle;
-			}
-			break;
-		case enAlphaState_Idle:
 
-			break;
-		}
-	}
-	void PageUp()
-	{
-		
-		m_alphaState = enAlphaState_FadeIn;
-		if (m_alphaState = enAlphaState_Idle) {
-			m_pageTimer -= GameTime().GetFrameDeltaTime();
-			if (m_pageTimer <= 0.0f)
-			{
-
-				m_alphaState = enAlphaState_FadeOut;
-
-			}
-			m_pro_page += 1;
-		}
-	}
-
-	EnGameState m_gameState = enGameState_Start;
+	EnGameState m_gameState = enGameState_Game;
 	EnAlphaState m_alphaState = enAlphaState_Idle;
 	SkyCube m_skyCube;
 	std::vector< PointLight*> m_lightArray;
@@ -135,12 +89,6 @@ private:
 	bool m_pageFlag = false;
 	bool m_isWaitFadeout = false;
 
-	SpriteRender m_Prologue1;
-	SpriteRender m_Prologue2;
-	SpriteRender m_Prologue3;
-	SpriteRender m_Prologue4;
-	SpriteRender m_Prologue5;
-	Vector3 playerPos;
 	Vector3 m_gemPos;
 	Vector3 m_dashPos;
 

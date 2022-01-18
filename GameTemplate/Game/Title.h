@@ -15,7 +15,7 @@ public:
 private:
 	SpriteRender			m_spriteRender;					//タイトルの画像。
 	float					m_alpha = 0.0f;					//pressbuttonのα値。
-	SpriteRender			m_pressButton;					//pressbuttonの画像。
+	SpriteRender			m_play;					//pressbuttonの画像。
 	SoundSource*			m_bgm = nullptr;				//BGM
 	Fade*					m_fade = nullptr;				//フェード。
 	bool					m_isWaitFadeout = false;

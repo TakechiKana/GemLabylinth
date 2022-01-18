@@ -16,19 +16,19 @@ Title::~Title()
 bool Title::Start()
 {
 	//画像を読み込む。
-	m_spriteRender.Init("Assets/sprite/title.dds", 1457, 728);
-	m_pressButton.Init("Assets/sprite/button.dds", 931, 465);
-	m_pressButton.SetPosition(Vector3(0.0f, -130.0f, 0.0f));
+	m_spriteRender.Init("Assets/sprite/title/Title_jackie1.dds", 1920, 1080);
+	m_play.Init("Assets/sprite/title/title_play.dds",450,128);
+	m_play.SetPosition(Vector3(0.0f, -250.0f, 0.0f));
 
 	//音を読み込む。
-	g_soundEngine->ResistWaveFileBank(8, "Assets/sound/titlebgm.wav");
-	g_soundEngine->ResistWaveFileBank(9, "Assets/sound/button.wav");
+	/*g_soundEngine->ResistWaveFileBank(8, "Assets/sound/titlebgm.wav");
+	g_soundEngine->ResistWaveFileBank(9, "Assets/sound/button.wav");*/
 
 	//BGM。
-	m_bgm = NewGO<SoundSource>(0);
+	/*m_bgm = NewGO<SoundSource>(0);
 	m_bgm->Init(8);
 	m_bgm->Play(true);
-	m_bgm->SetVolume(0.3f);
+	m_bgm->SetVolume(0.3f);*/
 
 	m_fade = FindGO<Fade>("fade");
 	m_fade->StartFadeIn();
@@ -50,10 +50,10 @@ void Title::Update()
 			m_isWaitFadeout = true;
 			m_fade->StartFadeOut();
 			//効果音を再生する。
-			SoundSource* se = NewGO<SoundSource>(0);
+			/*SoundSource* se = NewGO<SoundSource>(0);
 			se->Init(9);
 			se->Play(false);
-			se->SetVolume(0.6f);
+			se->SetVolume(0.6f);*/
 		}
 	}
 
@@ -67,16 +67,16 @@ void Title::Update()
 		m_alpha += g_gameTime->GetFrameDeltaTime() * 1.2f;
 	}
 
-	m_pressButton.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
+	m_play.SetMulColor(Vector4(1.0f, 1.0f, 1.0f, fabsf(sinf(m_alpha))));
 
 	//画像の更新。
 	m_spriteRender.Update();
-	m_pressButton.Update();
+	m_play.Update();
 }
 
 void Title::Render(RenderContext& rc)
 {
 	//画像の描画。
 	m_spriteRender.Draw(rc);
-	m_pressButton.Draw(rc);
+	m_play.Draw(rc);
 }

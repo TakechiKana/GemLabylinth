@@ -40,16 +40,12 @@ private:
 		enState_Idle			//アイドル中。
 	};
 
-	void AutoFade();
-
 	//状態
 	EnState m_state = enState_Idle;
+
 	//画像
 	SpriteRender		m_dreamRender;		//タイトル→ゲーム
-	SpriteRender		m_gameOverRender;	//ゲーム→ゲームオーバー
-	SpriteRender		m_gameClearRender;	//ゲーム→ゲームクリア
 
-	float m_alpha = 0.0f;					//α値　変更すると透明になる
-	float m_timer = 0.0f;					//フェードタイマー
+	float m_alpha = 1.0f;					//α値　変更すると透明になる
 };
 
