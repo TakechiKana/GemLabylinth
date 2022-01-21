@@ -11,6 +11,12 @@
 //EffectEmitterを使用するために、ファイルをインクルードする。
 #include "graphics/effect/EffectEmitter.h"
 
+namespace
+{
+	const float WIDTH = 1920.f;
+	const float HIGH = 1080.f;
+	const float WINGS_SPRITE = 170.0f;
+}
 
 bool Player::Start()
 {
@@ -23,8 +29,6 @@ bool Player::Start()
 	animationClips[enAnimationClip_FastRun].SetLoopFlag(true);
 	animationClips[enAnimationClip_Catch].Load("Assets/animData/jackie/catch.tka");
 	animationClips[enAnimationClip_Catch].SetLoopFlag(true);
-	//animationClips[enAnimationClip_Damage].Load("Assets/animData/jackie/receivedamage.tka");
-	//animationClips[enAnimationClip_Damage].SetLoopFlag(false);
 	animationClips[enAnimationClip_Down].Load("Assets/animData/jackie/down.tka");
 	animationClips[enAnimationClip_Down].SetLoopFlag(false);
 
@@ -37,11 +41,10 @@ bool Player::Start()
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
 
-	m_gameOverRender.Init("Assets/sprite/kari/Gameover.dds", 1980.0f, 1080.0f);
-	m_downTextRender.Init("Assets/sprite/life/Down_text.dds", 1980.0f, 1080.0f);
-	m_downLife1Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
-	m_downLife2Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
-	m_downLife3Render.Init("Assets/sprite/life/life1.dds", 1980.0f, 1080.0f);
+	m_downLife1Render.Init("Assets/sprite/life/down1.dds", WIDTH, HIGH);
+	m_downLife2Render.Init("Assets/sprite/life/down2.dds", WIDTH, HIGH);
+	m_wingsRender.Init("Assets/sprite/UI/wings.dds", WINGS_SPRITE, WINGS_SPRITE);
+	m_wingsRender.SetPosition(Vector3(-830.0f, 350.0f, 0.0f));
 
 	//各クラスのFindGO
 	m_dash = FindGO<ItemDash>("dash");
@@ -76,35 +79,33 @@ void Player::Update()
 	Catch();
 	//クリア判定
 	Clear();
-
 	//アニメーションの再生。
 	PlayAnimation();
-
-
-	//////////デバッグ用テキスト//////////
-
-	//wchar_t wcsbuf[256];
-	//swprintf_s(wcsbuf, 256, L"%d",m_gemCount);
-	////取得個数
-	////表示するテキストを設定。
-	//fontRender.SetText(wcsbuf);
-	////フォントの位置を設定。
-	//fontRender.SetPosition(Vector3(-900.0f, 500.0f, 0.0f));
-	////フォントの大きさを設定。
-	//fontRender.SetScale(2.0f);
-	//swprintf_s(wcsbuf, 256, L"%.3f", m_game->GetTimer());
-	////取得個数
-	////表示するテキストを設定。
-	//fontRender1.SetText(wcsbuf);
-	////フォントの位置を設定。
-	//fontRender1.SetPosition(Vector3(-900.0f, 350.0f, 0.0f));
-	////フォントの大きさを設定。
-	//fontRender1.SetScale(2.0f);
-
-	//////////////////////////////////////
+	//文字表示
+	Font();
 
 	//モデルの更新。
 	m_modelRender.Update();
+	m_wingsRender.Update();
+}
+//文字表示
+void Player::Font()
+{
+	wchar_t wcsbuf[256];
+	swprintf_s(wcsbuf, 256, L"x %d", m_dashCount);
+	//表示するテキストを設定。
+	fontRender1.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender1.SetPosition(Vector3(-760.0f, 400.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender1.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"夢のかけら のこり%d", m_gemCount);
+	//表示するテキストを設定。
+	fontRender2.SetText(wcsbuf);
+	//フォントの位置を設定。
+	fontRender2.SetPosition(Vector3(100.0f, 500.0f, 0.0f));
+	//フォントの大きさを設定。
+	fontRender2.SetScale(1.5f);
 }
 
 //つかみ判定
@@ -144,36 +145,13 @@ void Player::Move()
 	forward.y = 0.0f;
 	right.y = 0.0f;
 
-
-
-
-	//if (m_playerState == enPlayerState_Run) {
-	//	//左スティックの入力量と120.0fを乗算。
-	//	right *= stickL.x * 350.0f;
-	//	forward *= stickL.y * 350.0f;
-	//}
-	//if(m_playerState == enPlayerState_FastRun) {
-	//	//左スティックの入力量と190.0fを乗算。
-	//	right *= stickL.x * 450.0f;
-	//	forward *= stickL.y * 450.0f;
-	//}
-
-
-	////移動速度にスティックの入力量を加算する。
-	//m_moveSpeed += right + forward;
-
-
-	/////////////////////////////////
-
-
-
 	//移動速度にスティックの入力量を加算する。
 	m_moveSpeed += right * stickL.x * 350.0f;
 	m_moveSpeed += forward * stickL.y * 350.0f;
 
 	//ダッシュ状態なら速度を1.6倍にする。
-	if (m_playerState == enPlayerState_FastRun) {
-
+	if (m_playerState == enPlayerState_FastRun) 
+	{
 		m_moveSpeed.x *= 1.3f;
 		m_moveSpeed.z *= 1.3f;
 	}
@@ -302,18 +280,25 @@ void Player::DownState()
 //キャッチステート
 void Player::CatchState()
 {
-	ProcessState();
-}
-
-//ステート遷移
-void Player::ProcessState()
-{
 	//ダウンしたら。
 	if (m_death == true)
 	{
 		m_downCount -= 1;
 		m_playerState = enPlayerState_Down;
 	}
+
+}
+
+//ステート遷移
+void Player::ProcessState()
+{
+	////ダウンしたら。
+	//if (m_death == true)
+	//{
+	//	m_downCount -= 1;
+	//	m_playerState = enPlayerState_Down;
+
+	//}
 
 	if (m_playerState != enPlayerState_Catch) {
 		//Bボタンが押されたら。
@@ -428,19 +413,14 @@ void Player::PlayAnimation()
 //描画処理。
 void Player::Render(RenderContext& rc)
 {
-	//ユニティちゃんを描画する。
+	//モデルを描画する。
 	m_modelRender.Draw(rc);
+	m_wingsRender.Draw(rc);
 	fontRender.Draw(rc);
 	fontRender1.Draw(rc);
 	fontRender2.Draw(rc);
 	fontRender3.Draw(rc);
-	if (m_downScreen == true) {
-		m_downTextRender.Draw(rc);
-	}
-	if (m_gameOver == true)
-	{
-		m_gameOverRender.Draw(rc);
-	}
+
 }
 
 //memo

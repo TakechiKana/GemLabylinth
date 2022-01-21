@@ -1,8 +1,6 @@
 #pragma once
 
 class Player;
-class ItemHeart;
-class ItemMagic;
 class ItemDash;
 
 class Item
@@ -19,8 +17,6 @@ private:
 	Quaternion m_rotation;
 	Vector3 position;
 	Player* m_player = nullptr;
-	ItemHeart* m_heart;
-	ItemMagic* m_magic;
 	ItemDash* m_dash;
 };
 

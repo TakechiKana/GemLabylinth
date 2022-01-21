@@ -12,6 +12,10 @@
 #include "Title.h"
 //#include "Map.h"
 
+namespace
+{
+	const float HIGH = 15.0f;
+}
 
 Game::~Game()
 {
@@ -53,6 +57,8 @@ bool Game::Start()
 		}
 
 		if (objData.EqualObjectName(L"Light") == true) {
+
+			objData.position.y = objData.position.y + HIGH;
 
 			//ポイントライトのオブジェクトを作る。
 			PointLight* light = new PointLight;
@@ -113,7 +119,7 @@ bool Game::Start()
 
 		if (objData.ForwardMatchName(L"enemy") == true) 
 		{
-			//プレイヤーのオブジェクトを作る。
+			//エネミーのオブジェクトを作る。
 			m_enemy = NewGO<Enemy>(0, "enemy");
 			m_enemy->SetPosition(objData.position);
 
@@ -123,19 +129,17 @@ bool Game::Start()
 		if (objData.ForwardMatchName(L"item") == true) 
 		{
 			m_dash = NewGO<ItemDash>(0, "dash");
-			m_dashPos = objData.position;
-			m_dashPos.y = objData.position.y + 30.0f;
-			//m_dash->SetPosition(objData.position);
-			m_dash->SetPosition(m_dashPos);
+			objData.position.y = objData.position.y + (HIGH * 2.0f);
+			m_dash->SetPosition(objData.position);
 			
 			return true;
 		}
 		if (objData.EqualObjectName(L"gem") == true) {
-			//プレイヤーのオブジェクトを作る。
+			//ジェムのオブジェクトを作る。
+			m_player->SetGemCount();
 			m_gem = NewGO<Gem>(0, "gem");
-			m_gemPos = objData.position;
-			m_gemPos.y = objData.position.y + 30.0f;
-			m_gem->SetPosition(m_gemPos);
+			objData.position.y = objData.position.y + (HIGH * 2.0f);
+			m_gem->SetPosition(objData.position);
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
@@ -165,9 +169,40 @@ void Game::Update()
 	for (auto vlLig : m_volumeSptLightArray) {
 		vlLig->Update();
 	}
+	GameTimer();
+	TimerRender();
+}
+
+void Game::GameTimer()
+{
+	m_timer = m_timer + g_gameTime->GetFrameDeltaTime();
+
+	if (m_timer < 60.0f)
+	{
+		m_minutes = m_timer;
+	}
+	else
+	{
+		m_timer = 0.0f;
+		m_hour += 1;
+	}
+}
+
+void Game::TimerRender()
+{
+	wchar_t wcsbuf[256];
+	swprintf_s(wcsbuf, 256, L"AM %02d:%02d",m_hour,m_minutes);
+	//取得個数
+	//表示するテキストを設定。
+	m_timeRender.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_timeRender.SetPosition(Vector3(-915.0f, 500.0f, 0.0f));
+	//フォントの大きさを設定。
+	m_timeRender.SetScale(2.0f);
+
 }
 
 void Game::Render(RenderContext& rc)
 {
-
+	m_timeRender.Draw(rc);
 }

@@ -5,7 +5,7 @@
 
 bool ItemDash::Start()
 {
-	m_modelRender.Init("Assets/modelData/item/wings.tkm");
+	m_modelRender.Init("Assets/modelData/item/clock.tkm");
 	m_modelRender.SetScale({ 1.4f,1.4f,1.4f });
 	m_player = FindGO<Player>("player");
 	return true;
@@ -26,7 +26,7 @@ void ItemDash::DashGet()
 	if (m_item.GetItem(ServePosition()) == false) {
 		return;
 	}
-	m_player->GetDashCount();
+	m_player->SetDashCount();
 	DeleteGO(this);
 }
 void ItemDash::Rotation()

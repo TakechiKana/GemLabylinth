@@ -6,7 +6,7 @@
 bool Gem::Start()
 {
 	//m_gemMap.Init("Assets/sprite/enemy.dds", 35, 35);
-	m_modelRender.Init("Assets/modelData/item/gem_kari.tkm");
+	m_modelRender.Init("Assets/modelData/item/gem.tkm");
 	//m_modelRender.SetScale({ 10.0f,10.0f,10.0f });
 	m_player = FindGO<Player>("player");
 	return true;
@@ -25,7 +25,7 @@ void Gem::Count()
 	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
 	if (m_item.GetItem(ServePosition()) == true) {
-		m_player->GetGemCount();
+		m_player->LeftGemCount();
 		DeleteGO(this);
 	}
 }

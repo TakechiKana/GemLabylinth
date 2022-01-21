@@ -22,17 +22,8 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
-
-	const bool GetCameraFlag()const
-	{
-		return m_cameraFlag;
-	}
-
-	void SetCameraFlag(bool flag)
-	{
-		m_cameraFlag = flag;
-	}
-
+	void GameTimer();
+	void TimerRender();
 private:
 	std::vector< PointLight*> m_lightArray;
 	std::vector< SpotLight*> m_sptLightArray;
@@ -49,15 +40,16 @@ private:
 	Fade* m_fade = nullptr;
 	//Map* m_map = nullptr;
 
-	int itemNum = 0;
+	float m_timer = 0.0f;
+
+	int m_hour = 0;
+	int m_minutes = 0;
+
 	bool m_cameraFlag = true;
 	bool m_fadeFlag = false;
 
 	bool m_pageFlag = false;
 	bool m_isWaitFadeout = false;
 
-	Vector3 m_gemPos;
-	Vector3 m_dashPos;
-
-	FontRender font1;
+	FontRender m_timeRender;
 };

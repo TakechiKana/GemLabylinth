@@ -27,6 +27,12 @@ public:
 	Player();
 	~Player();
 
+	//プレイヤーを待機状態にする。
+	void SetIdleState()
+	{
+		m_playerState = enPlayerState_Idle;
+	}
+
 	//ダメージ処理
 	void RaceiveDamage()
 	{
@@ -34,14 +40,19 @@ public:
 	}
 
 	//ダッシュアイテムを拾ったら
-	void GetDashCount()
+	void SetDashCount()
 	{
 		m_dashCount += 1;
 	}
-	//ジェムを拾ったら
-	void GetGemCount()
+	//ジェムの個数設定
+	void SetGemCount()
 	{
 		m_gemCount += 1;
+	}
+	//ジェムの残り個数
+	void LeftGemCount()
+	{
+		m_gemCount -= 1;
 	}
 
 	//ポジションを渡す関数
@@ -114,6 +125,9 @@ private:
 	void Rotation();
 	//アニメーションの再生。
 	void PlayAnimation();
+	//文字表示
+	void Font();
+
 	//ダウン時の残機表示
 	//void LifeRender(RenderContext& rc);
 
@@ -164,12 +178,9 @@ private:
 
 	std::vector<Enemy*>  m_enemys;
 
-	SpriteRender m_downTextRender;		//ダウン時テキスト
 	SpriteRender m_downLife1Render;		//ダウン時残機１
 	SpriteRender m_downLife2Render;		//ダウン時残機２
-	SpriteRender m_downLife3Render;		//ダウン時残機３
-	SpriteRender m_gameOverRender;		//GameOver
-
+	SpriteRender m_wingsRender;
 
 	FontRender fontRender;
 	FontRender fontRender1; 
