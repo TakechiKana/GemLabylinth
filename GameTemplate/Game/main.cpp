@@ -4,6 +4,7 @@
 #include<InitGUID.h>
 #include<dxgidebug.h>
 
+#include "Prologue.h"
 #include "Game.h"
 #include "Title.h"
 #include "Fade.h"
@@ -37,8 +38,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//////////////////////////////////////
 
 	//クラスのオブジェクトを作成。
-	NewGO<Game>(0, "game");
-	//NewGO<Title>(0, "title");
+	//NewGO<Prologue>(0, "prologue");
+	NewGO<Title>(0, "title");
 	NewGO<Fade>(0, "fade");
 
 	//////////////////////////////////////

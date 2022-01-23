@@ -13,6 +13,12 @@
 //CollisionObjectを使用したいため、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
 
+namespace
+{
+	const float CATCH_TIMER = 20.0f;
+	const Vector3 PADDING = { 20.0f,20.0f,20.0f };
+}
+
 Enemy::Enemy()
 {
 
@@ -34,10 +40,6 @@ bool Enemy::Start()
 	m_animationClips[enAnimationClip_Punch].SetLoopFlag(false);
 	m_animationClips[enAnimationClip_Phose].Load("Assets/animData/michelle/sad.tka");
 	m_animationClips[enAnimationClip_Phose].SetLoopFlag(true);
-	m_animationClips[enAnimationClip_Damage].Load("Assets/animData/michelle/receivedamage.tka");
-	m_animationClips[enAnimationClip_Damage].SetLoopFlag(false);
-	//m_animationClips[enAnimationClip_Down].Load("Assets/animData/michelle/down.tka");
-	//m_animationClips[enAnimationClip_Down].SetLoopFlag(false);
 
 	//モデルを読み込む。
 	m_modelRender.Init("Assets/modelData/human/Michelle.tkm", m_animationClips, enAnimationClip_Num);
@@ -53,8 +55,6 @@ bool Enemy::Start()
 	m_modelRender.SetPosition(position);
 	//回転を設定する。
 	m_modelRender.SetRotation(m_rotation);
-	//大きさを設定する。
-	//m_modelRender.SetScale(m_scale);
 
 	//キャラクターコントローラーを初期化。
 	m_charaCon.Init(
@@ -92,10 +92,6 @@ void Enemy::Update()
 	Chase();
 	//回転処理。
 	Rotation();
-	//当たり判定。
-	Collision();
-
-
 	//アニメーションの再生。
 	PlayAnimation();
 	//ステートの遷移処理。
@@ -107,7 +103,7 @@ void Enemy::Update()
 	m_modelRender.Update();
 
 	//ターゲットポジション（プレイヤー）の更新
-	m_targetPosition = m_player->GetPosition() + padding ;
+	m_targetPosition = m_player->GetPosition() + PADDING ;
 }
 
 void Enemy::Chase()
@@ -117,7 +113,7 @@ void Enemy::Chase()
 		return;
 	}
 	//ポーズ処理
-	Phose();
+	//Phose();
 	bool isEnd;
 	if (SearchPlayer()==true)   {
 		// パス検索
@@ -162,43 +158,6 @@ void Enemy::Rotation()
 
 }
 
-void Enemy::Phose()
-{
-	if (m_catchTimer > 0.0f)
-	{
-		m_catchTimer -= g_gameTime->GetFrameDeltaTime();
-	}
-	else
-	{
-		return;
-	}
-}
-
-void Enemy::Collision()
-{
-	//被ダメージ、あるいはダウンステートの時は。
-	//当たり判定処理はしない。
-	if (m_enemyState == enEnemyState_ReceiveDamage)
-	{
-		return;
-	}
-
-	//プレイヤーのマジック用のコリジョンを取得する。
-	const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_magic");
-	//for文で配列を回す。
-	for (auto collision : collisions2)
-	{
-		//コリジョンとキャラコンが衝突したら。
-		if (collision->IsHit(m_charaCon))
-		{
-			m_enemyState = enEnemyState_ReceiveDamage;
-			////効果音を再生する。
-			////ここ
-			return;
-		}
-	}
-}
-
 const bool Enemy::SearchPlayer() const
 {
 	//エネミーからプレイヤーに向かうベクトルを求める。
@@ -217,6 +176,7 @@ void Enemy::ProcessState()
 {
 	if (m_catchTimer > 0.0f)
 	{
+		//m_enemyState = enEnemyState_Phose;
 		return;
 	}
 	if (SearchPlayer() == false)
@@ -234,45 +194,11 @@ void Enemy::ProcessState()
 	//プレイヤーに攻撃する。
 	m_enemyState = enEnemyState_Punch;
 
-	//if (m_catchTimer <= 0.0f) {
-	//	//プレイヤーを見つけたら。
-	//	if (SearchPlayer() == true)
-	//	{
-	//		//通常攻撃できる距離なら
-	//		if (m_catch == true)
-	//		{
-	//			m_enemyState = enEnemyState_Punch;
-
-	//		}
-	//		else
-	//		{
-	//			//プレイヤーに向かって走る
-	//			m_enemyState = enEnemyState_Chase;
-	//		}
-	//	}
-	//	//プレイヤーを見つけられなければ。
-	//	else
-	//	{
-	//		//待機ステートに遷移する。
-	//		m_enemyState = enEnemyState_Idle;
-	//	}
-	// 
-	// 
-	//	if (m_isUnderDamage == true) {
-	//		m_enemyState = enEnemyState_ReceiveDamage;
-	//	}
-	//}
 }
 
 void Enemy::IdleState()
 {
 	//他のステートへ遷移する。
-	ProcessState();
-}
-
-void Enemy::WalkState()
-{
-	//他のステートに遷移する。
 	ProcessState();
 }
 
@@ -293,7 +219,7 @@ void Enemy::PunchState()
 	//攻撃アニメーションの再生が終わったら。
 	if (m_modelRender.IsPlayingAnimation() == false)
 	{
-		m_catchTimer = 20.0f;
+		m_catchTimer = CATCH_TIMER;
 		m_catch = false;
 		m_enemyState = enEnemyState_Phose;
 	}
@@ -305,7 +231,9 @@ void Enemy::PhoseState()
 	{
 		m_catchTimer = 0.0f;
 		m_enemyState = enEnemyState_Idle;
+		return;
 	}
+	m_catchTimer -= g_gameTime->GetFrameDeltaTime();
 }
 //ダメージ関数
 void Enemy::DamageState()
@@ -377,13 +305,6 @@ void Enemy::PlayAnimation()
 		//攻撃アニメーションを再生。
 		m_modelRender.PlayAnimation(enAnimationClip_Phose, 0.3f);
 		break;
-		//被ダメージステートの時。
-	case enEnemyState_ReceiveDamage:
-		m_modelRender.SetAnimationSpeed(1.3f);
-		//被ダメージアニメーションを再生。
-		m_modelRender.PlayAnimation(enAnimationClip_Damage, 0.3f);
-		break;
-		//ダウンステートの時。
 	default:
 		break;
 	}

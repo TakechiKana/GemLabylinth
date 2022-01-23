@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Title.h"
 
+#include "Prologue.h"
 #include "Game.h"
 #include "Fade.h"
 

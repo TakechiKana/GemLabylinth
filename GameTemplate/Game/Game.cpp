@@ -175,17 +175,15 @@ void Game::Update()
 
 void Game::GameTimer()
 {
-	m_timer = m_timer + g_gameTime->GetFrameDeltaTime();
+	m_timer += g_gameTime->GetFrameDeltaTime();
 
-	if (m_timer < 60.0f)
-	{
-		m_minutes = m_timer;
-	}
-	else
+	if (m_timer > 60.0f)
 	{
 		m_timer = 0.0f;
 		m_hour += 1;
+		return;
 	}
+	m_minutes = m_timer;
 }
 
 void Game::TimerRender()

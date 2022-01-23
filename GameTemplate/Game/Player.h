@@ -128,10 +128,6 @@ private:
 	//文字表示
 	void Font();
 
-	//ダウン時の残機表示
-	//void LifeRender(RenderContext& rc);
-
-
 	//メンバ変数。
 	enum EnAnimationClip //アニメーション。
 	{		
@@ -154,13 +150,11 @@ private:
 	CharacterController m_characterController;				//キャラクターコントローラー。
 
 	float m_timer = 0.0f;									//ダッシュタイム
-	float m_timer1 = 0.0f;									//マジック削除まで
 	float m_notCatchTimer = 0.0f;							//無敵時間
 
 	bool m_fastRun = false;									//速度アップ中の判定
 
 	int m_dashCount = 0;									//ダッシュアイテムカウント
-	int m_magicCount = 0;									//マジックアイテムカウント
 	int m_gemCount = 0;										//ジェムカウント
 	int m_downCount = 3;									//ダウン回数
 

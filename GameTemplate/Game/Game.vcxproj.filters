@@ -22,7 +22,8 @@
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="Door.cpp" />
-    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="Prologue.cpp" />
+    <ClCompile Include="Score.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="Door.h" />
-    <ClInclude Include="Event.h" />
+    <ClInclude Include="Prologue.h" />
+    <ClInclude Include="Score.h" />
   </ItemGroup>
 </Project>

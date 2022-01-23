@@ -48,10 +48,7 @@ public:
 	{
 		return m_catch;
 	}
-	const float GetCatchTimer() const
-	{
-		return m_catchTimer;
-	}
+
 private:
 	//移動処理
 	void Move();
@@ -59,10 +56,6 @@ private:
 	void Chase();
 	//回転処理
 	void Rotation();
-	//当たり判定
-	void Collision();
-	//ポーズ中の処理
-	void Phose();
 	//プレイヤー探索
 	const bool SearchPlayer() const;
 	//アニメーション再生
@@ -75,8 +68,6 @@ private:
 	void ProcessState();
 	/// 待機ステートの遷移処理。
 	void IdleState();
-	/// 歩きステートの遷移処理。
-	void WalkState();
 	/// 走りステートの遷移処理。
 	void RunState();
 	/// 追跡ステートの背遷移処理。
@@ -96,7 +87,6 @@ private:
 		enAnimationClip_Run,					//走りアニメーション。
 		enAnimationClip_Punch,					//攻撃アニメーション。
 		enAnimationClip_Phose,					//攻撃後一時停止アニメーション。
-		enAnimationClip_Damage,					//被ダメージアニメーション。
 		enAnimationClip_Num,					//アニメーションの数。
 	};
 	AnimationClip				m_animationClips[enAnimationClip_Num];		//アニメーションクリップ。
@@ -105,7 +95,6 @@ private:
 	Vector3						m_targetPosition;							//ターゲットの座標
 	Vector3						m_moveSpeed;								//移動速度。
 	Vector3						m_forward = Vector3::AxisZ;					//エネミーの正面ベクトル。
-	Vector3						padding = { 20.0f,20.0f,20.0f };			//ターゲットをプレイヤーより少し離す。
 	Quaternion					m_rotation;									//回転。
 	Vector3						m_scale = Vector3::One;						//大きさ。
 	CharacterController			m_charaCon;									//キャラコン。

@@ -1,17 +1,11 @@
 #pragma once
 
-//クラス宣言
 class Fade;
-//class SoundSource;
-
-/// <summary>
-/// タイトル。
-/// </summary>
-class Title : public IGameObject
+class Prologue : public IGameObject
 {
 public:
-	Title() {};
-	~Title();
+	Prologue();
+	~Prologue();
 	/// <summary>
 	/// 初期化処理。
 	/// </summary>
@@ -27,10 +21,9 @@ public:
 	/// <param name="rc">レンダーコンテキスト。</param>
 	void Render(RenderContext& rc);
 private:
-	SpriteRender			m_spriteRender;					//タイトルの画像。
-	float					m_alpha = 0.0f;					//pressbuttonのα値。
-	SpriteRender			m_play;							//playの画像。
+	SpriteRender			m_spriteRender;					//操作説明画像。
 	SoundSource*			m_bgm = nullptr;				//BGM
 	Fade*					m_fade = nullptr;				//フェード。
 	bool					m_isWaitFadeout = false;
 };
+
