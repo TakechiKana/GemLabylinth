@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gem.h"
 #include "Player.h"
+#include "Game.h"
 
 
 bool Gem::Start()
@@ -25,7 +26,7 @@ void Gem::Count()
 	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
 	if (m_item.GetItem(ServePosition()) == true) {
-		m_player->LeftGemCount();
+		m_game->LeftGem();
 		DeleteGO(this);
 	}
 }

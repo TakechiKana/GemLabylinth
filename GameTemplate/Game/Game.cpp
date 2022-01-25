@@ -7,10 +7,11 @@
 #include "Item.h"
 #include "ItemDash.h"
 #include "Enemy.h"
+#include "Score.h"
 #include "Gem.h"
 #include "Fade.h"
 #include "Title.h"
-//#include "Map.h"
+#include "GameOver.h"
 
 namespace
 {
@@ -136,20 +137,27 @@ bool Game::Start()
 		}
 		if (objData.EqualObjectName(L"gem") == true) {
 			//ジェムのオブジェクトを作る。
-			m_player->SetGemCount();
+			m_gem += 1;
 			m_gem = NewGO<Gem>(0, "gem");
 			objData.position.y = objData.position.y + (HIGH * 2.0f);
 			m_gem->SetPosition(objData.position);
 			//falseにすると、レベルの方でモデルが読み込まれて配置される。
 			return true;
 		}
+		if (objData.EqualObjectName(L"clear") == true) {
+			////ジェムのオブジェクトを作る。
+			//m_clockRender.Init("Assets/modelData/item/clock.tkm");
+			//objData.position.y = objData.position.y + (HIGH * 2.0f);
+			//m_gem->SetPosition(objData.position);
+			//m_clockPos = objData.position;
+			////falseにすると、レベルの方でモデルが読み込まれて配置される。
+			//return true;
+		}
 		return true;
 	});
 
 	//ゲームカメラのオブジェクトを作る。
 	m_gameCamera = NewGO<GameCamera>(0, "gamecamera");
-
-	//m_map = NewGO<Map>(0, "map");
 
 	//フェードを終了する。
 	m_fade = FindGO<Fade>("fade");
@@ -170,7 +178,7 @@ void Game::Update()
 		vlLig->Update();
 	}
 	GameTimer();
-	TimerRender();
+	Font();
 }
 
 void Game::GameTimer()
@@ -186,7 +194,7 @@ void Game::GameTimer()
 	m_minutes = m_timer;
 }
 
-void Game::TimerRender()
+void Game::Font()
 {
 	wchar_t wcsbuf[256];
 	swprintf_s(wcsbuf, 256, L"AM %02d:%02d",m_hour,m_minutes);
@@ -197,10 +205,42 @@ void Game::TimerRender()
 	m_timeRender.SetPosition(Vector3(-915.0f, 500.0f, 0.0f));
 	//フォントの大きさを設定。
 	m_timeRender.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"夢のかけら のこり%d", m_gem);
+	//表示するテキストを設定。
+	m_gemRender.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_gemRender.SetPosition(Vector3(100.0f, 500.0f, 0.0f));
+	//フォントの大きさを設定。
+	m_gemRender.SetScale(1.5f);
 
 }
+
+void Game::GameJudge()
+{
+	if (m_isGameover == true)
+	{
+		m_score.SetUseItem(m_useItem);
+		NewGO<GameOver>(0, "gameover");
+		DeleteGO(this);
+	}
+//	m_item.GetItem(m_clockPos);
+//	//アイテムをゲットした判定
+//	if (m_item.GetItem(m_clockPos) == true) {
+//		NewGO<Score>(0, "score");
+//		m_score.SetHour(m_hour);
+//		m_score.SetMinutes(m_minutes);
+//		m_score.SetUseItem(m_useItem);
+//		DeleteGO(this);
+//	}
+}
+
 
 void Game::Render(RenderContext& rc)
 {
 	m_timeRender.Draw(rc);
+	m_gemRender.Draw(rc);
+	/*if (m_gem == 0)
+	{
+		m_clockRender.Draw(rc);
+	}*/
 }

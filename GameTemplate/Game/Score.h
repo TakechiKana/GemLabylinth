@@ -7,6 +7,12 @@ class Fade;
 class Score :public IGameObject
 {
 public:
+	enum EnScoreState {
+		enScoreState_Clear,
+		enScoreState_GameOver
+	};
+
+public:
 	Score() {};
 	~Score();
 	/// <summary>
@@ -18,6 +24,13 @@ public:
 	/// 更新処理。
 	/// </summary>
 	void Update();
+	/// <summary>
+	/// ゲームオーバーの設定
+	/// </summary>
+	void SetGameOver()
+	{
+		m_scoreState = enScoreState_GameOver;
+	}
 	/// <summary>
 	/// 時間の設定(時)。
 	/// </summary>
@@ -33,19 +46,36 @@ public:
 		m_minutes = minutes;
 	}
 	/// <summary>
-	/// 文字表示。
+	/// 使ったアイテム数の設定。
 	/// </summary>
-	void Font();
+	void SetUseItem(int item)
+	{
+		m_item = item;
+	}
+	/// <summary>
+	/// クリアスコア表示。
+	/// </summary>
+	void ClearFont();
+	/// <summary>
+	/// ゲームオーバースコア表示。
+	/// </summary>
+	void GameOverFont();
+	/// <summary>
+	/// ステート管理
+	/// </summary>
+	void ManageState();
 	/// <summary>
 	/// 描画処理。
 	/// </summary>
 	/// <param name="rc">レンダーコンテキスト。</param>
 	void Render(RenderContext& rc);
 private:
+	EnScoreState			m_scoreState = enScoreState_Clear;
 	SpriteRender			m_spriteRender;					//タイトルの画像。
 	SoundSource*			m_bgm = nullptr;				//BGM
 	FontRender				m_time;
 	FontRender				m_useitem;
+	FontRender				m_gameclear;
 	FontRender				m_comment1;
 	FontRender				m_comment2;
 	FontRender				m_gameover;

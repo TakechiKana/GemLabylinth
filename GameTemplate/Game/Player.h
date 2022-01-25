@@ -18,8 +18,9 @@ public:
 		enPlayerState_Idle,					//待機。
 		enPlayerState_Run,					//走る。
 		enPlayerState_FastRun,				//速く走る。
-		enPlayerState_Down,					//HPが0。
+		enPlayerState_Down,					//捕まって倒れる
 		enPlayerState_Catch,				//つかまった。
+		enPlayerState_StandUp,				//立ち上がり。
 		enPlayerState_Clear					//クリアー。
 	};
 
@@ -115,6 +116,8 @@ private:
 	void DownState();
 	//キャッチステート
 	void CatchState();
+	//立ちあがりステート
+	void StandUpState();
 	//更新処理。
 	void Update();
 	//描画処理。
@@ -135,6 +138,7 @@ private:
 		enAnimationClip_Run,		//走りアニメーション。
 		enAnimationClip_FastRun,	//ダッシュアイテム時の走りアニメーション。
 		enAnimationClip_Catch,		//つかまれたアニメーション。
+		enAnimationClip_StandUp,	//立ち上がりアニメーション
 		enAnimationClip_Down,		//ダウンアニメーション。
 		enAnimationClip_Num,		//アニメーション数。
 	};

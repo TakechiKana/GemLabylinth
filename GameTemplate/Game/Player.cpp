@@ -31,6 +31,8 @@ bool Player::Start()
 	animationClips[enAnimationClip_Catch].SetLoopFlag(true);
 	animationClips[enAnimationClip_Down].Load("Assets/animData/jackie/down.tka");
 	animationClips[enAnimationClip_Down].SetLoopFlag(false);
+	animationClips[enAnimationClip_StandUp].Load("Assets/animData/jackie/standup.tka");
+	animationClips[enAnimationClip_StandUp].SetLoopFlag(false);
 
 	//Jackieモデルを読み込む。
 	m_modelRender.Init("Assets/modelData/human/jackie.tkm", animationClips, enAnimationClip_Num, enModelUpAxisZ, true);
@@ -99,13 +101,14 @@ void Player::Font()
 	fontRender1.SetPosition(Vector3(-760.0f, 400.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender1.SetScale(2.0f);
-	swprintf_s(wcsbuf, 256, L"夢のかけら のこり%d", m_gemCount);
+	swprintf_s(wcsbuf, 256, L"Aで立ち上がる");
 	//表示するテキストを設定。
 	fontRender2.SetText(wcsbuf);
 	//フォントの位置を設定。
-	fontRender2.SetPosition(Vector3(100.0f, 500.0f, 0.0f));
+	fontRender2.SetPosition(Vector3(0.0f, -200.0f, 0.0f));
 	//フォントの大きさを設定。
 	fontRender2.SetScale(1.5f);
+	
 }
 
 //つかみ判定
@@ -114,6 +117,7 @@ void Player::Catch()
 	if (m_notCatchTimer > 0.0f) 
 	{
 		m_notCatchTimer -= g_gameTime->GetFrameDeltaTime();
+		
 	}
 	else
 	{
@@ -231,26 +235,21 @@ void Player::FastRunState()
 	ProcessState();
 }
 
+//キャッチステート
+void Player::CatchState()
+{
+	//ダウンしたら。
+	if (m_death == true)
+	{
+		m_downCount -= 1;
+		m_playerState = enPlayerState_Down;
+	}
+
+}
+
 //ダウンステート
 void Player::DownState()
 {
-	/*if (m_modelRender.IsPlayingAnimation() == false)
-	{
-		if (m_downCount == 0)
-		{
-			m_gameOver = true;
-		}
-		else {
-			m_downScreen = true;
-			if (g_pad[0]->IsTrigger(enButtonA))
-			{
-				m_death = false;
-				m_downScreen = false;
-				m_playerState = enPlayerState_Idle;
-			}
-		}
-	}*/
-
 	//アニメーションが再生中なら。
 	if (m_modelRender.IsPlayingAnimation() == true)
 	{
@@ -272,40 +271,30 @@ void Player::DownState()
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
 		m_death = false;
-		m_downScreen = false;
-		m_playerState = enPlayerState_Idle;
+		m_playerState = enPlayerState_StandUp;
 	}
 }
 
-//キャッチステート
-void Player::CatchState()
+void Player::StandUpState()
 {
-	//ダウンしたら。
-	if (m_death == true)
+	if (m_modelRender.IsPlayingAnimation() == true)
 	{
-		m_downCount -= 1;
-		m_playerState = enPlayerState_Down;
+		//処理しない。
+		return;
 	}
-
+	m_playerState = enPlayerState_Idle;
 }
 
 //ステート遷移
 void Player::ProcessState()
 {
-	////ダウンしたら。
-	//if (m_death == true)
-	//{
-	//	m_downCount -= 1;
-	//	m_playerState = enPlayerState_Down;
-
-	//}
-
 	if (m_playerState != enPlayerState_Catch) {
 		//Bボタンが押されたら。
 		if (g_pad[0]->IsTrigger(enButtonB) && m_fastRun == false && m_dashCount > 0)
 		{
 			//カウント-1
 			m_dashCount -= 1;
+			m_game->UseItem();
 			//ダッシュタイムを4秒に設定。
 			m_timer = 4.0f;
 			m_fastRun = true;
@@ -368,10 +357,12 @@ void Player::ManageState()
 		CatchState();
 		break;
 		//クリアステートの時。
-	//case enPlayerState_Clear:
-	//	//クリアステートのステート遷移処理。
-	//	ClearState();
-	//	break;
+	case enPlayerState_StandUp:
+		//クリアステートのステート遷移処理。
+		StandUpState();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -405,6 +396,10 @@ void Player::PlayAnimation()
 		//Down
 		m_modelRender.PlayAnimation(enAnimationClip_Down, 0.3f);
 		break;
+	case enPlayerState_StandUp:
+		//Down
+		m_modelRender.PlayAnimation(enAnimationClip_StandUp, 0.3f);
+		break;
 	default:
 		break;
 	}
@@ -418,7 +413,9 @@ void Player::Render(RenderContext& rc)
 	m_wingsRender.Draw(rc);
 	fontRender.Draw(rc);
 	fontRender1.Draw(rc);
-	fontRender2.Draw(rc);
+	if (m_death == true) {
+		fontRender2.Draw(rc);
+	}
 	fontRender3.Draw(rc);
 
 }

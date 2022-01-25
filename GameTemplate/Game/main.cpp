@@ -39,8 +39,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//クラスのオブジェクトを作成。
 	//NewGO<Prologue>(0, "prologue");
-	NewGO<Title>(0, "title");
-	NewGO<Fade>(0, "fade");
+	NewGO<Game>(0, "game");
+	//NewGO<Title>(0, "title");
+	NewGO<Fade>(1, "fade");
 
 	//////////////////////////////////////
 	// 初期化を行うコードを書くのはここまで！！！

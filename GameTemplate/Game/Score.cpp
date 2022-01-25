@@ -63,11 +63,12 @@ void Score::Update()
 			se->SetVolume(0.6f);*/
 		}
 	}
+	ManageState();
 	//画像の更新。
 	m_spriteRender.Update();
 }
 
-void Score::Font()
+void Score::ClearFont()
 {
 	wchar_t wcsbuf[256];
 	swprintf_s(wcsbuf, 256, L"現在時刻　　　AM %02d:%02d", m_hour, m_minutes);
@@ -87,6 +88,14 @@ void Score::Font()
 	m_useitem.SetPosition(Vector3(0.0f, 100, 0.0f));
 	//フォントの大きさを設定。
 	m_useitem.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"Game Clear");
+	//取得個数
+	//表示するテキストを設定。
+	m_gameclear.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_gameclear.SetPosition(Vector3(0.0f, -300, 0.0f));
+	//フォントの大きさを設定。
+	m_gameclear.SetScale(2.5f);
 	if (m_hour >= 4)
 	{
 		swprintf_s(wcsbuf, 256, L"いつもと同じ時間に起きた！朝ごはん食べよう。");
@@ -105,9 +114,54 @@ void Score::Font()
 		//表示するテキストを設定。
 		m_comment2.SetText(wcsbuf);
 		//フォントの位置を設定。
-		m_comment2.SetPosition(Vector3(0.0f, -300, 0.0f));
+		m_comment2.SetPosition(Vector3(0.0f, -100, 0.0f));
 		//フォントの大きさを設定。
 		m_comment2.SetScale(1.5f);
+	}
+}
+
+void Score::GameOverFont()
+{
+	wchar_t wcsbuf[256];
+	swprintf_s(wcsbuf, 256, L"現在時刻　　　AM 05:00");
+	//取得個数
+	//表示するテキストを設定。
+	m_time.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_time.SetPosition(Vector3(0.0f, 300, 0.0f));
+	//フォントの大きさを設定。
+	m_time.SetScale(2.0f);
+
+	swprintf_s(wcsbuf, 256, L"使ったアイテム数　　　　%d", m_item);
+	//取得個数
+	//表示するテキストを設定。
+	m_useitem.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_useitem.SetPosition(Vector3(0.0f, 100, 0.0f));
+	//フォントの大きさを設定。
+	m_useitem.SetScale(2.0f);
+	swprintf_s(wcsbuf, 256, L"どこまでいっても迷宮。寝ても覚めても迷宮…。");
+	//取得個数
+	//表示するテキストを設定。
+	m_gameover.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_gameover.SetPosition(Vector3(0.0f, -300, 0.0f));
+	//フォントの大きさを設定。
+	m_gameover.SetScale(1.5f);
+}
+
+void Score::ManageState()
+{
+	switch (m_scoreState) 
+	{
+	case enScoreState_Clear:
+		ClearFont();
+		break;
+	case enScoreState_GameOver:
+		GameOverFont();
+		break;
+	default:
+		break;
 	}
 }
 

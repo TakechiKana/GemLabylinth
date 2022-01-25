@@ -31,10 +31,11 @@ bool Prologue::Start()
 
 void Prologue::Update()
 {
+
 	if (m_isWaitFadeout) {
 		//フェード中じゃなかったら。
 		if (!m_fade->IsFade()) {
-			NewGO<Prologue>(0, "prologue");
+			NewGO<Game>(0, "game");
 			//自身を削除する。
 			DeleteGO(this);
 		}

@@ -2,6 +2,7 @@
 #include "Item.h"
 
 class Player;
+class Game;
 
 class Gem : public IGameObject
 {
@@ -44,6 +45,7 @@ private:
 	Vector3 m_position;
 	Quaternion m_rotation;
 	Item m_item;
-	Player* m_player;
+	Player* m_player = nullptr;
+	Game* m_game = nullptr;
 	bool m_isStart = false;
 };
