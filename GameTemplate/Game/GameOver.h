@@ -3,6 +3,7 @@
 //クラス宣言
 class Fade;
 //class SoundSource;
+class Score;
 
 /// <summary>
 /// タイトル。
@@ -26,9 +27,18 @@ public:
 	/// </summary>
 	/// <param name="rc">レンダーコンテキスト。</param>
 	void Render(RenderContext& rc);
+	/// <summary>
+	/// 使ったアイテム数の設定。
+	/// </summary>
+	void SetUseItem(int item)
+	{
+		m_useitem = item;
+	}
 private:
 	SpriteRender			m_spriteRender;					//タイトルの画像。
-	SoundSource* m_bgm = nullptr;				//BGM
-	Fade* m_fade = nullptr;				//フェード。
-	bool					m_isWaitFadeout = false;
+	SoundSource*			m_bgm = nullptr;				//BGM
+	Fade*					m_fade = nullptr;				//フェード。
+	Score*					m_score = nullptr;				//スコア。
+	bool					m_isWaitFadeout = false;		//フェード中？
+	int						m_useitem = 0;					//使ったアイテム数
 };

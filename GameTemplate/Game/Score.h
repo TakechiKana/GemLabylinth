@@ -53,6 +53,13 @@ public:
 		m_item = item;
 	}
 	/// <summary>
+	/// 残ったジェム数の設定。
+	/// </summary>
+	void SetLeftGem(int leftgem)
+	{
+		m_leftgem = leftgem;
+	}
+	/// <summary>
 	/// クリアスコア表示。
 	/// </summary>
 	void ClearFont();

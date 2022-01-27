@@ -1,6 +1,5 @@
 #pragma once
 #include "Item.h"
-#include "Score.h"
 #include "Level3DRender/LevelRender.h"
 
 class Player;
@@ -10,6 +9,8 @@ class ItemDash;
 class Enemy;
 class Gem;
 class Fade;
+class Score;
+class GameOver;
 
 //class Map;
 
@@ -28,13 +29,17 @@ public:
 	{
 		m_gems -= 1;
 	}
-	void UseItem()
+	void SetUseItem()
 	{
 		m_useItem += 1;
 	}
 	void SetGameOverFlag()
 	{
 		m_isGameover = true;
+	}
+	void SetGameClearFlag()
+	{
+		m_isGameclear = true;
 	}
 private:
 	std::vector< PointLight*> m_lightArray;
@@ -47,10 +52,11 @@ private:
 	GameCamera* m_gameCamera = nullptr;			//ÉJÉÅÉâ
 	ItemDash* m_dash = nullptr;
 	Item m_item;
-	Score m_score;
+	Score* m_score;
 	Enemy* m_enemy = nullptr;
 	Gem* m_gem = nullptr;
 	Fade* m_fade = nullptr;
+	GameOver* m_gameover = nullptr;
 
 	float m_timer = 0.0f;
 
@@ -61,8 +67,8 @@ private:
 
 	bool m_isWaitFadeout = false;
 	bool m_isGameover = false;
+	bool m_isGameclear = false;
 
-	Vector3 m_clockPos;
 	FontRender m_timeRender;
 	FontRender m_gemRender;
 	ModelRender m_clockRender;

@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Game.h"
-//#include "ItemHeart.h"
+#include "Clock.h"
 #include "ItemDash.h"
 #include "Enemy.h"
 #include "Fade.h"
+#include "Score.h"
 
 //CollisionObjectを使用するために、ファイルをインクルードする。
 #include "collision/CollisionObject.h"
@@ -16,6 +17,7 @@ namespace
 	const float WIDTH = 1920.f;
 	const float HIGH = 1080.f;
 	const float WINGS_SPRITE = 170.0f;
+	const float HEART_SPRITE = 130.0f;
 }
 
 bool Player::Start()
@@ -43,8 +45,12 @@ bool Player::Start()
 	//キャラコンを初期化する。
 	m_characterController.Init(20.0f, 90.0f, m_position);
 
-	m_downLife1Render.Init("Assets/sprite/life/down1.dds", WIDTH, HIGH);
-	m_downLife2Render.Init("Assets/sprite/life/down2.dds", WIDTH, HIGH);
+	m_life1Render.Init("Assets/sprite/life/life1.dds", HEART_SPRITE, HEART_SPRITE);
+	m_life1Render.SetPosition(Vector3(0.0f, 10.0f, 0.0f));
+	m_life2Render.Init("Assets/sprite/life/life2.dds", HEART_SPRITE, HEART_SPRITE);
+	m_life1Render.SetPosition(Vector3(0.0f, 10.0f, 0.0f));
+	m_life3Render.Init("Assets/sprite/life/life3.dds", HEART_SPRITE, HEART_SPRITE);
+	m_life1Render.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
 	m_wingsRender.Init("Assets/sprite/UI/wings.dds", WINGS_SPRITE, WINGS_SPRITE);
 	m_wingsRender.SetPosition(Vector3(-830.0f, 350.0f, 0.0f));
 
@@ -54,7 +60,7 @@ bool Player::Start()
 	m_enemys = FindGOs<Enemy>("enemy");
 
 	m_fade = FindGO<Fade>("fade");
-
+	m_isGamenow = true;
 	return true;
 }
 
@@ -65,7 +71,9 @@ Player::Player()
 
 Player::~Player()
 {
-
+	m_score = FindGO<Score>("score");
+	m_score->SetUseItem(m_useItem);
+	m_score->SetLeftGem(m_gemCount);
 }
 
 //更新処理。
@@ -85,29 +93,46 @@ void Player::Update()
 	PlayAnimation();
 	//文字表示
 	Font();
-
 	//モデルの更新。
 	m_modelRender.Update();
 	m_wingsRender.Update();
+	m_life1Render.Update();
+	m_life2Render.Update();
+	m_life3Render.Update();
 }
+
+void Player::Clear() {
+	if (m_gemCount == 0 && m_isGamenow == true)
+	{
+		NewGO<Clock>(0, "clock");
+	}
+}
+
 //文字表示
 void Player::Font()
 {
 	wchar_t wcsbuf[256];
 	swprintf_s(wcsbuf, 256, L"x %d", m_dashCount);
 	//表示するテキストを設定。
-	fontRender1.SetText(wcsbuf);
+	m_leftdash_Render.SetText(wcsbuf);
 	//フォントの位置を設定。
-	fontRender1.SetPosition(Vector3(-760.0f, 400.0f, 0.0f));
+	m_leftdash_Render.SetPosition(Vector3(-760.0f, 400.0f, 0.0f));
 	//フォントの大きさを設定。
-	fontRender1.SetScale(2.0f);
+	m_leftdash_Render.SetScale(2.0f);
 	swprintf_s(wcsbuf, 256, L"Aで立ち上がる");
 	//表示するテキストを設定。
-	fontRender2.SetText(wcsbuf);
+	m_downCommentRender.SetText(wcsbuf);
 	//フォントの位置を設定。
-	fontRender2.SetPosition(Vector3(0.0f, -200.0f, 0.0f));
+	m_downCommentRender.SetPosition(Vector3(0.0f, -200.0f, 0.0f));
 	//フォントの大きさを設定。
-	fontRender2.SetScale(1.5f);
+	m_downCommentRender.SetScale(1.5f);
+	swprintf_s(wcsbuf, 256, L"夢のかけら のこり%d", m_gemCount);
+	//表示するテキストを設定。
+	m_gemRender.SetText(wcsbuf);
+	//フォントの位置を設定。
+	m_gemRender.SetPosition(Vector3(100.0f, 500.0f, 0.0f));
+	//フォントの大きさを設定。
+	m_gemRender.SetScale(1.5f);
 	
 }
 
@@ -263,7 +288,8 @@ void Player::DownState()
 	if (m_downCount ==0)
 	{
 		//ゲームオーバー。
-		m_gameOver = true;
+		m_game->SetGameOverFlag();
+		m_isGamenow = false;
 		return;
 	}
 
@@ -294,7 +320,7 @@ void Player::ProcessState()
 		{
 			//カウント-1
 			m_dashCount -= 1;
-			m_game->UseItem();
+			m_useItem += 1;
 			//ダッシュタイムを4秒に設定。
 			m_timer = 4.0f;
 			m_fastRun = true;
@@ -410,15 +436,22 @@ void Player::Render(RenderContext& rc)
 {
 	//モデルを描画する。
 	m_modelRender.Draw(rc);
+	m_gemRender.Draw(rc);
 	m_wingsRender.Draw(rc);
-	fontRender.Draw(rc);
-	fontRender1.Draw(rc);
+	m_life1Render.Draw(rc);
+	m_life2Render.Draw(rc);
+	m_life3Render.Draw(rc);
+	//if (m_downCount >= 3)
+	//{
+	//	m_life3Render.Draw(rc);
+	//}
+	//if (m_downCount >= 2)
+	//{
+	//	m_life2Render.Draw(rc);
+	//}
+	//
+	m_leftdash_Render.Draw(rc);
 	if (m_death == true) {
-		fontRender2.Draw(rc);
+		m_downCommentRender.Draw(rc);
 	}
-	fontRender3.Draw(rc);
-
 }
-
-//memo
-/**/

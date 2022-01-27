@@ -1,17 +1,19 @@
 #include "stdafx.h"
-#include "Gem.h"
+#include "Clock.h"
 #include "Player.h"
 #include "Game.h"
 
 
-bool Gem::Start()
+bool Clock::Start()
 {
-	m_modelRender.Init("Assets/modelData/item/gem.tkm");
+	m_modelRender.Init("Assets/modelData/item/clock.tkm");
+	m_modelRender.SetPosition(Vector3{ 0.0f,30.0f,0.0f });
 	m_player = FindGO<Player>("player");
+	m_game = FindGO<Game>("game");
 	return true;
 }
 
-void Gem::Update()
+void Clock::Update()
 {
 	Count();
 	Rotation();
@@ -19,16 +21,16 @@ void Gem::Update()
 }
 
 
-void Gem::Count()
+void Clock::Count()
 {
 	m_item.GetItem(ServePosition());
 	//アイテムをゲットした判定
 	if (m_item.GetItem(ServePosition()) == true) {
-		m_player->SetLeftGemCount();
+		m_game->SetGameClearFlag();
 		DeleteGO(this);
 	}
 }
-void Gem::Rotation()
+void Clock::Rotation()
 {
 	m_rotation.AddRotationDegY(2.0f);
 
@@ -38,7 +40,7 @@ void Gem::Rotation()
 	m_modelRender.SetScale({ 0.3f,0.3f,0.3f });
 }
 
-void Gem::Render(RenderContext& rc)
+void Clock::Render(RenderContext& rc)
 {
 	m_modelRender.Draw(rc);
 }

@@ -24,6 +24,7 @@
     <ClCompile Include="Prologue.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="GameOver.cpp" />
+    <ClCompile Include="Clock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -43,5 +44,6 @@
     <ClInclude Include="Prologue.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="GameOver.h" />
+    <ClInclude Include="Clock.h" />
   </ItemGroup>
 </Project>

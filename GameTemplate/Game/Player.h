@@ -1,12 +1,12 @@
 #pragma once
 
-
 //クラス宣言
-class Collision;
+class Clock;
 class ItemDash;
 class Game;
 class Enemy;
 class Fade;
+class Score;
 
  
 //プレイヤークラス。
@@ -51,7 +51,7 @@ public:
 		m_gemCount += 1;
 	}
 	//ジェムの残り個数
-	void LeftGemCount()
+	void SetLeftGemCount()
 	{
 		m_gemCount -= 1;
 	}
@@ -85,17 +85,15 @@ public:
 		return m_forward;
 	}
 	////クリア
-	bool Clear() {
-		if (m_gemCount == 178 && m_clear == true)
-		{
-			return true;
-		}
-	}
+	void Clear();
 	
+	void GameOver();
+
 	bool IsEnableMove() const
 	{
 		return m_playerState != enPlayerState_Down &&
 			m_playerState != enPlayerState_Catch &&
+			m_playerState != enPlayerState_StandUp &&
 			m_playerState != enPlayerState_Clear;
 	}
 
@@ -159,12 +157,13 @@ private:
 	bool m_fastRun = false;									//速度アップ中の判定
 
 	int m_dashCount = 0;									//ダッシュアイテムカウント
-	int m_gemCount = 0;										//ジェムカウント
+	int m_gemCount  = 0;									//ジェムカウント
 	int m_downCount = 3;									//ダウン回数
+	int m_useItem = 0;
 
 	bool m_death = false;									//ダウンしたか？
 	bool m_downScreen = false;								//ダウン画面
-	bool m_clear = false;
+	bool m_isGamenow = false;
 	bool m_gameOver = false;
 
 	int	m_PunchBoneId_R= -1;									//BoneID
@@ -173,15 +172,17 @@ private:
 	ItemDash* m_dash;
 	Game* m_game;
 	Fade* m_fade;
+	Score* m_score;
+	Clock* m_clock;
 
 	std::vector<Enemy*>  m_enemys;
 
-	SpriteRender m_downLife1Render;		//ダウン時残機１
-	SpriteRender m_downLife2Render;		//ダウン時残機２
+	SpriteRender m_life1Render;		//残機１
+	SpriteRender m_life2Render;		//残機２
+	SpriteRender m_life3Render;		//残機３
 	SpriteRender m_wingsRender;
 
-	FontRender fontRender;
-	FontRender fontRender1; 
-	FontRender fontRender2; 
-	FontRender fontRender3;
+	FontRender m_gemRender;
+	FontRender m_leftdash_Render; 
+	FontRender m_downCommentRender; 
 };

@@ -45,6 +45,8 @@ void GameOver::Update()
 		//フェード中じゃなかったら。
 		if (!m_fade->IsFade()) {
 			NewGO<Score>(0, "score");
+			m_score->SetGameOver();
+			m_score->SetUseItem(m_useitem);
 			//自身を削除する。
 			DeleteGO(this);
 		}
